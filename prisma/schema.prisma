@@ -1,0 +1,98 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ───────────────────────────────
+// USER
+// ───────────────────────────────
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  snippets    Snippet[]
+  collections Collection[]
+
+  @@map("users")
+}
+
+// ───────────────────────────────
+// SNIPPET
+// ───────────────────────────────
+model Snippet {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?  @db.Text
+  code        String   @db.LongText
+  language    String
+  isPublic    Boolean  @default(false)
+  shareId     String?  @unique  // nanoid — untuk public link /s/[shareId]
+  copyCount   Int      @default(0)
+  
+  userId        Int
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  collectionId  Int?
+  collection    Collection? @relation(fields: [collectionId], references: [id], onDelete: SetNull)
+
+  tags      SnippetTag[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("snippets")
+}
+
+// ───────────────────────────────
+// TAG
+// ───────────────────────────────
+model Tag {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
+  snippets SnippetTag[]
+
+  @@map("tags")
+}
+
+// ───────────────────────────────
+// SNIPPET_TAG (pivot)
+// ───────────────────────────────
+model SnippetTag {
+  snippetId Int
+  tagId     Int
+
+  snippet Snippet @relation(fields: [snippetId], references: [id], onDelete: Cascade)
+  tag     Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([snippetId, tagId])
+  @@map("snippet_tags")
+}
+
+// ───────────────────────────────
+// COLLECTION (folder)
+// ───────────────────────────────
+model Collection {
+  id     Int     @id @default(autoincrement())
+  name   String
+  color  String? // hex color buat UI
+  icon   String? // emoji atau icon name
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  snippets Snippet[]
+
+  createdAt DateTime @default(now())
+
+  @@map("collections")
+}
