@@ -25,15 +25,7 @@ export default function Sidebar() {
     return (
         <aside className="w-[224px] h-full bg-[var(--surface)] border-r border-[var(--border)] flex flex-col">
 
-            {/* Logo */}
-            <div className="flex items-center gap-2 px-4 h-[52px] border-b border-[var(--border)] shrink-0">
-                <div className="w-[26px] h-[26px] bg-[var(--em)] rounded-[6px] flex items-center justify-center text-[#0a0a0a] font-mono text-[11px] font-bold shrink-0">
-                    &lt;/&gt;
-                </div>
-                <span className="text-[15px] font-semibold tracking-tight">
-                    dev<span className="text-[var(--em)]">note</span>
-                </span>
-            </div>
+
 
             {/* Library */}
             <div className="px-3 pt-4 pb-2">

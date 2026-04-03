@@ -6,11 +6,22 @@ export default function Topbar() {
         <header className="h-[52px] bg-[var(--surface)] border-b border-[var(--border)] flex items-center justify-between px-5 shrink-0">
 
             {/* kiri */}
-            <div className="flex items-center gap-2 font-mono text-[12px] text-[var(--text3)]">
-                <span>snippets</span>
-                <span className="text-[var(--text4)]">/</span>
-                <span className="text-[var(--text2)]">all</span>
+            <div className='flex'>
+                <div className="flex items-center gap-2 px-4 h-[52px] border-b border-[var(--border)] shrink-0 mr-24">
+                    <div className="w-[26px] h-[26px] bg-[var(--em)] rounded-[6px] flex items-center justify-center text-[#0a0a0a] font-mono text-[11px] font-bold shrink-0">
+                        &lt;/&gt;
+                    </div>
+                    <span className="text-[15px] font-semibold tracking-tight">
+                        dev<span className="text-[var(--em)]">note</span>
+                    </span>
+                </div>
+                <div className="flex items-center gap-2 font-mono text-[12px] text-[var(--text3)]">
+                    <span>snippets</span>
+                    <span className="text-[var(--text4)]">/</span>
+                    <span className="text-[var(--text2)]">all</span>
+                </div>
             </div>
+
 
             {/* kanan  */}
             <div className="flex items-center gap-3">
