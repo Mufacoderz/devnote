@@ -23,7 +23,7 @@ function NavItem({ label, count, active }: {
 
 export default function Sidebar() {
     return (
-        <aside className="w-[224px] h-full bg-[var(--surface)] border-r border-[var(--border)] flex flex-col">
+        <aside className="w-[280px] h-full bg-[var(--surface)] border-r border-[var(--border)] flex flex-col">
 
 
 

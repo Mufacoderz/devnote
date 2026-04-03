@@ -96,7 +96,7 @@ export default function RegisterPage() {
 
                     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                         <div className="flex flex-col gap-1.5">
-                            <label className="text-[11.5px] font-medium text-[var(--text2)] tracking-[0.2px]">Full name</label>
+                            <label className="text-[11.5px] font-medium text-[var(--text2)] tracking-[0.2px]">Nama</label>
                             <input
                                 type="text"
                                 name="name"
@@ -107,7 +107,7 @@ export default function RegisterPage() {
                         </div>
 
                         <div className="flex flex-col gap-1.5">
-                            <label className="text-[11.5px] font-medium text-[var(--text2)] tracking-[0.2px]">Email address</label>
+                            <label className="text-[11.5px] font-medium text-[var(--text2)] tracking-[0.2px]">Email</label>
                             <input
                                 type="email"
                                 name="email"
@@ -130,7 +130,7 @@ export default function RegisterPage() {
                                 />
                             </div>
                             <div className="flex flex-col gap-1.5">
-                                <label className="text-[11.5px] font-medium text-[var(--text2)] tracking-[0.2px]">Confirm</label>
+                                <label className="text-[11.5px] font-medium text-[var(--text2)] tracking-[0.2px]">Konfirmasi</label>
                                 <input
                                     type="password"
                                     name="confirm"
@@ -153,14 +153,14 @@ export default function RegisterPage() {
                             disabled={loading}
                             className="bg-[var(--em)] text-[#0a0a0a] font-semibold text-[14px] py-3 rounded-lg hover:bg-[#2bc48a] hover:shadow-[0_4px_24px_var(--em-glow)] hover:-translate-y-[1px] transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-1"
                         >
-                            {loading ? "Creating account..." : "Create Account →"}
+                            {loading ? "Creating account..." : "Create Account"}
                         </button>
                     </form>
 
                     <p className="text-[13px] text-[var(--text2)] text-center mt-6">
-                        Already have an account?{" "}
+                        Sudah punya akun?{" "}
                         <Link href="/login" className="text-[var(--em)] hover:underline font-medium">
-                            Sign in
+                            Masuk
                         </Link>
                     </p>
                 </div>

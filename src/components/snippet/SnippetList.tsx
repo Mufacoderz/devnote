@@ -12,7 +12,7 @@ export default function SnippetList({ snippets }: { snippets: Snippet[] }) {
         <div className="flex h-full overflow-hidden">
 
             {/* Panel list */}
-            <div className="w-[280px] border-r border-[var(--border)] flex flex-col shrink-0">
+            <div className="w-[300px] border-r border-[var(--border)] flex flex-col shrink-0">
                 <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border)] shrink-0">
                     <span className="text-[11px] font-semibold tracking-[1px] uppercase text-[var(--text3)]">
                         Semua Snippet

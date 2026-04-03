@@ -6,8 +6,7 @@ export default function Topbar() {
         <header className="h-[52px] bg-[var(--surface)] border-b border-[var(--border)] flex items-center justify-between px-5 shrink-0">
 
             {/* kiri */}
-            <div className='flex'>
-                <div className="flex items-center gap-2 px-4 h-[52px] border-b border-[var(--border)] shrink-0 mr-24">
+                <div className="flex items-center gap-2 px-4 h-[52px] border-b border-[var(--border)] shrink-0 ">
                     <div className="w-[26px] h-[26px] bg-[var(--em)] rounded-[6px] flex items-center justify-center text-[#0a0a0a] font-mono text-[11px] font-bold shrink-0">
                         &lt;/&gt;
                     </div>
@@ -15,12 +14,6 @@ export default function Topbar() {
                         dev<span className="text-[var(--em)]">note</span>
                     </span>
                 </div>
-                <div className="flex items-center gap-2 font-mono text-[12px] text-[var(--text3)]">
-                    <span>snippets</span>
-                    <span className="text-[var(--text4)]">/</span>
-                    <span className="text-[var(--text2)]">all</span>
-                </div>
-            </div>
 
 
             {/* kanan  */}
@@ -30,7 +23,7 @@ export default function Topbar() {
                 <div className="relative">
                     <input
                         type="text"
-                        placeholder="Search snippets..."
+                        placeholder="Cari snippets..."
                         className="bg-[var(--surface2)] border border-[var(--border2)] rounded-full px-4 py-[6px] pl-8 text-[12px] font-mono text-[var(--text)] placeholder:text-[var(--text4)] outline-none w-[200px] focus:border-[var(--em-border)] focus:shadow-[0_0_0_3px_var(--em-faint)] transition-all"
                     />
                     <FontAwesomeIcon
@@ -40,9 +33,9 @@ export default function Topbar() {
                 </div>
 
                 {/* tambah Snippet */}
-                <button className="flex items-center gap-2 bg-[var(--em)] text-[#0a0a0a] font-semibold text-[13px] px-4 py-[6px] rounded-full hover:bg-[#2bc48a] hover:shadow-[0_0_20px_var(--em-glow)] transition-all">
+                <button className="flex items-center gap-2 bg-[var(--em)] text-[#0a0a0a] font-semibold text-[13px] px-4 py-[6px] rounded-full border-[1px] border-transparent hover:bg-transparent hover:text-[var(--em)] hover:border-[var(--em)] hover:shadow-[0_0_20px_var(--em-glow)] transition-all">
                     <FontAwesomeIcon icon={faPlus} className="w-[12px] h-[12px]" />
-                    New Snippet
+                    Tambah Snippet
                 </button>
 
                 {/* profil */}

@@ -59,10 +59,10 @@ export default function SnippetDetail({ snippet }: { snippet: Snippet }) {
 
                 <div className="flex items-center gap-2">
                     <CopyButton code={snippet.code} />
-                    <button className="text-[13px] font-medium px-4 py-2 rounded-lg border border-[var(--border2)] text-[var(--text3)] hover:border-[var(--em-border)] hover:text-[var(--em)] transition-all">
+                    <button className="text-[13px] font-medium px-4 py-2 rounded-lg border border-[var(--border2)] text-[var(--text3)] hover:border-yellow-500/60 hover:text-yellow-300 transition-all">
                         Edit
                     </button>
-                    <button className="text-[13px] font-medium px-4 py-2 rounded-lg border border-[var(--border2)] text-[var(--text3)] hover:border-red-500/30 hover:text-red-400 transition-all">
+                    <button className="text-[13px] font-medium px-4 py-2 rounded-lg border border-[var(--border2)] text-[var(--text3)] hover:border-red-500/60 hover:text-red-400 transition-all">
                         Hapus
                     </button>
                 </div>

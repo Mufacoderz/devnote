@@ -14,7 +14,7 @@
 --surface3: #1c1c1c;
 
   /* Border */
---border:   #1f1f1f;
+--border:   #2f2f2f;
 --border2:  #2a2a2a;
 
   /* Emerald accent */
@@ -28,7 +28,7 @@
 --text:       #fdfdfd;
 --text2:      #e0e0e0;
 --text3:      #4a654a;
---text4:      #2d432d;
+--text4:      #86b286;
 
 /* Language colors */
 --ts:         #60a5fa;
