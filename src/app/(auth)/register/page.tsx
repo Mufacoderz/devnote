@@ -42,10 +42,10 @@ export default function RegisterPage() {
     }
 
     return (
-        <div className="min-h-screen grid grid-cols-2">
+        <div className="min-h-screen grid md:grid-cols-2 grid-cols-1 ">
 
-            {/* Left — Green Panel */}
-            <div className="relative flex flex-col justify-center px-14 py-12 bg-[var(--em)] overflow-hidden">
+            {/* kiri */}
+            <div className="relative flex flex-col justify-center px-14 py-12 bg-[var(--em)] overflow-hidden order-2 lg:order-1">
                 <div className="absolute w-[400px] h-[400px] rounded-full bg-white/[0.06] -top-[100px] -right-[100px]" />
                 <div className="absolute w-[300px] h-[300px] rounded-full bg-white/[0.04] -bottom-[80px] -left-[80px]" />
 
@@ -65,28 +65,11 @@ export default function RegisterPage() {
                         Every snippet you save is a minute saved tomorrow. Never lose good code again.
                     </p>
 
-                    <div className="flex flex-col gap-5">
-                        {[
-                            { icon: "01", title: "Save & Organize", desc: "Categorize snippets by language, tags, and collections" },
-                            { icon: "02", title: "Instant Search", desc: "Find any snippet in under a second with smart search" },
-                            { icon: "03", title: "Share Publicly", desc: "Share snippets via link with your team or community" },
-                        ].map(f => (
-                            <div key={f.icon} className="flex items-start gap-4">
-                                <div className="w-[32px] h-[32px] bg-black/12 rounded-lg flex items-center justify-center font-mono text-[10px] font-bold text-black/50 shrink-0">
-                                    {f.icon}
-                                </div>
-                                <div>
-                                    <div className="text-[14px] font-semibold text-[#0a0a0a] mb-0.5">{f.title}</div>
-                                    <div className="text-[12px] text-black/45 leading-relaxed">{f.desc}</div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
                 </div>
             </div>
 
-            {/* Right — Form */}
-            <div className="flex flex-col justify-center px-14 py-12 bg-[var(--bg)] relative overflow-hidden">
+            {/* kanan */}
+            <div className="flex flex-col justify-center px-14 py-12 bg-[var(--bg)] relative overflow-hidden order-1 lg:order-2">
                 <div className="absolute inset-0 opacity-40"
                     style={{
                         backgroundImage: `linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px)`,
@@ -94,7 +77,7 @@ export default function RegisterPage() {
                     }}
                 />
 
-                <div className="relative z-10 max-w-[360px]">
+                <div className="relative z-10 ml-0 md:ml-28 max-w-[360px]">
                     <div className="flex items-center gap-2 mb-10">
                         <div className="w-[26px] h-[26px] bg-[var(--em)] rounded-[6px] flex items-center justify-center text-[#0a0a0a] font-mono text-[10px] font-bold shrink-0">
                             &lt;/&gt;

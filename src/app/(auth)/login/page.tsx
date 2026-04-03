@@ -35,7 +35,7 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="min-h-screen grid grid-cols-2">
+        <div className="min-h-screen grid grid-cols-1 md:grid-cols-2">
 
             {/* Left — Form */}
             <div className="flex flex-col justify-center px-14 py-12 bg-[var(--bg)] relative overflow-hidden">
@@ -47,7 +47,7 @@ export default function LoginPage() {
                     }}
                 />
 
-                <div className="relative z-10 max-w-[360px]">
+                <div className="relative ml-0 md:ml-28 z-10 max-w-[360px]">
                     {/* Logo */}
                     <div className="flex items-center gap-2 mb-10">
                         <div className="w-[26px] h-[26px] bg-[var(--em)] rounded-[6px] flex items-center justify-center text-[#0a0a0a] font-mono text-[10px] font-bold shrink-0">

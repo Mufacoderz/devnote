@@ -34,8 +34,8 @@ const langStripe: Record<string, string> = {
 
 export default function SnippetCard({ snippet }: { snippet: Snippet }) {
     const lang = snippet.language.toLowerCase()
-const pipClass = langPip[lang] ?? 'bg-white/10 text-white/50 border-white/10'
-const stripeClass = langStripe[lang] ?? 'bg-white/30'
+    const pipClass = langPip[lang] ?? 'bg-white/10 text-white/50 border-white/10'
+    const stripeClass = langStripe[lang] ?? 'bg-white/30'
 
     return (
         <div className="relative bg-[var(--surface)] border border-[var(--border)] rounded-[10px] overflow-hidden hover:border-[var(--border2)] hover:-translate-y-[1px] hover:shadow-[0_4px_24px_rgba(0,0,0,0.3)] transition-all group">
