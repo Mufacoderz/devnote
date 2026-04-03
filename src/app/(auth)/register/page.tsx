@@ -45,7 +45,7 @@ export default function RegisterPage() {
         <div className="min-h-screen grid md:grid-cols-2 grid-cols-1 ">
 
             {/* kiri */}
-            <div className="relative flex flex-col justify-center px-14 py-12 bg-[var(--em)] overflow-hidden order-2 lg:order-1">
+            <div className="relative flex flex-col justify-center px-14 py-12 bg-[var(--em)] overflow-hidden order-2 md:order-1">
                 <div className="absolute w-[400px] h-[400px] rounded-full bg-white/[0.06] -top-[100px] -right-[100px]" />
                 <div className="absolute w-[300px] h-[300px] rounded-full bg-white/[0.04] -bottom-[80px] -left-[80px]" />
 
@@ -69,7 +69,7 @@ export default function RegisterPage() {
             </div>
 
             {/* kanan */}
-            <div className="flex flex-col justify-center px-14 py-12 bg-[var(--bg)] relative overflow-hidden order-1 lg:order-2">
+            <div className="flex flex-col justify-center px-14 py-12 bg-[var(--bg)] relative overflow-hidden order-1 md:order-2">
                 <div className="absolute inset-0 opacity-40"
                     style={{
                         backgroundImage: `linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px)`,

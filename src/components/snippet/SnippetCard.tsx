@@ -1,11 +1,11 @@
-interface Snippet {
-    id: number
-    title: string
-    language: string
-    code: string
-    tags: string[]
-    copyCount: number
-    createdAt: string
+'use client'
+
+import { Snippet } from "./SnippetDetail"
+
+const langLabel: Record<string, string> = {
+    typescript: 'TS', javascript: 'JS', php: 'PHP',
+    css: 'CSS', sql: 'SQL', python: 'PY',
+    html: 'HTML', rust: 'RS', go: 'GO',
 }
 
 const langPip: Record<string, string> = {
@@ -21,71 +21,60 @@ const langPip: Record<string, string> = {
 }
 
 const langStripe: Record<string, string> = {
-    typescript: 'bg-[var(--ts)]',
-    javascript: 'bg-[var(--js)]',
-    php: 'bg-[var(--php)]',
-    css: 'bg-[var(--css)]',
-    sql: 'bg-[var(--sql)]',
-    python: 'bg-[var(--python)]',
-    html: 'bg-[var(--html)]',
-    rust: 'bg-[var(--rust)]',
+    typescript: 'bg-[var(--ts)]', javascript: 'bg-[var(--js)]',
+    php: 'bg-[var(--php)]', css: 'bg-[var(--css)]',
+    sql: 'bg-[var(--sql)]', python: 'bg-[var(--python)]',
+    html: 'bg-[var(--html)]', rust: 'bg-[var(--rust)]',
     go: 'bg-[var(--go)]',
 }
 
-export default function SnippetCard({ snippet }: { snippet: Snippet }) {
+export default function SnippetCard({ snippet, active, onClick }: {
+    snippet: Snippet
+    active?: boolean
+    onClick?: () => void
+}) {
     const lang = snippet.language.toLowerCase()
     const pipClass = langPip[lang] ?? 'bg-white/10 text-white/50 border-white/10'
     const stripeClass = langStripe[lang] ?? 'bg-white/30'
 
     return (
-        <div className="relative bg-[var(--surface)] border border-[var(--border)] rounded-[10px] overflow-hidden hover:border-[var(--border2)] hover:-translate-y-[1px] hover:shadow-[0_4px_24px_rgba(0,0,0,0.3)] transition-all group">
+        <div
+            onClick={onClick}
+            className={`relative pl-3 pr-3 py-3 rounded-[6px] cursor-pointer transition-all border
+        ${active
+                    ? 'bg-[var(--surface)] border-[var(--em-border)] shadow-[0_0_0_1px_var(--em-border)]'
+                    : 'border-transparent hover:bg-[var(--surface2)] hover:border-[var(--border)]'
+                }`}
+        >
+            <div className={`absolute left-0 top-[6px] bottom-[6px] w-[2px] rounded-full ${stripeClass}`} />
 
-            {/* Stripe kiri */}
-            <div className={`absolute left-0 top-0 bottom-0 w-[3px] ${stripeClass}`} />
-
-            {/* Header */}
-            <div className="flex items-center justify-between pl-5 pr-4 py-3 border-b border-[var(--border)]">
-                <div className="flex items-center gap-2.5 min-w-0">
-                    <span className={`font-mono text-[10px] font-semibold px-2 py-[3px] rounded-[4px] border shrink-0 ${pipClass}`}>
-                        {snippet.language.toUpperCase().slice(0, 3)}
-                    </span>
-                    <span className="text-[14px] font-medium text-[var(--text)] tracking-[-0.2px] truncate">
-                        {snippet.title}
-                    </span>
-                </div>
-
-                <div className="flex items-center gap-2 shrink-0">
-                    <div className="flex gap-1.5">
-                        {snippet.tags.map(tag => (
-                            <span key={tag} className="font-mono text-[10px] text-[var(--text3)] bg-[var(--surface2)] px-2 py-[2px] rounded-full">
-                                {tag}
-                            </span>
-                        ))}
-                    </div>
-                    <button className="flex items-center gap-1.5 text-[12px] font-medium px-3 py-[5px] rounded-[6px] border border-[var(--border2)] text-[var(--text3)] hover:border-[var(--em-border)] hover:text-[var(--em)] hover:bg-[var(--em-faint)] transition-all">
-                        Salin
-                    </button>
-                </div>
-            </div>
-
-            {/* Code */}
-            <div className="bg-[#080a08] pl-5 pr-4 py-3 max-h-[160px] overflow-hidden">
-                <pre className="font-mono text-[11.5px] text-[var(--text2)] leading-[1.7] overflow-hidden">
-                    <code>{snippet.code}</code>
-                </pre>
-            </div>
-
-            {/* Footer */}
-            <div className="flex items-center justify-between pl-5 pr-4 py-2 border-t border-[var(--border)]">
-                <span className="font-mono text-[11px] text-[var(--text3)]">
-                    {snippet.createdAt}
+            <div className="flex items-center justify-between mb-[5px]">
+                <span className={`font-mono text-[9px] font-semibold px-[7px] py-[2px] rounded-[3px] border ${pipClass}`}>
+                    {langLabel[lang] ?? snippet.language.toUpperCase().slice(0, 3)}
                 </span>
-                <div className="flex items-center gap-1.5 font-mono text-[11px] text-[var(--text3)]">
-                    <div className="w-[4px] h-[4px] rounded-full bg-[var(--em)]" />
-                    {snippet.copyCount} disalin
-                </div>
+                <span className="font-mono text-[10px] text-[var(--text4)]">{snippet.createdAt}</span>
             </div>
 
+            <div className={`text-[13px] font-medium mb-[5px] truncate tracking-[-0.2px]
+        ${active ? 'text-[var(--em)]' : 'text-[var(--text)]'}`}>
+                {snippet.title}
+            </div>
+
+            <div className="font-mono text-[10px] text-[var(--text3)] truncate mb-[6px]">
+                {snippet.code.split('\n')[0]}
+            </div>
+
+            <div className="flex gap-1.5 flex-wrap">
+                {snippet.tags.map(tag => (
+                    <span key={tag} className={`font-mono text-[9px] px-[7px] py-[1px] rounded-full
+            ${active
+                            ? 'text-[var(--em-dim)] bg-[var(--em-faint)]'
+                            : 'text-[var(--text4)] bg-[var(--surface3)]'
+                        }`}>
+                        {tag}
+                    </span>
+                ))}
+            </div>
         </div>
     )
 }
