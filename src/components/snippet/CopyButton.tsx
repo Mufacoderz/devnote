@@ -20,7 +20,7 @@ export default function CopyButton({ code }: { code: string }) {
                     : 'bg-[var(--em)] text-[#0a0a0a] hover:bg-[#2bc48a] hover:shadow-[0_4px_16px_var(--em-glow)]'
                 }`}
         >
-            {copied ? '✓ Tersalin!' : '⎘ Salin Kode'}
+            {copied ? 'Tersalin!' : 'Salin Kode'}
         </button>
     )
 }
