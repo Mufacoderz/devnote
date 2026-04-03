@@ -3,26 +3,70 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+--font-outfit: 'Outfit', sans-serif;
+--font-mono: 'JetBrains Mono', monospace;
+
+  /* Background */
+--bg:       #0a0a0a;
+--bg2:      #0d0d0d;
+--surface:  #111111;
+--surface2: #161616;
+--surface3: #1c1c1c;
+
+  /* Border */
+--border:   #1f1f1f;
+--border2:  #2a2a2a;
+
+  /* Emerald accent */
+--em:         #34d399;
+--em-dim:     #22946a;
+--em-faint:   rgba(52, 211, 153, 0.07);
+--em-glow:    rgba(52, 211, 153, 0.15);
+--em-border:  rgba(52, 211, 153, 0.2);
+
+  /* Text */
+--text:       #fdfdfd;
+--text2:      #e0e0e0;
+--text3:      #4a654a;
+--text4:      #2d432d;
+
+/* Language colors */
+--ts:         #60a5fa;
+--js:         #fbbf24;
+--php:        #a78bfa;
+--css:        #38bdf8;
+--sql:        #34d399;
+--python:     #4ade80;
+--rust:       #fb923c;
+--go:         #67e8f9;
+--java:       #f97316;
+--cpp:        #c084fc;
+--csharp:     #818cf8;
+--ruby:       #f43f5e;
+--swift:      #ff6b35;
+--kotlin:     #a78bfa;
+--bash:       #facc15;
+--yaml:       #94a3b8;
+--json:       #6ee7b7;
+--html:       #fb7185;
+--markdown:   #cbd5e1;
+--prisma:     #34d399;
+--graphql:    #e879f9;
+--docker:     #38bdf8;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-outfit);
+  background: var(--bg);
+  color: var(--text);
 }
+
+/* Scrollbar global */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text4); }
