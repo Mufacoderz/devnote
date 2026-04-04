@@ -23,6 +23,7 @@ export interface Snippet {
     id: number
     title: string
     language: string
+    description: string | null
     code: string
     tags: string[]
     copyCount: number
@@ -48,6 +49,12 @@ export default function SnippetDetail({ snippet }: { snippet: Snippet }) {
                 <h2 className="text-[22px] font-bold tracking-[-0.5px] mb-3">
                     {snippet.title}
                 </h2>
+
+                {snippet.description && (
+                    <p className="text-[13px] text-[var(--text3)] mb-4 leading-relaxed">
+                        {snippet.description}
+                    </p>
+                )}
 
                 <div className="flex gap-2 mb-4">
                     {snippet.tags.map(tag => (

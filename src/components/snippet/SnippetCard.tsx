@@ -46,7 +46,7 @@ export default function SnippetCard({ snippet, active, onClick }: {
                     : 'border-transparent hover:bg-[var(--surface2)] hover:border-[var(--border)]'
                 }`}
         >
-            <div className={`absolute left-0 top-[6px] bottom-[6px] w-[2px] rounded-full ${stripeClass}`} />
+            <div className={`absolute left-0 top-0 h-full w-[2px] rounded-l-[6px] ${stripeClass}`} />
 
             <div className="flex items-center justify-between mb-[5px]">
                 <span className={`font-mono text-[9px] font-semibold px-[7px] py-[2px] rounded-[3px] border ${pipClass}`}>

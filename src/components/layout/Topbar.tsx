@@ -1,22 +1,25 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faMagnifyingGlass, faPlus } from '@fortawesome/free-solid-svg-icons'
 
-export default function Topbar() {
+interface TopbarProps {
+    onNewSnippet: () => void
+}
+
+export default function Topbar({ onNewSnippet }: TopbarProps) {
     return (
         <header className="h-[52px] bg-[var(--surface)] border-b border-[var(--border)] flex items-center justify-between px-5 shrink-0">
 
             {/* kiri */}
-                <div className="flex items-center gap-2 px-4 h-[52px] border-b border-[var(--border)] shrink-0 ">
-                    <div className="w-[26px] h-[26px] bg-[var(--em)] rounded-[6px] flex items-center justify-center text-[#0a0a0a] font-mono text-[11px] font-bold shrink-0">
-                        &lt;/&gt;
-                    </div>
-                    <span className="text-[15px] font-semibold tracking-tight">
-                        dev<span className="text-[var(--em)]">note</span>
-                    </span>
+            <div className="flex items-center gap-2 px-4 h-[52px] border-b border-[var(--border)] shrink-0">
+                <div className="w-[26px] h-[26px] bg-[var(--em)] rounded-[6px] flex items-center justify-center text-[#0a0a0a] font-mono text-[11px] font-bold shrink-0">
+                    &lt;/&gt;
                 </div>
+                <span className="text-[15px] font-semibold tracking-tight">
+                    dev<span className="text-[var(--em)]">note</span>
+                </span>
+            </div>
 
-
-            {/* kanan  */}
+            {/* kanan */}
             <div className="flex items-center gap-3">
 
                 {/* cari */}
@@ -33,7 +36,10 @@ export default function Topbar() {
                 </div>
 
                 {/* tambah Snippet */}
-                <button className="flex items-center gap-2 bg-[var(--em)] text-[#0a0a0a] font-semibold text-[13px] px-4 py-[6px] rounded-full border-[1px] border-transparent hover:bg-transparent hover:text-[var(--em)] hover:border-[var(--em)] hover:shadow-[0_0_20px_var(--em-glow)] transition-all">
+                <button
+                    onClick={onNewSnippet}
+                    className="flex items-center gap-2 bg-[var(--em)] text-[#0a0a0a] font-semibold text-[13px] px-4 py-[6px] rounded-full border-[1px] border-transparent hover:bg-transparent hover:text-[var(--em)] hover:border-[var(--em)] hover:shadow-[0_0_20px_var(--em-glow)] transition-all"
+                >
                     <FontAwesomeIcon icon={faPlus} className="w-[12px] h-[12px]" />
                     Tambah Snippet
                 </button>

@@ -48,12 +48,23 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         })
     ],
     //ini atur gmna session user disimpan setelah login
-    session:{
+    session: {
         strategy: "jwt"
     },
 
     //klo ini atur halaman login, kalau user belum login terus akses halaman yang butuh auth, dia bakal diarahin ke halaman login ini
     pages: {
         signIn: "/login"
+    },
+
+    callbacks: {
+        jwt({ token, user }) {
+            if (user) token.id = user.id
+            return token
+        },
+        session({ session, token }) {
+            if (token.id) session.user.id = token.id as string
+            return session
+        }
     }
 })

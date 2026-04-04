@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
     }
 
     // ambil data dari request body
-    const { title, language, code, tags } = await req.json()
+    const { title, language, description, code, tags } = await req.json()
 
     // validasi — return 400 kalau title, language, atau code kosong
     if (!title || !language || !code) {
@@ -49,6 +49,7 @@ export async function POST(req: NextRequest) {
         data: {
             title,
             language,
+            description: description?.trim() || null,
             code,
             userId: Number(session.user.id),
             tags:{
