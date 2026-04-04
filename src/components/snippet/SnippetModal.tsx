@@ -62,7 +62,7 @@ export default function SnippetModal({ isOpen, onClose }: SnippetModalProps) {
                 throw new Error(data.error || "Gagal menyimpan snippet.");
             }
 
-            router.refresh(); // re-fetch server component dashboard
+            router.refresh();
             onClose();
             setForm({ title: "", language: "typescript", description: "", code: "", tags: "" });
         } catch (err) {

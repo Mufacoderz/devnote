@@ -43,7 +43,6 @@ export default function SnippetList({ snippets }: { snippets: Snippet[] }) {
     }
 
     return (
-        // tidak ada perubahan dari versi lo — modal sudah di DashboardLayout
         <div className="flex h-full overflow-hidden">
             <div className="w-[280px] border-r border-[var(--border)] flex flex-col shrink-0">
                 <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border)] shrink-0">

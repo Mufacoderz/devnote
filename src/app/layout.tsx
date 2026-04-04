@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Outfit, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import Providers from "./providers"; // 👈 tambahin ini
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -19,16 +20,20 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html
       lang="en"
       className={`${outfit.variable} ${jetbrainsMono.variable}`}
     >
       <body className="min-h-screen bg-[#0a0a0a] text-[#e8f0e8] antialiased">
-        {children}
+        
+        <Providers>
+          {children}
+        </Providers>
+
       </body>
     </html>
   );
