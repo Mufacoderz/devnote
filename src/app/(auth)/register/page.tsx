@@ -78,14 +78,19 @@ export default function RegisterPage() {
                 />
 
                 <div className="relative z-10 ml-0 md:ml-28 max-w-[360px]">
-                    <div className="flex items-center gap-2 mb-10">
-                        <div className="w-[26px] h-[26px] bg-[var(--em)] rounded-[6px] flex items-center justify-center text-[#0a0a0a] font-mono text-[10px] font-bold shrink-0">
-                            &lt;/&gt;
+                    <Link href="/welcome" className="flex flex-col gap-1 mb-10 w-fit group">
+                        <div className="flex items-center gap-2">
+                            <div className="w-[26px] h-[26px] bg-[var(--em)] rounded-[6px] flex items-center justify-center text-[#0a0a0a] font-mono text-[10px] font-bold shrink-0">
+                                &lt;/&gt;
+                            </div>
+                            <span className="text-[15px] font-semibold tracking-tight">
+                                dev<span className="text-[var(--em)]">note</span>
+                            </span>
                         </div>
-                        <span className="text-[15px] font-semibold tracking-tight">
-                            dev<span className="text-[var(--em)]">note</span>
+                        <span className="text-[11px] text-[var(--text4)] group-hover:text-[var(--em)] transition-all flex items-center gap-1 pl-[2px]">
+                            ← kembali
                         </span>
-                    </div>
+                    </Link>
 
                     <h1 className="text-[32px] font-bold tracking-[-0.8px] leading-[1.1] mb-2">
                         Create your<br />account.
@@ -163,6 +168,7 @@ export default function RegisterPage() {
                             Masuk
                         </Link>
                     </p>
+
                 </div>
             </div>
 

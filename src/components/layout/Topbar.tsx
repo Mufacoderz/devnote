@@ -157,7 +157,7 @@ export default function Topbar({ onNewSnippet, onToggleSidebar }: TopbarProps) {
                                     Edit Profil
                                 </button>
                                 <button
-                                    onClick={() => signOut()}
+                                    onClick={() => signOut({ callbackUrl: "/welcome" })}
                                     className="flex items-center gap-2 px-3 py-2 text-[12px] hover:bg-red-500/10 text-red-400 rounded-md transition-all"
                                 >
                                     <FontAwesomeIcon icon={faRightFromBracket} className="w-[11px] h-[11px]" />

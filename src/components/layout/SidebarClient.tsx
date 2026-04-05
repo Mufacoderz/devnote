@@ -132,7 +132,7 @@ export default function SidebarClient({ totalSnippets, totalCopies, totalFavorit
                 <p className="text-[10px] font-semibold tracking-[1.5px] uppercase text-[var(--text4)] px-2 mb-1">
                     Language
                 </p>
-                <div className="overflow-y-auto max-h-[130px]">
+                <div className="overflow-y-auto max-h-[125px]">
                     {languages.map(({ name, count }) => {
                         const langConfig = getLang(name)
                         return (
@@ -154,7 +154,7 @@ export default function SidebarClient({ totalSnippets, totalCopies, totalFavorit
                 <p className="text-[10px] font-semibold tracking-[1.5px] uppercase text-[var(--text4)] px-2 mb-1">
                     Tags
                 </p>
-                <div className="overflow-y-auto max-h-[130px]">
+                <div className="overflow-y-auto max-h-[100px]">
                     <div className="flex flex-wrap gap-[5px] px-2 pt-1">
                         {tags.map(({ name }) => (
                             <span
