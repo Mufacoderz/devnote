@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes, faPlus, faPen } from "@fortawesome/free-solid-svg-icons";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { useRouter } from "next/navigation";
 import { LANGUAGE_OPTIONS } from "@/lib/languages"
 import { type Snippet } from "@/components/snippet/SnippetDetail"
@@ -242,7 +242,6 @@ export default function SnippetModal({ isOpen, onClose, snippetToEdit }: Snippet
                         }}
                     >
                         {/* icon dan teks berubah sesuai mode */}
-                        <FontAwesomeIcon icon={isEditMode ? faPen : faPlus} />
                         {loading
                             ? (isEditMode ? "Menyimpan..." : "Menyimpan...")
                             : (isEditMode ? "Simpan Perubahan" : "Simpan Snippet")

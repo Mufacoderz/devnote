@@ -8,19 +8,17 @@ export async function POST(_: NextRequest, { params }: { params: Promise<{ id: s
 
     const { id } = await params
 
+    // cek kepemilikan dulu
     const snippet = await prisma.snippet.findFirst({
-        where: {
-            id: Number(id),
-            userId: Number(session.user.id)
-        }
+        where: { id: Number(id), userId: Number(session.user.id) }
     })
-
     if (!snippet) return NextResponse.json({ message: "Tidak ditemukan" }, { status: 404 })
 
-    await prisma.snippet.update({
+    // toggle — kalau sudah fav jadi tidak fav, dan sebaliknya
+    const updated = await prisma.snippet.update({
         where: { id: Number(id) },
-        data: { copyCount: { increment: 1 } }
+        data: { isFavorite: !snippet.isFavorite }
     })
 
-    return NextResponse.json({ ok: true })
+    return NextResponse.json({ isFavorite: updated.isFavorite })
 }

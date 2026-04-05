@@ -37,6 +37,7 @@ model Snippet {
   isPublic    Boolean  @default(false)
   shareId     String?  @unique  // nanoid — untuk public link /s/[shareId]
   copyCount   Int      @default(0)
+  isFavorite  Boolean  @default(false)
   
   userId        Int
   user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)

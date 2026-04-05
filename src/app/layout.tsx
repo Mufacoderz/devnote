@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Outfit, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import Providers from "./providers"; // 👈 tambahin ini
+import Providers from "./providers";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -25,7 +25,7 @@ export default function RootLayout({
 }) {
   return (
     <html
-      lang="en"
+      lang="id"
       className={`${outfit.variable} ${jetbrainsMono.variable}`}
     >
       <body className="min-h-screen bg-[#0a0a0a] text-[#e8f0e8] antialiased">

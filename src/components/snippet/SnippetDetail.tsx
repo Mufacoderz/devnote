@@ -8,7 +8,7 @@ import { getLang } from "@/lib/languages"
 
 interface SnippetDetailProps {
     snippet: Snippet
-    onEdit: () => void  // dipanggil saat tombol Edit diklik
+    onEdit: () => void
 }
 
 export interface Snippet {
@@ -19,30 +19,26 @@ export interface Snippet {
     code: string
     tags: string[]
     copyCount: number
+    isFavorite?: boolean
     createdAt: string
 }
 
 export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
     const router = useRouter()
 
-    // state untuk loading tombol hapus
     const [deleting, setDeleting] = useState(false)
-
-    // state untuk buka/tutup dialog konfirmasi hapus
     const [confirmOpen, setConfirmOpen] = useState(false)
-
-    // copyCount disimpan di local state supaya bisa di-update
-    // secara optimistic tanpa perlu router.refresh()
     const [copyCount, setCopyCount] = useState(snippet.copyCount)
+    const [isFavorite, setIsFavorite] = useState(snippet.isFavorite)
 
-    // sync copyCount dari server setiap kali snippet yang ditampilkan ganti
-    // watch snippet.id bukan snippet.copyCount — supaya tidak loop
-    // kalau watch copyCount, setiap setCopyCount akan trigger effect lagi
     useEffect(() => {
         setCopyCount(snippet.copyCount)
     }, [snippet.id, snippet.copyCount])
 
-    // ambil config bahasa (label, warna pip) dari languages.ts
+    useEffect(() => {
+        setIsFavorite(snippet.isFavorite)
+    }, [snippet.id, snippet.isFavorite])
+
     const lang = getLang(snippet.language)
 
     const handleDelete = async () => {
@@ -50,13 +46,20 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
         try {
             const res = await fetch(`/api/snippets/${snippet.id}`, { method: "DELETE" })
             if (!res.ok) throw new Error()
-            // refresh server component (DashboardPage) supaya
-            // list snippet di panel kiri ikut terupdate
             router.refresh()
         } catch {
             alert("Gagal menghapus snippet.")
-            // kalau gagal, kembalikan tombol ke state normal
             setDeleting(false)
+        }
+    }
+
+    const handleFavorite = async () => {
+        setIsFavorite(prev => !prev)
+        try {
+            const res = await fetch(`/api/snippets/${snippet.id}/favorite`, { method: "POST" })
+            if (!res.ok) throw new Error()
+        } catch {
+            setIsFavorite(prev => !prev)
         }
     }
 
@@ -64,26 +67,56 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
         <div className="flex-1 flex flex-col overflow-hidden">
 
             <div className="px-6 py-5 border-b border-[var(--border)] shrink-0">
-                <div className="flex items-center gap-2 mb-3">
-                    {/* pip badge — warna dan label dari getLang() */}
-                    <span className={`font-mono text-[10px] font-semibold px-2 py-[3px] rounded-[4px] border ${lang.pip}`}>
-                        {lang.label}
-                    </span>
-                    <span className="text-[12px] text-[var(--text3)]">{snippet.language}</span>
+
+                {/* TOP ROW */}
+                <div className="flex items-start justify-between gap-4 mb-3">
+
+                    {/* LEFT */}
+                    <div>
+                        <div className="flex items-center gap-2 mb-2">
+                            <span className={`font-mono text-[10px] font-semibold px-2 py-[3px] rounded border ${lang.pip}`}>
+                                {lang.label}
+                            </span>
+                            <span className="text-[12px] text-[var(--text3)]">
+                                {snippet.language}
+                            </span>
+                        </div>
+
+                        <h2 className="text-[22px] font-bold tracking-[-0.5px] leading-tight">
+                            {snippet.title}
+                        </h2>
+                    </div>
+
+                    {/* RIGHT (ACTION BAR) */}
+                    <div className="flex items-center gap-2">
+
+                        {/* FAVORITE */}
+                        <button
+                            onClick={handleFavorite}
+                            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-[12px] font-medium transition-all
+                            ${isFavorite
+                                    ? 'bg-yellow-400/10 border-yellow-400/50 text-yellow-300'
+                                    : 'border-[var(--border2)] text-[var(--text3)] hover:border-yellow-400/50 hover:text-yellow-300'
+                                }`}
+                        >
+                            <span className={`text-[14px] transition-transform ${isFavorite ? "scale-110" : ""}`}>
+                                ★
+                            </span>
+                            {isFavorite ? "Favorited" : "Favorite"}
+                        </button>
+
+                    </div>
                 </div>
 
-                <h2 className="text-[22px] font-bold tracking-[-0.5px] mb-3">
-                    {snippet.title}
-                </h2>
-
-                {/* deskripsi hanya ditampilkan kalau ada isinya (tidak null/kosong) */}
+                {/* DESCRIPTION */}
                 {snippet.description && (
-                    <p className="text-[13px] text-[var(--text3)] mb-4 leading-relaxed">
+                    <p className="text-[13px] text-[var(--text3)] mb-4 leading-relaxed max-w-2xl">
                         {snippet.description}
                     </p>
                 )}
 
-                <div className="flex gap-2 mb-4">
+                {/* TAGS */}
+                <div className="flex gap-2 mb-4 flex-wrap">
                     {snippet.tags.map(tag => (
                         <span key={tag} className="font-mono text-[10px] text-[var(--text3)] bg-[var(--surface2)] border border-[var(--border2)] px-2.5 py-[3px] rounded-full">
                             {tag}
@@ -91,56 +124,46 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
                     ))}
                 </div>
 
+                {/* ACTION BUTTONS */}
                 <div className="flex items-center gap-2">
                     <CopyButton
                         code={snippet.code}
                         snippetId={snippet.id}
-                        // onCopy dipanggil dari CopyButton setelah copy terjadi
-                        // increment lokal supaya angka naik instantly tanpa refresh
-                        // functional update (c => c + 1) lebih aman dari race condition
-                        // dibanding setCopyCount(copyCount + 1)
                         onCopy={() => setCopyCount(c => c + 1)}
                     />
+
                     <button
                         onClick={onEdit}
-                        className="text-[13px] font-medium px-4 py-2 rounded-lg border border-[var(--border2)] text-[var(--text3)] hover:border-yellow-500/60 hover:text-yellow-300 transition-all">
+                        className="text-[13px] font-medium px-4 py-2 rounded-lg border border-[var(--border2)] text-[var(--text3)] hover:border-yellow-500/60 hover:text-yellow-300 transition-all"
+                    >
                         Edit
                     </button>
-                    {/* tombol hapus tidak langsung hapus — buka dialog konfirmasi dulu */}
+
                     <button
                         onClick={() => setConfirmOpen(true)}
                         disabled={deleting}
-                        className="text-[13px] font-medium px-4 py-2 rounded-lg border border-[var(--border2)] text-[var(--text3)] hover:border-red-500/60 hover:text-red-400 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                        className="text-[13px] font-medium px-4 py-2 rounded-lg border border-[var(--border2)] text-[var(--text3)] hover:border-red-500/60 hover:text-red-400 transition-all disabled:opacity-40"
                     >
                         {deleting ? "Menghapus..." : "Hapus"}
                     </button>
                 </div>
 
+                {/* META */}
                 <div className="flex items-center gap-4 mt-4 font-mono text-[11px] text-[var(--text4)]">
-                    <span className="flex items-center gap-1.5">
-                        <div className="w-[4px] h-[4px] rounded-full bg-[var(--em)]" />
-                        Disimpan {snippet.createdAt}
-                    </span>
-                    <span className="flex items-center gap-1.5">
-                        <div className="w-[4px] h-[4px] rounded-full bg-[var(--em)]" />
-                        {/* pakai local state copyCount, bukan snippet.copyCount */}
-                        {copyCount} kali disalin
-                    </span>
-                    <span className="flex items-center gap-1.5">
-                        <div className="w-[4px] h-[4px] rounded-full bg-[var(--em)]" />
-                        Privat
-                    </span>
+                    <span>Disimpan {snippet.createdAt}</span>
+                    <span>{copyCount} kali disalin</span>
+                    <span>Privat</span>
                 </div>
             </div>
 
-            {/* CodeBlock fetch highlight ke /api/highlight via Shiki */}
+            {/* CODE */}
             <div className="flex-1 overflow-hidden">
                 <CodeBlock code={snippet.code} language={snippet.language} />
             </div>
 
+            {/* FOOTER */}
             <div className="flex items-center justify-between px-6 py-2.5 border-t border-[var(--border)] bg-[var(--surface)] shrink-0">
                 <div className="flex items-center gap-4 font-mono text-[10px] text-[var(--text4)]">
-                    {/* hitung jumlah baris dari newline */}
                     <span>{snippet.code.split('\n').length} baris</span>
                     <span>UTF-8</span>
                     <span>{snippet.language}</span>
@@ -150,48 +173,30 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
                 </button>
             </div>
 
-            {/* dialog konfirmasi hapus — hanya muncul kalau confirmOpen true */}
+            {/* MODAL DELETE */}
             {confirmOpen && (
-                <div
-                    className="fixed inset-0 z-50 flex items-center justify-center"
-                    style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)" }}
-                >
-                    <div
-                        className="flex flex-col gap-4 rounded-xl p-6 w-full max-w-sm"
-                        style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
-                    >
-                        <h3 className="text-[15px] font-semibold" style={{ color: "var(--text)" }}>
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+                    <div className="flex flex-col gap-4 rounded-xl p-6 w-full max-w-sm bg-[var(--surface)] border border-[var(--border)]">
+                        <h3 className="text-[15px] font-semibold">
                             Hapus snippet ini?
                         </h3>
-                        <p className="text-[13px]" style={{ color: "var(--text3)" }}>
-                            <span className="font-medium" style={{ color: "var(--text)" }}>
+                        <p className="text-[13px] text-[var(--text3)]">
+                            <span className="font-medium text-[var(--text)]">
                                 {snippet.title}
                             </span>{" "}
-                            akan dihapus permanen dan tidak bisa dikembalikan.
+                            akan dihapus permanen.
                         </p>
                         <div className="flex justify-end gap-2">
-                            {/* batal — tutup dialog tanpa hapus */}
                             <button
                                 onClick={() => setConfirmOpen(false)}
-                                className="px-4 py-2 rounded-lg text-[13px]"
-                                style={{
-                                    background: "var(--bg)",
-                                    border: "1px solid var(--border)",
-                                    color: "var(--text3)"
-                                }}
+                                className="px-4 py-2 rounded-lg text-[13px] border border-[var(--border)] text-[var(--text3)]"
                             >
                                 Batal
                             </button>
-                            {/* konfirmasi hapus — panggil handleDelete */}
                             <button
                                 onClick={handleDelete}
                                 disabled={deleting}
-                                className="px-4 py-2 rounded-lg text-[13px] font-medium"
-                                style={{
-                                    background: "#ef4444",
-                                    color: "#fff",
-                                    opacity: deleting ? 0.6 : 1
-                                }}
+                                className="px-4 py-2 rounded-lg text-[13px] font-medium bg-red-500 text-white"
                             >
                                 {deleting ? "Menghapus..." : "Ya, Hapus"}
                             </button>

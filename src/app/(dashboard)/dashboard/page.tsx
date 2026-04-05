@@ -38,6 +38,7 @@ export default async function DashboardPage({
     description: s.description ?? null,
     code: s.code,
     copyCount: s.copyCount,
+    isFavorite: s.isFavorite,
     createdAt: s.createdAt.toLocaleDateString("id-ID", {
       day: "numeric",
       month: "long",
