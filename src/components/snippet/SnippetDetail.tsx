@@ -74,7 +74,14 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
                     {/* LEFT */}
                     <div>
                         <div className="flex items-center gap-2 mb-2">
-                            <span className={`font-mono text-[10px] font-semibold px-2 py-[3px] rounded border ${lang.pip}`}>
+                            <span
+                                className="font-mono text-[9px] font-semibold px-[7px] py-[2px] rounded-[3px] border"
+                                style={{
+                                    color: lang.color,
+                                    borderColor: lang.color + "55",
+                                    background: lang.color + "18",
+                                }}
+                            >
                                 {lang.label}
                             </span>
                             <span className="text-[12px] text-[var(--text3)]">
@@ -134,7 +141,7 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
 
                     <button
                         onClick={onEdit}
-                        className="text-[13px] font-medium px-4 py-2 rounded-lg border border-[var(--border2)] text-[var(--text3)] hover:border-yellow-500/60 hover:text-yellow-300 transition-all"
+                        className="text-[13px] font-medium px-4 py-2 rounded-lg border border-[var(--border2)] text-yellow-600 hover:border-yellow-500/60 hover:text-yellow-300 transition-all"
                     >
                         Edit
                     </button>
@@ -142,7 +149,7 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
                     <button
                         onClick={() => setConfirmOpen(true)}
                         disabled={deleting}
-                        className="text-[13px] font-medium px-4 py-2 rounded-lg border border-[var(--border2)] text-[var(--text3)] hover:border-red-500/60 hover:text-red-400 transition-all disabled:opacity-40"
+                        className="text-[13px] font-medium px-4 py-2 rounded-lg border border-[var(--border2)] text-red-600 hover:border-red-500/60 hover:text-red-400 transition-all disabled:opacity-40"
                     >
                         {deleting ? "Menghapus..." : "Hapus"}
                     </button>

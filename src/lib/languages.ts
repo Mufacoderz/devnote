@@ -1,226 +1,139 @@
 export interface LanguageConfig {
-    label: string        // label pendek untuk pip: "TS", "JS", dst
-    color: string        // CSS variable atau hex untuk dot/stripe
-    pip: string          // class Tailwind untuk badge pip
-    stripe: string       // class untuk stripe di SnippetCard (kalau ada)
+    label: string
+    color: string
+    pip: string
+    stripe: string
 }
 
 export const languages: Record<string, LanguageConfig> = {
+
     // --- Web ---
     typescript: {
         label: "TS",
-        color: "var(--ts)",
-        pip: "bg-[rgba(96,165,250,0.1)] text-[var(--ts)] border-[rgba(96,165,250,0.2)]",
-        stripe: "bg-[var(--ts)]",
+        color: "#3178c6",
+        pip: "bg-[rgba(49,120,198,0.1)] text-[#3178c6] border-[rgba(49,120,198,0.25)]",
+        stripe: "bg-[#3178c6]",
     },
     javascript: {
         label: "JS",
-        color: "var(--js)",
-        pip: "bg-[rgba(251,191,36,0.1)] text-[var(--js)] border-[rgba(251,191,36,0.2)]",
-        stripe: "bg-[var(--js)]",
+        color: "#f7df1e",
+        pip: "bg-[rgba(247,223,30,0.1)] text-[#f7df1e] border-[rgba(247,223,30,0.25)]",
+        stripe: "bg-[#f7df1e]",
     },
     html: {
         label: "HTML",
-        color: "var(--html)",
-        pip: "bg-[rgba(251,113,133,0.1)] text-[var(--html)] border-[rgba(251,113,133,0.2)]",
-        stripe: "bg-[var(--html)]",
+        color: "#e34c26",
+        pip: "bg-[rgba(227,76,38,0.1)] text-[#e34c26] border-[rgba(227,76,38,0.25)]",
+        stripe: "bg-[#e34c26]",
     },
     css: {
         label: "CSS",
-        color: "var(--css)",
-        pip: "bg-[rgba(56,189,248,0.1)] text-[var(--css)] border-[rgba(56,189,248,0.2)]",
-        stripe: "bg-[var(--css)]",
+        color: "#264de4",
+        pip: "bg-[rgba(38,77,228,0.1)] text-[#264de4] border-[rgba(38,77,228,0.25)]",
+        stripe: "bg-[#264de4]",
     },
     scss: {
         label: "SCSS",
-        color: "#f472b6",
-        pip: "bg-[rgba(244,114,182,0.1)] text-[#f472b6] border-[rgba(244,114,182,0.2)]",
-        stripe: "bg-[#f472b6]",
+        color: "#cc6699",
+        pip: "bg-[rgba(204,102,153,0.1)] text-[#cc6699] border-[rgba(204,102,153,0.25)]",
+        stripe: "bg-[#cc6699]",
+    },
+
+    // --- Frontend ---
+    vue: {
+        label: "VUE",
+        color: "#42b883",
+        pip: "bg-[rgba(66,184,131,0.1)] text-[#42b883] border-[rgba(66,184,131,0.25)]",
+        stripe: "bg-[#42b883]",
+    },
+    react: {
+        label: "RE",
+        color: "#61dafb",
+        pip: "bg-[rgba(97,218,251,0.1)] text-[#61dafb] border-[rgba(97,218,251,0.25)]",
+        stripe: "bg-[#61dafb]",
     },
 
     // --- Backend ---
     python: {
         label: "PY",
-        color: "var(--python)",
-        pip: "bg-[rgba(74,222,128,0.1)] text-[var(--python)] border-[rgba(74,222,128,0.2)]",
-        stripe: "bg-[var(--python)]",
+        color: "#ffd43b",
+        pip: "bg-[rgba(255,212,59,0.1)] text-[#ffd43b] border-[rgba(255,212,59,0.25)]",
+        stripe: "bg-[#ffd43b]",
     },
     php: {
         label: "PHP",
-        color: "var(--php)",
-        pip: "bg-[rgba(167,139,250,0.1)] text-[var(--php)] border-[rgba(167,139,250,0.2)]",
-        stripe: "bg-[var(--php)]",
+        color: "#777bb4",
+        pip: "bg-[rgba(119,123,180,0.1)] text-[#777bb4] border-[rgba(119,123,180,0.25)]",
+        stripe: "bg-[#777bb4]",
     },
     java: {
         label: "JAVA",
-        color: "#fb923c",
-        pip: "bg-[rgba(251,146,60,0.1)] text-[#fb923c] border-[rgba(251,146,60,0.2)]",
-        stripe: "bg-[#fb923c]",
+        color: "#f89820",
+        pip: "bg-[rgba(248,152,32,0.1)] text-[#f89820] border-[rgba(248,152,32,0.25)]",
+        stripe: "bg-[#f89820]",
     },
     csharp: {
         label: "C#",
-        color: "#a78bfa",
-        pip: "bg-[rgba(167,139,250,0.1)] text-[#a78bfa] border-[rgba(167,139,250,0.2)]",
-        stripe: "bg-[#a78bfa]",
+        color: "#9b4f96",
+        pip: "bg-[rgba(155,79,150,0.1)] text-[#9b4f96] border-[rgba(155,79,150,0.25)]",
+        stripe: "bg-[#9b4f96]",
     },
     go: {
         label: "GO",
-        color: "var(--go)",
-        pip: "bg-[rgba(103,232,249,0.1)] text-[var(--go)] border-[rgba(103,232,249,0.2)]",
-        stripe: "bg-[var(--go)]",
+        color: "#00add8",
+        pip: "bg-[rgba(0,173,216,0.1)] text-[#00add8] border-[rgba(0,173,216,0.25)]",
+        stripe: "bg-[#00add8]",
     },
     rust: {
         label: "RS",
-        color: "var(--rust)",
-        pip: "bg-[rgba(251,146,60,0.1)] text-[var(--rust)] border-[rgba(251,146,60,0.2)]",
-        stripe: "bg-[var(--rust)]",
-    },
-    ruby: {
-        label: "RB",
-        color: "#f87171",
-        pip: "bg-[rgba(248,113,113,0.1)] text-[#f87171] border-[rgba(248,113,113,0.2)]",
-        stripe: "bg-[#f87171]",
-    },
-    kotlin: {
-        label: "KT",
-        color: "#c084fc",
-        pip: "bg-[rgba(192,132,252,0.1)] text-[#c084fc] border-[rgba(192,132,252,0.2)]",
-        stripe: "bg-[#c084fc]",
-    },
-    swift: {
-        label: "SW",
-        color: "#fb923c",
-        pip: "bg-[rgba(251,146,60,0.1)] text-[#fb923c] border-[rgba(251,146,60,0.2)]",
-        stripe: "bg-[#fb923c]",
-    },
-    dart: {
-        label: "DART",
-        color: "#38bdf8",
-        pip: "bg-[rgba(56,189,248,0.1)] text-[#38bdf8] border-[rgba(56,189,248,0.2)]",
-        stripe: "bg-[#38bdf8]",
+        color: "#dea584",
+        pip: "bg-[rgba(222,165,132,0.1)] text-[#dea584] border-[rgba(222,165,132,0.25)]",
+        stripe: "bg-[#dea584]",
     },
 
-    // --- Data & DB ---
-    sql: {
-        label: "SQL",
-        color: "var(--sql)",
-        pip: "bg-[var(--em-faint)] text-[var(--sql)] border-[var(--em-border)]",
-        stripe: "bg-[var(--sql)]",
+    // --- Database ---
+    mysql: {
+        label: "MY",
+        color: "#00758f",
+        pip: "bg-[rgba(0,117,143,0.1)] text-[#00758f] border-[rgba(0,117,143,0.25)]",
+        stripe: "bg-[#00758f]",
     },
     postgresql: {
         label: "PG",
-        color: "#60a5fa",
-        pip: "bg-[rgba(96,165,250,0.1)] text-[#60a5fa] border-[rgba(96,165,250,0.2)]",
-        stripe: "bg-[#60a5fa]",
-    },
-    mysql: {
-        label: "MY",
-        color: "#f59e0b",
-        pip: "bg-[rgba(245,158,11,0.1)] text-[#f59e0b] border-[rgba(245,158,11,0.2)]",
-        stripe: "bg-[#f59e0b]",
+        color: "#336791",
+        pip: "bg-[rgba(51,103,145,0.1)] text-[#336791] border-[rgba(51,103,145,0.25)]",
+        stripe: "bg-[#336791]",
     },
     mongodb: {
         label: "MDB",
-        color: "#4ade80",
-        pip: "bg-[rgba(74,222,128,0.1)] text-[#4ade80] border-[rgba(74,222,128,0.2)]",
-        stripe: "bg-[#4ade80]",
+        color: "#47a248",
+        pip: "bg-[rgba(71,162,72,0.1)] text-[#47a248] border-[rgba(71,162,72,0.25)]",
+        stripe: "bg-[#47a248]",
     },
 
-    // --- Config & Scripting ---
-    bash: {
-        label: "SH",
-        color: "#a3e635",
-        pip: "bg-[rgba(163,230,53,0.1)] text-[#a3e635] border-[rgba(163,230,53,0.2)]",
-        stripe: "bg-[#a3e635]",
-    },
-    powershell: {
-        label: "PS",
-        color: "#818cf8",
-        pip: "bg-[rgba(129,140,248,0.1)] text-[#818cf8] border-[rgba(129,140,248,0.2)]",
-        stripe: "bg-[#818cf8]",
-    },
-    yaml: {
-        label: "YML",
-        color: "#fb7185",
-        pip: "bg-[rgba(251,113,133,0.1)] text-[#fb7185] border-[rgba(251,113,133,0.2)]",
-        stripe: "bg-[#fb7185]",
-    },
-    toml: {
-        label: "TOML",
-        color: "#fbbf24",
-        pip: "bg-[rgba(251,191,36,0.1)] text-[#fbbf24] border-[rgba(251,191,36,0.2)]",
-        stripe: "bg-[#fbbf24]",
-    },
+    // --- DevOps ---
     dockerfile: {
         label: "DOCK",
-        color: "#38bdf8",
-        pip: "bg-[rgba(56,189,248,0.1)] text-[#38bdf8] border-[rgba(56,189,248,0.2)]",
-        stripe: "bg-[#38bdf8]",
+        color: "#2496ed",
+        pip: "bg-[rgba(36,150,237,0.1)] text-[#2496ed] border-[rgba(36,150,237,0.25)]",
+        stripe: "bg-[#2496ed]",
     },
 
-    // --- Data Format ---
+    // --- Data ---
     json: {
         label: "JSON",
-        color: "#fbbf24",
-        pip: "bg-[rgba(251,191,36,0.1)] text-[#fbbf24] border-[rgba(251,191,36,0.2)]",
-        stripe: "bg-[#fbbf24]",
-    },
-    xml: {
-        label: "XML",
-        color: "#f87171",
-        pip: "bg-[rgba(248,113,113,0.1)] text-[#f87171] border-[rgba(248,113,113,0.2)]",
-        stripe: "bg-[#f87171]",
+        color: "#f5a623",
+        pip: "bg-[rgba(245,166,35,0.1)] text-[#f5a623] border-[rgba(245,166,35,0.25)]",
+        stripe: "bg-[#f5a623]",
     },
     markdown: {
         label: "MD",
         color: "#94a3b8",
-        pip: "bg-[rgba(148,163,184,0.1)] text-[#94a3b8] border-[rgba(148,163,184,0.2)]",
+        pip: "bg-[rgba(148,163,184,0.1)] text-[#94a3b8] border-[rgba(148,163,184,0.25)]",
         stripe: "bg-[#94a3b8]",
     },
 
-    // --- Lainnya ---
-    c: {
-        label: "C",
-        color: "#60a5fa",
-        pip: "bg-[rgba(96,165,250,0.1)] text-[#60a5fa] border-[rgba(96,165,250,0.2)]",
-        stripe: "bg-[#60a5fa]",
-    },
-    cpp: {
-        label: "C++",
-        color: "#818cf8",
-        pip: "bg-[rgba(129,140,248,0.1)] text-[#818cf8] border-[rgba(129,140,248,0.2)]",
-        stripe: "bg-[#818cf8]",
-    },
-    r: {
-        label: "R",
-        color: "#38bdf8",
-        pip: "bg-[rgba(56,189,248,0.1)] text-[#38bdf8] border-[rgba(56,189,248,0.2)]",
-        stripe: "bg-[#38bdf8]",
-    },
-    elixir: {
-        label: "EX",
-        color: "#a78bfa",
-        pip: "bg-[rgba(167,139,250,0.1)] text-[#a78bfa] border-[rgba(167,139,250,0.2)]",
-        stripe: "bg-[#a78bfa]",
-    },
-    haskell: {
-        label: "HS",
-        color: "#c084fc",
-        pip: "bg-[rgba(192,132,252,0.1)] text-[#c084fc] border-[rgba(192,132,252,0.2)]",
-        stripe: "bg-[#c084fc]",
-    },
-    lua: {
-        label: "LUA",
-        color: "#818cf8",
-        pip: "bg-[rgba(129,140,248,0.1)] text-[#818cf8] border-[rgba(129,140,248,0.2)]",
-        stripe: "bg-[#818cf8]",
-    },
-    scala: {
-        label: "SC",
-        color: "#f87171",
-        pip: "bg-[rgba(248,113,113,0.1)] text-[#f87171] border-[rgba(248,113,113,0.2)]",
-        stripe: "bg-[#f87171]",
-    },
+    // --- fallback ---
     other: {
         label: "?",
         color: "#64748b",
@@ -229,18 +142,35 @@ export const languages: Record<string, LanguageConfig> = {
     },
 }
 
-// fallback kalau language tidak ditemukan di config
-export const defaultLang: LanguageConfig = {
-    label: "?",
-    color: "#64748b",
-    pip: "bg-white/5 text-white/40 border-white/10",
-    stripe: "bg-[#64748b]",
+export const defaultLang: LanguageConfig = languages.other
+
+// 🔥 alias biar fleksibel input
+const alias: Record<string, string> = {
+    ts: "typescript",
+    js: "javascript",
+    py: "python",
+    sh: "bash",
+    yml: "yaml",
+    md: "markdown",
+    rs: "rust",
+    golang: "go",
+    "c#": "csharp",
+    "c++": "cpp",
 }
 
-// helper function
+// 🔥 helper utama (SUDAH FIX TOTAL)
 export function getLang(language: string): LanguageConfig {
-    return languages[language.toLowerCase()] ?? defaultLang
+    if (!language) return defaultLang
+
+    let key = language.toLowerCase().trim()
+
+    // hapus spasi aneh
+    key = key.replace(/\s+/g, "")
+
+    const normalized = alias[key] ?? key
+
+    return languages[normalized] ?? defaultLang
 }
 
-// list untuk dropdown modal
+// dropdown options
 export const LANGUAGE_OPTIONS = Object.keys(languages)

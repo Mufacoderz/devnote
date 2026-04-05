@@ -35,7 +35,7 @@ function NavItem({ label, count, active, onClick, dotColor, icon }: NavItemProps
         >
             <div className="flex items-center gap-2">
 
-                {/* ICON / DOT */}
+                {/* ICON */}
                 {icon ? (
                     <FontAwesomeIcon
                         icon={icon}
@@ -84,7 +84,7 @@ export default function SidebarClient({ totalSnippets, totalCopies, languages, t
     }
 
     return (
-        <aside className="w-[280px] h-full bg-[var(--surface)] border-r border-[var(--border)] flex flex-col overflow-y-auto">
+        <aside className="w-[280px] h-full bg-[var(--surface)] border-r border-[var(--border)] flex flex-col ">
 
             {/* Library */}
             <div className="px-3 pt-4 pb-2">
