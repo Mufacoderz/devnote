@@ -1,21 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faTimes, faPlus, faPen } from "@fortawesome/free-solid-svg-icons";
 import { useRouter } from "next/navigation";
 import { LANGUAGE_OPTIONS } from "@/lib/languages"
-
+import { type Snippet } from "@/components/snippet/SnippetDetail"
 
 interface SnippetModalProps {
     isOpen: boolean;
     onClose: () => void;
+    snippetToEdit?: Snippet | null; // kalau ada → mode edit, kalau null → mode tambah
 }
 
-export default function SnippetModal({ isOpen, onClose }: SnippetModalProps) {
+export default function SnippetModal({ isOpen, onClose, snippetToEdit }: SnippetModalProps) {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+
+    const isEditMode = !!snippetToEdit; // true kalau mode edit
 
     const [form, setForm] = useState({
         title: "",
@@ -24,6 +27,22 @@ export default function SnippetModal({ isOpen, onClose }: SnippetModalProps) {
         code: "",
         tags: "",
     });
+
+    // prefill form kalau mode edit — setiap kali snippetToEdit berubah
+    useEffect(() => {
+        if (snippetToEdit) {
+            setForm({
+                title: snippetToEdit.title,
+                language: snippetToEdit.language,
+                description: snippetToEdit.description ?? "",
+                code: snippetToEdit.code,
+                tags: snippetToEdit.tags.join(", "), // array → string comma-separated
+            })
+        } else {
+            // reset form kalau balik ke mode tambah
+            setForm({ title: "", language: "typescript", description: "", code: "", tags: "" })
+        }
+    }, [snippetToEdit, isOpen])
 
     if (!isOpen) return null;
 
@@ -48,11 +67,16 @@ export default function SnippetModal({ isOpen, onClose }: SnippetModalProps) {
             .filter(Boolean);
 
         try {
-            const res = await fetch("/api/snippets", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ ...form, tags }),
-            });
+            // mode edit → PUT ke /api/snippets/:id
+            // mode tambah → POST ke /api/snippets
+            const res = await fetch(
+                isEditMode ? `/api/snippets/${snippetToEdit.id}` : "/api/snippets",
+                {
+                    method: isEditMode ? "PUT" : "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ ...form, tags }),
+                }
+            );
 
             if (!res.ok) {
                 const data = await res.json();
@@ -61,7 +85,6 @@ export default function SnippetModal({ isOpen, onClose }: SnippetModalProps) {
 
             router.refresh();
             onClose();
-            setForm({ title: "", language: "typescript", description: "", code: "", tags: "" });
         } catch (err) {
             setError(err instanceof Error ? err.message : "Gagal menyimpan snippet.");
         } finally {
@@ -78,10 +101,10 @@ export default function SnippetModal({ isOpen, onClose }: SnippetModalProps) {
                 className="relative flex flex-col gap-4 rounded-xl p-6 w-full max-w-xl max-h-[90vh] overflow-y-auto"
                 style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
             >
-                {/* Header */}
+                {/* Header — judul berubah sesuai mode */}
                 <div className="flex items-center justify-between">
                     <h2 className="font-semibold text-base" style={{ color: "var(--text)" }}>
-                        Tambah Snippet Baru
+                        {isEditMode ? "Edit Snippet" : "Tambah Snippet Baru"}
                     </h2>
                     <button onClick={onClose} style={{ color: "var(--text-muted)" }}>
                         <FontAwesomeIcon icon={faTimes} />
@@ -218,8 +241,12 @@ export default function SnippetModal({ isOpen, onClose }: SnippetModalProps) {
                             cursor: loading ? "not-allowed" : "pointer",
                         }}
                     >
-                        <FontAwesomeIcon icon={faPlus} />
-                        {loading ? "Menyimpan..." : "Simpan Snippet"}
+                        {/* icon dan teks berubah sesuai mode */}
+                        <FontAwesomeIcon icon={isEditMode ? faPen : faPlus} />
+                        {loading
+                            ? (isEditMode ? "Menyimpan..." : "Menyimpan...")
+                            : (isEditMode ? "Simpan Perubahan" : "Simpan Snippet")
+                        }
                     </button>
                 </div>
             </div>

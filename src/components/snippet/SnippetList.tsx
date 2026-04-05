@@ -11,8 +11,15 @@ import SnippetModal from "./SnippetModal"
 export default function SnippetList({ snippets }: { snippets: Snippet[] }) {
     const [selectedId, setSelectedId] = useState<number | null>(snippets[0]?.id ?? null)
     const [modalOpen, setModalOpen] = useState(false)
+    const [editSnippet, setEditSnippet] = useState<Snippet | null>(null)
 
     const selected = snippets.find(s => s.id === selectedId) ?? snippets[0] ?? null
+
+    // satu handler close untuk kedua mode
+    const handleModalClose = () => {
+        setModalOpen(false)
+        setEditSnippet(null)
+    }
 
     if (snippets.length === 0) {
         return (
@@ -39,34 +46,53 @@ export default function SnippetList({ snippets }: { snippets: Snippet[] }) {
                         </button>
                     </div>
                 </div>
-                <SnippetModal isOpen={modalOpen} onClose={() => setModalOpen(false)} />
+                <SnippetModal
+                    isOpen={modalOpen}
+                    onClose={handleModalClose}
+                    snippetToEdit={null}
+                />
             </>
         )
     }
 
     return (
-        <div className="flex h-full overflow-hidden">
-            <div className="w-[280px] border-r border-[var(--border)] flex flex-col shrink-0">
-                <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border)] shrink-0">
-                    <span className="text-[11px] font-semibold tracking-[1px] uppercase text-[var(--text3)]">
-                        Semua Snippet
-                    </span>
-                    <span className="font-mono text-[10px] text-[var(--text4)] bg-[var(--surface2)] px-2 py-[2px] rounded-full">
-                        {snippets.length}
-                    </span>
+        <>
+            <div className="flex h-full overflow-hidden">
+                <div className="w-[280px] border-r border-[var(--border)] flex flex-col shrink-0">
+                    <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border)] shrink-0">
+                        <span className="text-[11px] font-semibold tracking-[1px] uppercase text-[var(--text3)]">
+                            Semua Snippet
+                        </span>
+                        <span className="font-mono text-[10px] text-[var(--text4)] bg-[var(--surface2)] px-2 py-[2px] rounded-full">
+                            {snippets.length}
+                        </span>
+                    </div>
+                    <div className="flex-1 overflow-y-auto p-2">
+                        {snippets.map(snippet => (
+                            <SnippetCard
+                                key={snippet.id}
+                                snippet={snippet}
+                                active={selected?.id === snippet.id}
+                                onClick={() => setSelectedId(snippet.id)}
+                            />
+                        ))}
+                    </div>
                 </div>
-                <div className="flex-1 overflow-y-auto p-2">
-                    {snippets.map(snippet => (
-                        <SnippetCard
-                            key={snippet.id}
-                            snippet={snippet}
-                            active={selected?.id === snippet.id}
-                            onClick={() => setSelectedId(snippet.id)}
-                        />
-                    ))}
-                </div>
+                {selected && (
+                    <SnippetDetail
+                        key={selected.id}
+                        snippet={selected}
+                        onEdit={() => setEditSnippet(selected)}
+                    />
+                )}
             </div>
-            {selected && <SnippetDetail key={selected.id} snippet={selected} />}
-        </div>
+
+            {/* modal di luar div utama — render untuk tambah dan edit */}
+            <SnippetModal
+                isOpen={modalOpen || !!editSnippet}
+                onClose={handleModalClose}
+                snippetToEdit={editSnippet}
+            />
+        </>
     )
 }

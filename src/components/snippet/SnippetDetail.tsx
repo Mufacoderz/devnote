@@ -6,6 +6,11 @@ import CopyButton from "./CopyButton"
 import CodeBlock from "./CodeBlock"
 import { getLang } from "@/lib/languages"
 
+interface SnippetDetailProps {
+    snippet: Snippet
+    onEdit: () => void  // dipanggil saat tombol Edit diklik
+}
+
 export interface Snippet {
     id: number
     title: string
@@ -17,7 +22,7 @@ export interface Snippet {
     createdAt: string
 }
 
-export default function SnippetDetail({ snippet }: { snippet: Snippet }) {
+export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
     const router = useRouter()
 
     // state untuk loading tombol hapus
@@ -96,7 +101,9 @@ export default function SnippetDetail({ snippet }: { snippet: Snippet }) {
                         // dibanding setCopyCount(copyCount + 1)
                         onCopy={() => setCopyCount(c => c + 1)}
                     />
-                    <button className="text-[13px] font-medium px-4 py-2 rounded-lg border border-[var(--border2)] text-[var(--text3)] hover:border-yellow-500/60 hover:text-yellow-300 transition-all">
+                    <button
+                        onClick={onEdit}
+                        className="text-[13px] font-medium px-4 py-2 rounded-lg border border-[var(--border2)] text-[var(--text3)] hover:border-yellow-500/60 hover:text-yellow-300 transition-all">
                         Edit
                     </button>
                     {/* tombol hapus tidak langsung hapus — buka dialog konfirmasi dulu */}
