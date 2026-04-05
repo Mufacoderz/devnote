@@ -1,3 +1,53 @@
+# DevNote — Personal Code Snippet Library
+
+**DevNote** adalah web aplikasi DevTool (Developers tool) modern 
+
+
+# Tech Stack
+- **Next + TypeScript + Vite**
+- **TailwindCSS**
+- **Prisma, MySql** 
+
+---
+
+# Fitur Aplikasi
+
+
+- Sistem login / registrasi
+- CRUD Snippet
+- Collection Snippet
+- Filter snippets berdasarkan language, tag, favorite, publik
+- Highlight code dan siap salin
+- (Rencana) Halaman snippet publik
+- (Rencana) Share snippet
+
+
+---
+
+
+# Preview Aplikasi
+
+---
+
+## Welcome Page
+<img src="PreviewIMG/welcome.png" width="100%"/>
+---
+
+## Login & Register
+<img src="PreviewIMG/login.png" width="100%"/>
+<img src="PreviewIMG/registrasi.png" width="100%"/>
+---
+
+## Home Page 
+<img src="PreviewIMG/dasboard.png" width="100%"/>
+---
+
+## Form Create Snippet
+<img src="PreviewIMG/tambah-snippet.png" width="100%"/>
+---
+
+
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started

@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useAppStore } from "@/lib/store"
 import { useRouter, useSearchParams } from "next/navigation"
 import { getLang } from "@/lib/languages"
@@ -10,7 +10,12 @@ import {
     faLayerGroup,
     faStar,
     faGlobe,
-    faCopy
+    faCopy,
+    faFolder,
+    faPlus,
+    faEllipsis,
+    faTrash,
+    faPen
 } from "@fortawesome/free-solid-svg-icons"
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core"
 
@@ -23,11 +28,7 @@ interface NavItemProps {
     icon?: IconDefinition
 }
 
-
-
 function NavItem({ label, count, active, onClick, dotColor, icon }: NavItemProps) {
-
-
     return (
         <div
             onClick={onClick}
@@ -60,6 +61,12 @@ function NavItem({ label, count, active, onClick, dotColor, icon }: NavItemProps
     )
 }
 
+interface Collection {
+    id: number
+    name: string
+    _count: { snippets: number }
+}
+
 interface SidebarClientProps {
     totalSnippets: number
     totalCopies: number
@@ -70,7 +77,6 @@ interface SidebarClientProps {
 }
 
 export default function SidebarClient({ totalSnippets, totalCopies, totalFavorites, languages, tags, onNavigate }: SidebarClientProps) {
-
     const { favCount, setFavCount } = useAppStore()
     const router = useRouter()
     const searchParams = useSearchParams()
@@ -78,9 +84,30 @@ export default function SidebarClient({ totalSnippets, totalCopies, totalFavorit
     const activeLang = searchParams.get("lang")
     const activeTag = searchParams.get("tag")
     const activeFilter = searchParams.get("filter")
-    const isAll = !activeLang && !activeTag && !activeFilter
+    const activeCollection = searchParams.get("collection")
+    const isAll = !activeLang && !activeTag && !activeFilter && !activeCollection
 
-    const setFilter = (type: "lang" | "tag" | "filter" | null, value?: string) => {
+    // state collections
+    const [collections, setCollections] = useState<Collection[]>([])
+    const [newColName, setNewColName] = useState("")
+    const [addingCol, setAddingCol] = useState(false)
+    const [editingId, setEditingId] = useState<number | null>(null)
+    const [editingName, setEditingName] = useState("")
+    const [menuOpenId, setMenuOpenId] = useState<number | null>(null)
+
+    useEffect(() => {
+        setFavCount(totalFavorites)
+    }, [totalFavorites, setFavCount])
+
+    // fetch collections
+    useEffect(() => {
+        fetch("/api/collections")
+            .then(r => r.json())
+            .then(d => setCollections(d.collections ?? []))
+            .catch(console.error)
+    }, [])
+
+    const setFilter = (type: "lang" | "tag" | "filter" | "collection" | null, value?: string) => {
         if (type === null) {
             router.push("/dashboard")
         } else {
@@ -88,43 +115,166 @@ export default function SidebarClient({ totalSnippets, totalCopies, totalFavorit
         }
         onNavigate?.()
     }
-    
-    useEffect(() => {
-        setFavCount(totalFavorites)
-    }, [totalFavorites, setFavCount])
+
+    const handleAddCollection = async () => {
+        if (!newColName.trim()) return
+        const res = await fetch("/api/collections", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name: newColName.trim() })
+        })
+        const data = await res.json()
+        setCollections(prev => [{ ...data.collection, _count: { snippets: 0 } }, ...prev])
+        setNewColName("")
+        setAddingCol(false)
+    }
+
+    const handleRename = async (id: number) => {
+        if (!editingName.trim()) return
+        await fetch(`/api/collections/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name: editingName.trim() })
+        })
+        setCollections(prev => prev.map(c => c.id === id ? { ...c, name: editingName.trim() } : c))
+        setEditingId(null)
+        setEditingName("")
+    }
+
+    const handleDelete = async (id: number) => {
+        await fetch(`/api/collections/${id}`, { method: "DELETE" })
+        setCollections(prev => prev.filter(c => c.id !== id))
+        setMenuOpenId(null)
+        // kalau lagi di collection yang dihapus, balik ke all
+        if (activeCollection === String(id)) router.push("/dashboard")
+    }
 
     return (
-        <aside className="w-[280px] h-full bg-[var(--surface)] border-r border-[var(--border)] flex flex-col overflow-y-auto">
+        <aside className="w-[300px] h-full bg-[var(--surface)] border-r border-[var(--border)] flex flex-col overflow-y-auto">
 
             {/* Library */}
             <div className="px-3 pt-4 pb-2">
                 <p className="text-[10px] font-semibold tracking-[1.5px] uppercase text-[var(--text4)] px-2 mb-1">
                     Library
                 </p>
-                <NavItem
-                    label="All Snippets"
-                    count={totalSnippets}
-                    active={isAll}
-                    onClick={() => setFilter(null)}
-                    icon={faLayerGroup}
-                />
-                <NavItem
-                    label="Favorites"
-                    count={favCount}  // ← dari store, bukan prop
-                    active={activeFilter === "favorites"}
-                    onClick={() => setFilter("filter", "favorites")}
-                    icon={faStar}
-                />
-                <NavItem
-                    label="Public"
-                    count={0}
-                    icon={faGlobe}
-                />
-                <NavItem
-                    label="Most Copied"
-                    count={0}
-                    icon={faCopy}
-                />
+                <NavItem label="All Snippets" count={totalSnippets} active={isAll} onClick={() => setFilter(null)} icon={faLayerGroup} />
+                <NavItem label="Favorites" count={favCount} active={activeFilter === "favorites"} onClick={() => setFilter("filter", "favorites")} icon={faStar} />
+                <NavItem label="Public" count={0} icon={faGlobe} />
+                <NavItem label="Most Copied" count={0} icon={faCopy} />
+            </div>
+
+            {/* Collections */}
+            <div className="px-3 py-2 border-t border-[var(--border)]">
+                <div className="flex items-center justify-between px-2 mb-1">
+                    <p className="text-[10px] font-semibold tracking-[1.5px] uppercase text-[var(--text4)]">
+                        Collections
+                    </p>
+                    <button
+                        onClick={() => setAddingCol(true)}
+                        className="w-[18px] h-[18px] flex items-center justify-center rounded text-[var(--text4)] hover:text-[var(--em)] hover:bg-[var(--em-faint)] transition-all"
+                    >
+                        <FontAwesomeIcon icon={faPlus} className="w-[9px] h-[9px]" />
+                    </button>
+                </div>
+
+                {/* input tambah collection */}
+                {addingCol && (
+                    <div className="flex items-center gap-1.5 px-2 py-1 mb-1">
+                        <input
+                            autoFocus
+                            value={newColName}
+                            onChange={e => setNewColName(e.target.value)}
+                            onKeyDown={e => {
+                                if (e.key === "Enter") handleAddCollection()
+                                if (e.key === "Escape") { setAddingCol(false); setNewColName("") }
+                            }}
+                            placeholder="Nama collection..."
+                            className="flex-1 bg-[var(--bg)] border border-[var(--em-border)] rounded-md px-2 py-[4px] text-[12px] text-[var(--text)] outline-none placeholder:text-[var(--text4)]"
+                        />
+                        <button onClick={handleAddCollection} className="text-[11px] text-[var(--em)] font-medium px-2 py-[4px] rounded-md hover:bg-[var(--em-faint)] transition-all">
+                            Simpan
+                        </button>
+                    </div>
+                )}
+
+                <div className="overflow-y-auto max-h-[125px]">
+                    {collections.length === 0 && !addingCol && (
+                        <p className="text-[11px] text-[var(--text4)] px-2 py-2 italic">
+                            Belum ada collection
+                        </p>
+                    )}
+                    {collections.map(col => (
+                        <div key={col.id} className="relative group">
+                            {editingId === col.id ? (
+                                <div className="flex items-center gap-1.5 px-2 py-1">
+                                    <input
+                                        autoFocus
+                                        value={editingName}
+                                        onChange={e => setEditingName(e.target.value)}
+                                        onKeyDown={e => {
+                                            if (e.key === "Enter") handleRename(col.id)
+                                            if (e.key === "Escape") setEditingId(null)
+                                        }}
+                                        className="flex-1 bg-[var(--bg)] border border-[var(--em-border)] rounded-md px-2 py-[4px] text-[12px] text-[var(--text)] outline-none"
+                                    />
+                                    <button onClick={() => handleRename(col.id)} className="text-[11px] text-[var(--em)] font-medium px-2 py-[4px] rounded-md hover:bg-[var(--em-faint)] transition-all">
+                                        OK
+                                    </button>
+                                </div>
+                            ) : (
+                                <div
+                                    onClick={() => setFilter("collection", String(col.id))}
+                                    className={`flex items-center justify-between px-2 py-[6px] rounded-[5px] cursor-pointer text-[13px] transition-all
+                                    ${activeCollection === String(col.id)
+                                            ? 'bg-[var(--em-faint)] text-[var(--em)] font-medium'
+                                            : 'text-[var(--text2)] hover:bg-[var(--em-faint)] hover:text-[var(--text)]'
+                                        }`}
+                                >
+                                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                                        <FontAwesomeIcon
+                                            icon={faFolder}
+                                            className={`w-[12px] h-[12px] shrink-0 ${activeCollection === String(col.id) ? 'text-[var(--em)]' : 'text-[var(--text4)]'}`}
+                                        />
+                                        <span className="truncate">{col.name}</span>
+                                    </div>
+                                    <div className="flex items-center gap-1 shrink-0">
+                                        <span className={`font-mono text-[10px] px-2 py-[1px] rounded-full
+                                            ${activeCollection === String(col.id) ? 'text-[var(--em-dim)] bg-[var(--em-faint)]' : 'text-[var(--text4)] bg-[var(--surface3)]'}`}>
+                                            {col._count.snippets}
+                                        </span>
+                                        {/* menu btn — muncul saat hover */}
+                                        <button
+                                            onClick={e => { e.stopPropagation(); setMenuOpenId(menuOpenId === col.id ? null : col.id) }}
+                                            className="opacity-0 group-hover:opacity-100 w-[18px] h-[18px] flex items-center justify-center rounded text-[var(--text4)] hover:text-[var(--text)] transition-all"
+                                        >
+                                            <FontAwesomeIcon icon={faEllipsis} className="w-[10px] h-[10px]" />
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* dropdown menu */}
+                            {menuOpenId === col.id && (
+                                <div className="absolute right-0 top-8 z-50 w-[140px] rounded-lg border border-[var(--border)] bg-[var(--surface)] shadow-xl p-1">
+                                    <button
+                                        onClick={() => { setEditingId(col.id); setEditingName(col.name); setMenuOpenId(null) }}
+                                        className="flex items-center gap-2 w-full px-3 py-2 text-[12px] text-[var(--text2)] hover:bg-[var(--surface2)] rounded-md transition-all"
+                                    >
+                                        <FontAwesomeIcon icon={faPen} className="w-[10px] h-[10px]" />
+                                        Rename
+                                    </button>
+                                    <button
+                                        onClick={() => handleDelete(col.id)}
+                                        className="flex items-center gap-2 w-full px-3 py-2 text-[12px] text-red-400 hover:bg-red-500/10 rounded-md transition-all"
+                                    >
+                                        <FontAwesomeIcon icon={faTrash} className="w-[10px] h-[10px]" />
+                                        Hapus
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
             </div>
 
             {/* Language */}
@@ -175,23 +325,17 @@ export default function SidebarClient({ totalSnippets, totalCopies, totalFavorit
 
             {/* Explore */}
             <div className="px-3 py-2 border-t border-[var(--border)]">
-                <p className="text-[10px] font-semibold tracking-[1.5px] uppercase text-[var(--text4)] px-2 mb-1">
-                    Explore
-                </p>
                 <div
                     onClick={() => { router.push("/explore"); onNavigate?.() }}
-                    className="flex items-center justify-between px-2 py-[6px] rounded-[5px] cursor-pointer text-[13px] text-[var(--text2)] hover:bg-[var(--em-faint)] hover:text-[var(--em)] transition-all group"
+                    className="flex items-center justify-between px-3 py-2.5 rounded-[8px] cursor-pointer transition-all group bg-[var(--em-faint)] border border-[var(--em-border)] hover:bg-[var(--em)] hover:border-[var(--em)]"
                 >
                     <div className="flex items-center gap-2">
-                        <FontAwesomeIcon
-                            icon={faCompass}
-                            className="w-[10px] h-[10px] shrink-0"
-                        />
-                        Jelajahi Snippet Publik
+                        <FontAwesomeIcon icon={faCompass} className="w-[11px] h-[11px] shrink-0 text-[var(--em)] group-hover:text-[#0a0a0a] transition-all" />
+                        <span className="text-[12px] font-medium text-[var(--em)] group-hover:text-[#0a0a0a] transition-all">
+                            Jelajahi Snippet Publik
+                        </span>
                     </div>
-                    <span className="text-[10px] text-[var(--text4)] group-hover:text-[var(--em)] transition-all">
-                        →
-                    </span>
+                    <span className="text-[11px] text-[var(--em)] group-hover:text-[#0a0a0a] group-hover:translate-x-1 transition-all">→</span>
                 </div>
             </div>
 

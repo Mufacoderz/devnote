@@ -75,7 +75,7 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
     }
 
     return (
-        <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="flex-1 flex flex-col h-full min-h-0 overflow-hidden">
 
             <div className="px-6 py-5 border-b border-[var(--border)] shrink-0">
 
@@ -170,7 +170,7 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
             </div>
 
             {/* CODE */}
-            <div className="flex-1 overflow-hidden">
+            <div className="flex-1 min-h-0 overflow-hidden">
                 <CodeBlock code={snippet.code} language={snippet.language} />
             </div>
 

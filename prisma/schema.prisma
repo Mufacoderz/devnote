@@ -35,24 +35,46 @@ model Snippet {
   code        String   @db.LongText
   language    String
   isPublic    Boolean  @default(false)
-  shareId     String?  @unique  // nanoid — untuk public link /s/[shareId]
+  shareId     String?  @unique
   copyCount   Int      @default(0)
   isFavorite  Boolean  @default(false)
   
-  userId        Int
-  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  collectionId  Int?
-  collection    Collection? @relation(fields: [collectionId], references: [id], onDelete: SetNull)
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  tags      SnippetTag[]
+  tags        SnippetTag[]
+  collections SnippetCollection[]  // ← ganti dari collectionId
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@map("snippets")
 }
 
+model Collection {
+  id        Int      @id @default(autoincrement())
+  name      String
+
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  snippets  SnippetCollection[]
+
+  createdAt DateTime @default(now())
+
+  @@map("collections")
+}
+
+model SnippetCollection {
+  snippetId    Int
+  collectionId Int
+
+  snippet    Snippet    @relation(fields: [snippetId], references: [id], onDelete: Cascade)
+  collection Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+
+  @@id([snippetId, collectionId])
+  @@map("snippet_collections")
+}
 // ───────────────────────────────
 // TAG
 // ───────────────────────────────
@@ -77,23 +99,4 @@ model SnippetTag {
 
   @@id([snippetId, tagId])
   @@map("snippet_tags")
-}
-
-// ───────────────────────────────
-// COLLECTION (folder)
-// ───────────────────────────────
-model Collection {
-  id     Int     @id @default(autoincrement())
-  name   String
-  color  String? // hex color buat UI
-  icon   String? // emoji atau icon name
-
-  userId Int
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  snippets Snippet[]
-
-  createdAt DateTime @default(now())
-
-  @@map("collections")
 }
