@@ -1,5 +1,7 @@
 "use client"
 
+import { useEffect } from "react"
+import { useAppStore } from "@/lib/store"
 import { useRouter, useSearchParams } from "next/navigation"
 import { getLang } from "@/lib/languages"
 import { faCompass } from "@fortawesome/free-solid-svg-icons"
@@ -21,7 +23,11 @@ interface NavItemProps {
     icon?: IconDefinition
 }
 
+
+
 function NavItem({ label, count, active, onClick, dotColor, icon }: NavItemProps) {
+
+
     return (
         <div
             onClick={onClick}
@@ -57,20 +63,24 @@ function NavItem({ label, count, active, onClick, dotColor, icon }: NavItemProps
 interface SidebarClientProps {
     totalSnippets: number
     totalCopies: number
+    totalFavorites: number
     languages: { name: string; count: number }[]
     tags: { name: string; count: number }[]
     onNavigate?: () => void
 }
 
-export default function SidebarClient({ totalSnippets, totalCopies, languages, tags, onNavigate }: SidebarClientProps) {
+export default function SidebarClient({ totalSnippets, totalCopies, totalFavorites, languages, tags, onNavigate }: SidebarClientProps) {
+
+    const { favCount, setFavCount } = useAppStore()
     const router = useRouter()
     const searchParams = useSearchParams()
 
     const activeLang = searchParams.get("lang")
     const activeTag = searchParams.get("tag")
-    const isAll = !activeLang && !activeTag
+    const activeFilter = searchParams.get("filter")
+    const isAll = !activeLang && !activeTag && !activeFilter
 
-    const setFilter = (type: "lang" | "tag" | null, value?: string) => {
+    const setFilter = (type: "lang" | "tag" | "filter" | null, value?: string) => {
         if (type === null) {
             router.push("/dashboard")
         } else {
@@ -78,6 +88,10 @@ export default function SidebarClient({ totalSnippets, totalCopies, languages, t
         }
         onNavigate?.()
     }
+    
+    useEffect(() => {
+        setFavCount(totalFavorites)
+    }, [totalFavorites, setFavCount])
 
     return (
         <aside className="w-[280px] h-full bg-[var(--surface)] border-r border-[var(--border)] flex flex-col overflow-y-auto">
@@ -96,7 +110,9 @@ export default function SidebarClient({ totalSnippets, totalCopies, languages, t
                 />
                 <NavItem
                     label="Favorites"
-                    count={0}
+                    count={favCount}  // ← dari store, bukan prop
+                    active={activeFilter === "favorites"}
+                    onClick={() => setFilter("filter", "favorites")}
                     icon={faStar}
                 />
                 <NavItem

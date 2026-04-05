@@ -12,7 +12,8 @@ export default async function Sidebar() {
         select: {
             language: true,
             copyCount: true,
-            tags: { select: { tag: { select: { name: true } } } }
+            tags: { select: { tag: { select: { name: true } } } },
+            isFavorite: true,
         }
     })
 
@@ -39,10 +40,15 @@ export default async function Sidebar() {
     // total copies dari semua snippet
     const totalCopies = snippets.reduce((acc, s) => acc + s.copyCount, 0)
 
+
+    //total fav
+    const totalFavorites = snippets.filter(s => s.isFavorite).length
+
     return (
         <SidebarClient
             totalSnippets={snippets.length}
             totalCopies={totalCopies}
+            totalFavorites={totalFavorites}
             languages={languages}
             tags={tags}
         />

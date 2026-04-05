@@ -8,6 +8,7 @@ import SidebarClient from "./SidebarClient"
 interface SidebarData {
     totalSnippets: number
     totalCopies: number
+    totalFavorites: number
     languages: { name: string; count: number }[]
     tags: { name: string; count: number }[]
 }
@@ -17,13 +18,13 @@ export default function MobileSidebar() {
     const [data, setData] = useState<SidebarData | null>(null)
 
     useEffect(() => {
-        if (sidebarOpen && !data) {
+        if (sidebarOpen) {
             fetch("/api/sidebar")
                 .then(res => res.json())
                 .then(setData)
                 .catch(console.error)
         }
-    }, [sidebarOpen, data])
+    }, [sidebarOpen])
 
     useEffect(() => {
         const handleKey = (e: KeyboardEvent) => {
@@ -60,6 +61,7 @@ export default function MobileSidebar() {
                             <SidebarClient
                                 totalSnippets={data.totalSnippets}
                                 totalCopies={data.totalCopies}
+                                totalFavorites={data.totalFavorites}
                                 languages={data.languages}
                                 tags={data.tags}
                                 onNavigate={() => setSidebarOpen(false)}

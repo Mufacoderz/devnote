@@ -7,27 +7,22 @@ import { Snippet } from "@/components/snippet/SnippetDetail"
 export default async function DashboardPage({
   searchParams
 }: {
-  searchParams: Promise<{ lang?: string; tag?: string }>
+  searchParams: Promise<{ lang?: string; tag?: string; filter?: string }>
 }) {
   const session = await auth()
   if (!session?.user) redirect("/login")
 
   // await searchParams karena Next.js 15+ searchParams adalah Promise
-  const { lang, tag } = await searchParams
+  const { lang, tag, filter } = await searchParams
 
   const rawSnippets = await prisma.snippet.findMany({
     where: {
       userId: Number(session.user.id),
-      // filter language — hanya aktif kalau ada ?lang= di URL
       ...(lang && { language: lang }),
-      // filter tag — cari snippet yang punya tag dengan nama tersebut
-      ...(tag && {
-        tags: { some: { tag: { name: tag } } }
-      })
+      ...(tag && { tags: { some: { tag: { name: tag } } } }),
+      ...(filter === "favorites" && { isFavorite: true }),
     },
-    include: {
-      tags: { include: { tag: true } }
-    },
+    include: { tags: { include: { tag: true } } },
     orderBy: { createdAt: "desc" }
   })
 

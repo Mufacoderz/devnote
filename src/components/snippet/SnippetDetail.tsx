@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import CopyButton from "./CopyButton"
 import CodeBlock from "./CodeBlock"
 import { getLang } from "@/lib/languages"
+import { useAppStore } from "@/lib/store"
 
 interface SnippetDetailProps {
     snippet: Snippet
@@ -25,6 +26,7 @@ export interface Snippet {
 
 export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
     const router = useRouter()
+    const { incrementFav, decrementFav } = useAppStore()
 
     const [deleting, setDeleting] = useState(false)
     const [confirmOpen, setConfirmOpen] = useState(false)
@@ -54,12 +56,21 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
     }
 
     const handleFavorite = async () => {
-        setIsFavorite(prev => !prev)
+        const next = !isFavorite
+
+        // optimistic update UI + store
+        setIsFavorite(next)
+        if (next) incrementFav()
+        else decrementFav()
+
         try {
             const res = await fetch(`/api/snippets/${snippet.id}/favorite`, { method: "POST" })
             if (!res.ok) throw new Error()
         } catch {
-            setIsFavorite(prev => !prev)
+            // rollback kalau API gagal
+            setIsFavorite(!next)
+            if (next) decrementFav()
+            else incrementFav()
         }
     }
 
@@ -96,8 +107,6 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
 
                     {/* RIGHT (ACTION BAR) */}
                     <div className="flex items-center gap-2">
-
-                        {/* FAVORITE */}
                         <button
                             onClick={handleFavorite}
                             className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-[12px] font-medium transition-all
@@ -111,7 +120,6 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
                             </span>
                             {isFavorite ? "Favorited" : "Favorite"}
                         </button>
-
                     </div>
                 </div>
 
@@ -138,14 +146,12 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
                         snippetId={snippet.id}
                         onCopy={() => setCopyCount(c => c + 1)}
                     />
-
                     <button
                         onClick={onEdit}
                         className="text-[13px] font-medium px-4 py-2 rounded-lg border border-[var(--border2)] text-yellow-600 hover:border-yellow-500/60 hover:text-yellow-300 transition-all"
                     >
                         Edit
                     </button>
-
                     <button
                         onClick={() => setConfirmOpen(true)}
                         disabled={deleting}
