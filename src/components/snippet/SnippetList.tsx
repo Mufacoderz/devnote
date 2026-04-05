@@ -62,9 +62,9 @@ export default function SnippetList({ snippets }: { snippets: Snippet[] }) {
 
     return (
         <>
-            {/* ────────── DESKTOP (md ke atas) ────────── */}
-            <div className="hidden md:flex h-full overflow-hidden">
-                <div className="w-[280px] border-r border-[var(--border)] flex flex-col shrink-0">
+            {/* ────────── DESKTOP (lg ke atas) ────────── */}
+            <div className="hidden lg:flex h-full overflow-hidden">
+                <div className="w-[300px] border-r border-[var(--border)] flex flex-col shrink-0">
                     <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border)] shrink-0">
                         <span className="text-[11px] font-semibold tracking-[1px] uppercase text-[var(--text3)]">
                             Semua Snippet
@@ -93,8 +93,8 @@ export default function SnippetList({ snippets }: { snippets: Snippet[] }) {
                 )}
             </div>
 
-            {/* ────────── MOBILE (di bawah md) ────────── */}
-            <div className="flex md:hidden h-full overflow-hidden relative">
+            {/* ────────── MOBILE (di bawah lg) ────────── */}
+            <div className="flex lg:hidden h-full overflow-hidden relative">
                 <AnimatePresence initial={false}>
 
                     {/* Panel List — selalu ada, slide keluar saat detail muncul */}

@@ -10,8 +10,6 @@ import {
     faGlobe,
     faCopy
 } from "@fortawesome/free-solid-svg-icons"
-
-
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core"
 
 interface NavItemProps {
@@ -34,13 +32,11 @@ function NavItem({ label, count, active, onClick, dotColor, icon }: NavItemProps
                 }`}
         >
             <div className="flex items-center gap-2">
-
-                {/* ICON */}
                 {icon ? (
                     <FontAwesomeIcon
                         icon={icon}
                         className={`w-[12px] h-[12px] shrink-0 transition-all
-                        ${active ? 'text-[var(--em)]' : 'text-[var(--text4)] group-hover:text-[var(--em)]'}`}
+                        ${active ? 'text-[var(--em)]' : 'text-[var(--text4)]'}`}
                     />
                 ) : (
                     <div
@@ -48,10 +44,8 @@ function NavItem({ label, count, active, onClick, dotColor, icon }: NavItemProps
                         style={{ background: active ? 'var(--em)' : (dotColor ?? 'var(--border2)') }}
                     />
                 )}
-
                 {label}
             </div>
-
             <span className={`font-mono text-[10px] px-2 py-[1px] rounded-full
                 ${active ? 'text-[var(--em-dim)] bg-[var(--em-faint)]' : 'text-[var(--text4)] bg-[var(--surface3)]'}`}>
                 {count}
@@ -65,9 +59,10 @@ interface SidebarClientProps {
     totalCopies: number
     languages: { name: string; count: number }[]
     tags: { name: string; count: number }[]
+    onNavigate?: () => void
 }
 
-export default function SidebarClient({ totalSnippets, totalCopies, languages, tags }: SidebarClientProps) {
+export default function SidebarClient({ totalSnippets, totalCopies, languages, tags, onNavigate }: SidebarClientProps) {
     const router = useRouter()
     const searchParams = useSearchParams()
 
@@ -81,17 +76,17 @@ export default function SidebarClient({ totalSnippets, totalCopies, languages, t
         } else {
             router.push(`/dashboard?${type}=${value}`)
         }
+        onNavigate?.()
     }
 
     return (
-        <aside className="w-[280px] h-full bg-[var(--surface)] border-r border-[var(--border)] flex flex-col ">
+        <aside className="w-[280px] h-full bg-[var(--surface)] border-r border-[var(--border)] flex flex-col overflow-y-auto">
 
             {/* Library */}
             <div className="px-3 pt-4 pb-2">
                 <p className="text-[10px] font-semibold tracking-[1.5px] uppercase text-[var(--text4)] px-2 mb-1">
                     Library
                 </p>
-
                 <NavItem
                     label="All Snippets"
                     count={totalSnippets}
@@ -99,25 +94,21 @@ export default function SidebarClient({ totalSnippets, totalCopies, languages, t
                     onClick={() => setFilter(null)}
                     icon={faLayerGroup}
                 />
-
                 <NavItem
                     label="Favorites"
                     count={0}
                     icon={faStar}
                 />
-
                 <NavItem
                     label="Public"
                     count={0}
                     icon={faGlobe}
                 />
-
                 <NavItem
                     label="Most Copied"
                     count={0}
                     icon={faCopy}
                 />
-
             </div>
 
             {/* Language */}
@@ -172,7 +163,7 @@ export default function SidebarClient({ totalSnippets, totalCopies, languages, t
                     Explore
                 </p>
                 <div
-                    onClick={() => router.push("/explore")}
+                    onClick={() => { router.push("/explore"); onNavigate?.() }}
                     className="flex items-center justify-between px-2 py-[6px] rounded-[5px] cursor-pointer text-[13px] text-[var(--text2)] hover:bg-[var(--em-faint)] hover:text-[var(--em)] transition-all group"
                 >
                     <div className="flex items-center gap-2">
