@@ -1,0 +1,145 @@
+"use client"
+
+import { useRouter, useSearchParams } from "next/navigation"
+import { getLang } from "@/lib/languages"
+
+interface NavItemProps {
+    label: string
+    count: number
+    active?: boolean
+    onClick?: () => void
+    dotColor?: string
+}
+
+function NavItem({ label, count, active, onClick, dotColor }: NavItemProps) {
+    return (
+        <div
+            onClick={onClick}
+            className={`flex items-center justify-between px-2 py-[6px] rounded-[5px] cursor-pointer text-[13px] transition-all
+            ${active
+                ? 'bg-[var(--em-faint)] text-[var(--em)] font-medium'
+                : 'text-[var(--text2)] hover:bg-[var(--em-faint)] hover:text-[var(--text)]'
+            }`}
+        >
+            <div className="flex items-center gap-2">
+                <div
+                    className="w-[5px] h-[5px] rounded-full shrink-0"
+                    style={{ background: active ? 'var(--em)' : (dotColor ?? 'var(--border2)') }}
+                />
+                {label}
+            </div>
+            <span className={`font-mono text-[10px] px-2 py-[1px] rounded-full
+                ${active ? 'text-[var(--em-dim)] bg-[var(--em-faint)]' : 'text-[var(--text4)] bg-[var(--surface3)]'}`}>
+                {count}
+            </span>
+        </div>
+    )
+}
+
+interface SidebarClientProps {
+    totalSnippets: number
+    totalCopies: number
+    languages: { name: string; count: number }[]
+    tags: { name: string; count: number }[]
+}
+
+export default function SidebarClient({ totalSnippets, totalCopies, languages, tags }: SidebarClientProps) {
+    const router = useRouter()
+    const searchParams = useSearchParams()
+
+    // baca filter aktif dari URL
+    const activeLang = searchParams.get("lang")
+    const activeTag = searchParams.get("tag")
+    const isAll = !activeLang && !activeTag
+
+    // set filter ke URL — komponen lain baca dari sini
+    const setFilter = (type: "lang" | "tag" | null, value?: string) => {
+        if (type === null) {
+            router.push("/dashboard")
+        } else {
+            router.push(`/dashboard?${type}=${value}`)
+        }
+    }
+
+    return (
+        <aside className="w-[280px] h-full bg-[var(--surface)] border-r border-[var(--border)] flex flex-col">
+
+            {/* Library */}
+            <div className="px-3 pt-4 pb-2">
+                <p className="text-[10px] font-semibold tracking-[1.5px] uppercase text-[var(--text4)] px-2 mb-1">
+                    Library
+                </p>
+                <NavItem
+                    label="All Snippets"
+                    count={totalSnippets}
+                    active={isAll}
+                    onClick={() => setFilter(null)}
+                />
+                <NavItem label="Favorites" count={0} />
+                <NavItem label="Public" count={0} />
+            </div>
+
+            {/* Language */}
+            <div className="px-3 py-2 border-t border-[var(--border)]">
+                <p className="text-[10px] font-semibold tracking-[1.5px] uppercase text-[var(--text4)] px-2 mb-1">
+                    Language
+                </p>
+                {languages.map(({ name, count }) => {
+                    const langConfig = getLang(name)
+                    return (
+                        <NavItem
+                            key={name}
+                            label={name.charAt(0).toUpperCase() + name.slice(1)}
+                            count={count}
+                            active={activeLang === name}
+                            dotColor={langConfig.color}
+                            onClick={() => setFilter("lang", name)}
+                        />
+                    )
+                })}
+            </div>
+
+            {/* Tags */}
+            <div className="px-3 py-2 border-t border-[var(--border)]">
+                <p className="text-[10px] font-semibold tracking-[1.5px] uppercase text-[var(--text4)] px-2 mb-1">
+                    Tags
+                </p>
+                <div className="flex flex-wrap gap-[5px] px-2 pt-1">
+                    {tags.map(({ name }) => (
+                        <span
+                            key={name}
+                            onClick={() => setFilter("tag", name)}
+                            className={`font-mono text-[10px] px-2 py-[3px] rounded-full border cursor-pointer transition-all
+                                ${activeTag === name
+                                    ? 'border-[var(--em-border)] text-[var(--em)] bg-[var(--em-faint)]'
+                                    : 'border-[var(--border2)] text-[var(--text3)] hover:border-[var(--em-border)] hover:text-[var(--em)]'
+                                }`}
+                        >
+                            #{name}
+                        </span>
+                    ))}
+                </div>
+            </div>
+
+            {/* Stats */}
+            <div className="mt-auto px-3 py-3 border-t border-[var(--border)]">
+                <div className="grid grid-cols-2 gap-[6px]">
+                    {[
+                        { val: totalSnippets.toString(), label: 'Snippets' },
+                        { val: totalCopies.toString(), label: 'Copies' },
+                        { val: languages.length.toString(), label: 'Languages' },
+                        { val: tags.length.toString(), label: 'Tags' },
+                    ].map(stat => (
+                        <div key={stat.label} className="bg-[var(--surface2)] border border-[var(--border)] rounded-[6px] p-[10px]">
+                            <div className="font-mono text-[18px] font-semibold text-[var(--em)] leading-none mb-[3px]">
+                                {stat.val}
+                            </div>
+                            <div className="text-[10px] text-[var(--text3)]">{stat.label}</div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+        </aside>
+    )
+}
