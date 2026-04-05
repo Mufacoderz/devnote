@@ -9,8 +9,10 @@ import { faCode, faPlus } from '@fortawesome/free-solid-svg-icons'
 import SnippetModal from "./SnippetModal"
 
 export default function SnippetList({ snippets }: { snippets: Snippet[] }) {
-    const [selected, setSelected] = useState(snippets[0] ?? null)
+    const [selectedId, setSelectedId] = useState<number | null>(snippets[0]?.id ?? null)
     const [modalOpen, setModalOpen] = useState(false)
+
+    const selected = snippets.find(s => s.id === selectedId) ?? snippets[0] ?? null
 
     if (snippets.length === 0) {
         return (
@@ -59,12 +61,12 @@ export default function SnippetList({ snippets }: { snippets: Snippet[] }) {
                             key={snippet.id}
                             snippet={snippet}
                             active={selected?.id === snippet.id}
-                            onClick={() => setSelected(snippet)}
+                            onClick={() => setSelectedId(snippet.id)}
                         />
                     ))}
                 </div>
             </div>
-            {selected && <SnippetDetail snippet={selected} />}
+            {selected && <SnippetDetail key={selected.id} snippet={selected} />}
         </div>
     )
 }

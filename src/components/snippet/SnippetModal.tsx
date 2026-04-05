@@ -4,11 +4,8 @@ import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { useRouter } from "next/navigation";
+import { LANGUAGE_OPTIONS } from "@/lib/languages"
 
-const LANGUAGES = [
-    "typescript", "javascript", "python", "php", "css",
-    "html", "sql", "rust", "go", "bash", "json", "other"
-];
 
 interface SnippetModalProps {
     isOpen: boolean;
@@ -67,167 +64,165 @@ export default function SnippetModal({ isOpen, onClose }: SnippetModalProps) {
             setForm({ title: "", language: "typescript", description: "", code: "", tags: "" });
         } catch (err) {
             setError(err instanceof Error ? err.message : "Gagal menyimpan snippet.");
-    } finally {
-        setLoading(false);
-    }
-};
+        } finally {
+            setLoading(false);
+        }
+    };
 
-return (
-    <div
-        className="fixed inset-0 z-50 flex items-center justify-center"
-        style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)" }}
-    >
+    return (
         <div
-            className="relative flex flex-col gap-4 rounded-xl p-6 w-full max-w-xl max-h-[90vh] overflow-y-auto"
-            style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
+            className="fixed inset-0 z-50 flex items-center justify-center"
+            style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)" }}
         >
-            {/* Header */}
-            <div className="flex items-center justify-between">
-                <h2 className="font-semibold text-base" style={{ color: "var(--text)" }}>
-                    Tambah Snippet Baru
-                </h2>
-                <button onClick={onClose} style={{ color: "var(--text-muted)" }}>
-                    <FontAwesomeIcon icon={faTimes} />
-                </button>
-            </div>
+            <div
+                className="relative flex flex-col gap-4 rounded-xl p-6 w-full max-w-xl max-h-[90vh] overflow-y-auto"
+                style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
+            >
+                {/* Header */}
+                <div className="flex items-center justify-between">
+                    <h2 className="font-semibold text-base" style={{ color: "var(--text)" }}>
+                        Tambah Snippet Baru
+                    </h2>
+                    <button onClick={onClose} style={{ color: "var(--text-muted)" }}>
+                        <FontAwesomeIcon icon={faTimes} />
+                    </button>
+                </div>
 
-            {/* Field: Judul */}
-            <div className="flex flex-col gap-1">
-                <label className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>
-                    Judul <span style={{ color: "var(--em)" }}>*</span>
-                </label>
-                <input
-                    name="title"
-                    value={form.title}
-                    onChange={handleChange}
-                    placeholder="Contoh: useDebounce hook"
-                    className="rounded-lg px-3 py-2 text-sm outline-none"
-                    style={{
-                        background: "var(--bg)",
-                        border: "1px solid var(--border)",
-                        color: "var(--text)",
-                    }}
-                />
-            </div>
+                {/* Field: Judul */}
+                <div className="flex flex-col gap-1">
+                    <label className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>
+                        Judul <span style={{ color: "var(--em)" }}>*</span>
+                    </label>
+                    <input
+                        name="title"
+                        value={form.title}
+                        onChange={handleChange}
+                        placeholder="Contoh: useDebounce hook"
+                        className="rounded-lg px-3 py-2 text-sm outline-none"
+                        style={{
+                            background: "var(--bg)",
+                            border: "1px solid var(--border)",
+                            color: "var(--text)",
+                        }}
+                    />
+                </div>
 
-            {/* Field: Bahasa */}
-            <div className="flex flex-col gap-1">
-                <label className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>
-                    Bahasa
-                </label>
-                <select
-                    name="language"
-                    value={form.language}
-                    onChange={handleChange}
-                    className="rounded-lg px-3 py-2 text-sm outline-none"
-                    style={{
-                        background: "var(--bg)",
-                        border: "1px solid var(--border)",
-                        color: "var(--text)",
-                    }}
-                >
-                    {LANGUAGES.map((lang) => (
-                        <option key={lang} value={lang}>
-                            {lang}
-                        </option>
-                    ))}
-                </select>
-            </div>
+                {/* Field: Bahasa */}
+                <div className="flex flex-col gap-1">
+                    <label className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>
+                        Bahasa
+                    </label>
+                    <select
+                        name="language"
+                        value={form.language}
+                        onChange={handleChange}
+                        className="rounded-lg px-3 py-2 text-sm outline-none"
+                        style={{
+                            background: "var(--bg)",
+                            border: "1px solid var(--border)",
+                            color: "var(--text)",
+                        }}
+                    >
+                        {LANGUAGE_OPTIONS.map((lang) => (
+                            <option key={lang} value={lang}>{lang}</option>
+                        ))}
+                    </select>
+                </div>
 
-            {/* Field: Deskripsi */}
-            <div className="flex flex-col gap-1">
-                <label className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>
-                    Deskripsi <span style={{ color: "var(--text-muted)" }}>(opsional)</span>
-                </label>
-                <input
-                    name="description"
-                    value={form.description}
-                    onChange={handleChange}
-                    placeholder="Singkat aja, buat apa snippet ini"
-                    className="rounded-lg px-3 py-2 text-sm outline-none"
-                    style={{
-                        background: "var(--bg)",
-                        border: "1px solid var(--border)",
-                        color: "var(--text)",
-                    }}
-                />
-            </div>
+                {/* Field: Deskripsi */}
+                <div className="flex flex-col gap-1">
+                    <label className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>
+                        Deskripsi <span style={{ color: "var(--text-muted)" }}>(opsional)</span>
+                    </label>
+                    <input
+                        name="description"
+                        value={form.description}
+                        onChange={handleChange}
+                        placeholder="Singkat aja, buat apa snippet ini"
+                        className="rounded-lg px-3 py-2 text-sm outline-none"
+                        style={{
+                            background: "var(--bg)",
+                            border: "1px solid var(--border)",
+                            color: "var(--text)",
+                        }}
+                    />
+                </div>
 
-            {/* Field: Kode */}
-            <div className="flex flex-col gap-1">
-                <label className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>
-                    Kode <span style={{ color: "var(--em)" }}>*</span>
-                </label>
-                <textarea
-                    name="code"
-                    value={form.code}
-                    onChange={handleChange}
-                    placeholder="Paste kode di sini..."
-                    rows={8}
-                    className="rounded-lg px-3 py-2 text-sm outline-none resize-none"
-                    style={{
-                        background: "var(--bg)",
-                        border: "1px solid var(--border)",
-                        color: "var(--text)",
-                        fontFamily: "var(--font-mono, 'JetBrains Mono', monospace)",
-                    }}
-                />
-            </div>
+                {/* Field: Kode */}
+                <div className="flex flex-col gap-1">
+                    <label className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>
+                        Kode <span style={{ color: "var(--em)" }}>*</span>
+                    </label>
+                    <textarea
+                        name="code"
+                        value={form.code}
+                        onChange={handleChange}
+                        placeholder="Paste kode di sini..."
+                        rows={8}
+                        className="rounded-lg px-3 py-2 text-sm outline-none resize-none"
+                        style={{
+                            background: "var(--bg)",
+                            border: "1px solid var(--border)",
+                            color: "var(--text)",
+                            fontFamily: "var(--font-mono, 'JetBrains Mono', monospace)",
+                        }}
+                    />
+                </div>
 
-            {/* Field: Tags */}
-            <div className="flex flex-col gap-1">
-                <label className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>
-                    Tags <span style={{ color: "var(--text-muted)" }}>(pisah dengan koma)</span>
-                </label>
-                <input
-                    name="tags"
-                    value={form.tags}
-                    onChange={handleChange}
-                    placeholder="react, hooks, utility"
-                    className="rounded-lg px-3 py-2 text-sm outline-none"
-                    style={{
-                        background: "var(--bg)",
-                        border: "1px solid var(--border)",
-                        color: "var(--text)",
-                    }}
-                />
-            </div>
+                {/* Field: Tags */}
+                <div className="flex flex-col gap-1">
+                    <label className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>
+                        Tags <span style={{ color: "var(--text-muted)" }}>(pisah dengan koma)</span>
+                    </label>
+                    <input
+                        name="tags"
+                        value={form.tags}
+                        onChange={handleChange}
+                        placeholder="react, hooks, utility"
+                        className="rounded-lg px-3 py-2 text-sm outline-none"
+                        style={{
+                            background: "var(--bg)",
+                            border: "1px solid var(--border)",
+                            color: "var(--text)",
+                        }}
+                    />
+                </div>
 
-            {/* Error */}
-            {error && (
-                <p className="text-xs" style={{ color: "#f87171" }}>
-                    {error}
-                </p>
-            )}
+                {/* Error */}
+                {error && (
+                    <p className="text-xs" style={{ color: "#f87171" }}>
+                        {error}
+                    </p>
+                )}
 
-            {/* Actions */}
-            <div className="flex justify-end gap-2 pt-1">
-                <button
-                    onClick={onClose}
-                    className="px-4 py-2 rounded-lg text-sm"
-                    style={{
-                        background: "var(--bg)",
-                        border: "1px solid var(--border)",
-                        color: "var(--text-muted)",
-                    }}
-                >
-                    Batal
-                </button>
-                <button
-                    onClick={handleSubmit}
-                    disabled={loading}
-                    className="px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2"
-                    style={{
-                        background: loading ? "var(--border)" : "var(--em)",
-                        color: loading ? "var(--text-muted)" : "#000",
-                        cursor: loading ? "not-allowed" : "pointer",
-                    }}
-                >
-                    <FontAwesomeIcon icon={faPlus} />
-                    {loading ? "Menyimpan..." : "Simpan Snippet"}
-                </button>
+                {/* Actions */}
+                <div className="flex justify-end gap-2 pt-1">
+                    <button
+                        onClick={onClose}
+                        className="px-4 py-2 rounded-lg text-sm"
+                        style={{
+                            background: "var(--bg)",
+                            border: "1px solid var(--border)",
+                            color: "var(--text-muted)",
+                        }}
+                    >
+                        Batal
+                    </button>
+                    <button
+                        onClick={handleSubmit}
+                        disabled={loading}
+                        className="px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2"
+                        style={{
+                            background: loading ? "var(--border)" : "var(--em)",
+                            color: loading ? "var(--text-muted)" : "#000",
+                            cursor: loading ? "not-allowed" : "pointer",
+                        }}
+                    >
+                        <FontAwesomeIcon icon={faPlus} />
+                        {loading ? "Menyimpan..." : "Simpan Snippet"}
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
-);
+    );
 }

@@ -1,23 +1,10 @@
+"use client"
+
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import CopyButton from "./CopyButton"
 import CodeBlock from "./CodeBlock"
-
-const langLabel: Record<string, string> = {
-    typescript: 'TS', javascript: 'JS', php: 'PHP',
-    css: 'CSS', sql: 'SQL', python: 'PY',
-    html: 'HTML', rust: 'RS', go: 'GO',
-}
-
-const langPip: Record<string, string> = {
-    typescript: 'bg-[rgba(96,165,250,0.1)] text-[var(--ts)] border-[rgba(96,165,250,0.2)]',
-    javascript: 'bg-[rgba(251,191,36,0.1)] text-[var(--js)] border-[rgba(251,191,36,0.2)]',
-    php: 'bg-[rgba(167,139,250,0.1)] text-[var(--php)] border-[rgba(167,139,250,0.2)]',
-    css: 'bg-[rgba(56,189,248,0.1)] text-[var(--css)] border-[rgba(56,189,248,0.2)]',
-    sql: 'bg-[var(--em-faint)] text-[var(--sql)] border-[var(--em-border)]',
-    python: 'bg-[rgba(74,222,128,0.1)] text-[var(--python)] border-[rgba(74,222,128,0.2)]',
-    html: 'bg-[rgba(251,113,133,0.1)] text-[var(--html)] border-[rgba(251,113,133,0.2)]',
-    rust: 'bg-[rgba(251,146,60,0.1)] text-[var(--rust)] border-[rgba(251,146,60,0.2)]',
-    go: 'bg-[rgba(103,232,249,0.1)] text-[var(--go)] border-[rgba(103,232,249,0.2)]',
-}
+import { getLang } from "@/lib/languages"
 
 export interface Snippet {
     id: number
@@ -31,17 +18,51 @@ export interface Snippet {
 }
 
 export default function SnippetDetail({ snippet }: { snippet: Snippet }) {
-    const lang = snippet.language.toLowerCase()
-    const pipClass = langPip[lang] ?? 'bg-white/10 text-white/50 border-white/10'
+    const router = useRouter()
+
+    // state untuk loading tombol hapus
+    const [deleting, setDeleting] = useState(false)
+
+    // state untuk buka/tutup dialog konfirmasi hapus
+    const [confirmOpen, setConfirmOpen] = useState(false)
+
+    // copyCount disimpan di local state supaya bisa di-update
+    // secara optimistic tanpa perlu router.refresh()
+    const [copyCount, setCopyCount] = useState(snippet.copyCount)
+
+    // sync copyCount dari server setiap kali snippet yang ditampilkan ganti
+    // watch snippet.id bukan snippet.copyCount — supaya tidak loop
+    // kalau watch copyCount, setiap setCopyCount akan trigger effect lagi
+    useEffect(() => {
+        setCopyCount(snippet.copyCount)
+    }, [snippet.id, snippet.copyCount])
+
+    // ambil config bahasa (label, warna pip) dari languages.ts
+    const lang = getLang(snippet.language)
+
+    const handleDelete = async () => {
+        setDeleting(true)
+        try {
+            const res = await fetch(`/api/snippets/${snippet.id}`, { method: "DELETE" })
+            if (!res.ok) throw new Error()
+            // refresh server component (DashboardPage) supaya
+            // list snippet di panel kiri ikut terupdate
+            router.refresh()
+        } catch {
+            alert("Gagal menghapus snippet.")
+            // kalau gagal, kembalikan tombol ke state normal
+            setDeleting(false)
+        }
+    }
 
     return (
         <div className="flex-1 flex flex-col overflow-hidden">
 
-            {/* Header */}
             <div className="px-6 py-5 border-b border-[var(--border)] shrink-0">
                 <div className="flex items-center gap-2 mb-3">
-                    <span className={`font-mono text-[10px] font-semibold px-2 py-[3px] rounded-[4px] border ${pipClass}`}>
-                        {langLabel[lang] ?? snippet.language.toUpperCase().slice(0, 3)}
+                    {/* pip badge — warna dan label dari getLang() */}
+                    <span className={`font-mono text-[10px] font-semibold px-2 py-[3px] rounded-[4px] border ${lang.pip}`}>
+                        {lang.label}
                     </span>
                     <span className="text-[12px] text-[var(--text3)]">{snippet.language}</span>
                 </div>
@@ -50,6 +71,7 @@ export default function SnippetDetail({ snippet }: { snippet: Snippet }) {
                     {snippet.title}
                 </h2>
 
+                {/* deskripsi hanya ditampilkan kalau ada isinya (tidak null/kosong) */}
                 {snippet.description && (
                     <p className="text-[13px] text-[var(--text3)] mb-4 leading-relaxed">
                         {snippet.description}
@@ -65,12 +87,25 @@ export default function SnippetDetail({ snippet }: { snippet: Snippet }) {
                 </div>
 
                 <div className="flex items-center gap-2">
-                    <CopyButton code={snippet.code} />
+                    <CopyButton
+                        code={snippet.code}
+                        snippetId={snippet.id}
+                        // onCopy dipanggil dari CopyButton setelah copy terjadi
+                        // increment lokal supaya angka naik instantly tanpa refresh
+                        // functional update (c => c + 1) lebih aman dari race condition
+                        // dibanding setCopyCount(copyCount + 1)
+                        onCopy={() => setCopyCount(c => c + 1)}
+                    />
                     <button className="text-[13px] font-medium px-4 py-2 rounded-lg border border-[var(--border2)] text-[var(--text3)] hover:border-yellow-500/60 hover:text-yellow-300 transition-all">
                         Edit
                     </button>
-                    <button className="text-[13px] font-medium px-4 py-2 rounded-lg border border-[var(--border2)] text-[var(--text3)] hover:border-red-500/60 hover:text-red-400 transition-all">
-                        Hapus
+                    {/* tombol hapus tidak langsung hapus — buka dialog konfirmasi dulu */}
+                    <button
+                        onClick={() => setConfirmOpen(true)}
+                        disabled={deleting}
+                        className="text-[13px] font-medium px-4 py-2 rounded-lg border border-[var(--border2)] text-[var(--text3)] hover:border-red-500/60 hover:text-red-400 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                        {deleting ? "Menghapus..." : "Hapus"}
                     </button>
                 </div>
 
@@ -81,7 +116,8 @@ export default function SnippetDetail({ snippet }: { snippet: Snippet }) {
                     </span>
                     <span className="flex items-center gap-1.5">
                         <div className="w-[4px] h-[4px] rounded-full bg-[var(--em)]" />
-                        {snippet.copyCount} kali disalin
+                        {/* pakai local state copyCount, bukan snippet.copyCount */}
+                        {copyCount} kali disalin
                     </span>
                     <span className="flex items-center gap-1.5">
                         <div className="w-[4px] h-[4px] rounded-full bg-[var(--em)]" />
@@ -90,14 +126,14 @@ export default function SnippetDetail({ snippet }: { snippet: Snippet }) {
                 </div>
             </div>
 
-            {/* Code */}
+            {/* CodeBlock fetch highlight ke /api/highlight via Shiki */}
             <div className="flex-1 overflow-hidden">
                 <CodeBlock code={snippet.code} language={snippet.language} />
             </div>
 
-            {/* Footer */}
             <div className="flex items-center justify-between px-6 py-2.5 border-t border-[var(--border)] bg-[var(--surface)] shrink-0">
                 <div className="flex items-center gap-4 font-mono text-[10px] text-[var(--text4)]">
+                    {/* hitung jumlah baris dari newline */}
                     <span>{snippet.code.split('\n').length} baris</span>
                     <span>UTF-8</span>
                     <span>{snippet.language}</span>
@@ -106,6 +142,56 @@ export default function SnippetDetail({ snippet }: { snippet: Snippet }) {
                     Bagikan Link →
                 </button>
             </div>
+
+            {/* dialog konfirmasi hapus — hanya muncul kalau confirmOpen true */}
+            {confirmOpen && (
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center"
+                    style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)" }}
+                >
+                    <div
+                        className="flex flex-col gap-4 rounded-xl p-6 w-full max-w-sm"
+                        style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
+                    >
+                        <h3 className="text-[15px] font-semibold" style={{ color: "var(--text)" }}>
+                            Hapus snippet ini?
+                        </h3>
+                        <p className="text-[13px]" style={{ color: "var(--text3)" }}>
+                            <span className="font-medium" style={{ color: "var(--text)" }}>
+                                {snippet.title}
+                            </span>{" "}
+                            akan dihapus permanen dan tidak bisa dikembalikan.
+                        </p>
+                        <div className="flex justify-end gap-2">
+                            {/* batal — tutup dialog tanpa hapus */}
+                            <button
+                                onClick={() => setConfirmOpen(false)}
+                                className="px-4 py-2 rounded-lg text-[13px]"
+                                style={{
+                                    background: "var(--bg)",
+                                    border: "1px solid var(--border)",
+                                    color: "var(--text3)"
+                                }}
+                            >
+                                Batal
+                            </button>
+                            {/* konfirmasi hapus — panggil handleDelete */}
+                            <button
+                                onClick={handleDelete}
+                                disabled={deleting}
+                                className="px-4 py-2 rounded-lg text-[13px] font-medium"
+                                style={{
+                                    background: "#ef4444",
+                                    color: "#fff",
+                                    opacity: deleting ? 0.6 : 1
+                                }}
+                            >
+                                {deleting ? "Menghapus..." : "Ya, Hapus"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
         </div>
     )
