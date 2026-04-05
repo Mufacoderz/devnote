@@ -1,6 +1,7 @@
 # DevNote — Personal Code Snippet Library
 
-**DevNote** adalah web aplikasi DevTool (Developers tool) modern 
+**DevNote** adalah web aplikasi developer tool modern untuk menyimpan, mengelola, dan menggunakan kembali potongan kode (snippet) secara efisien.
+Dirancang dengan fokus pada kecepatan, keindahan, kerapihan, dan kemudahan akses, DevNote membantu developer menghindari copy-paste berulang dan menjaga kode tetap terorganisir.
 
 
 # Tech Stack
@@ -39,7 +40,7 @@
 ---
 
 ## Home Page 
-<img src="PreviewIMG/dasboard.png" width="100%"/>
+<img src="PreviewIMG/dashboard.png" width="100%"/>
 ---
 
 ## Form Create Snippet
