@@ -3,24 +3,30 @@ import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 
 // ── GET — ambil semua snippet milik user yang login
-export async function GET() {
-
-    // cek session, return 401 kalau belum login
+export async function GET(req: NextRequest) {
     const session = await auth()
     if (!session?.user) {
         return NextResponse.json({ message: "Unauthorized" }, { status: 401 })
     }
 
-    // ambil semua snippet milik user
-    // hint: prisma.snippet.findMany, filter by userId, include tags, urutkan by createdAt desc
+    const { searchParams } = new URL(req.url)
+    const lang = searchParams.get("lang")
+    const tag = searchParams.get("tag")
+    const filter = searchParams.get("filter")
+    const collection = searchParams.get("collection")
+
     const snippets = await prisma.snippet.findMany({
-        where: {userId: Number(session.user.id)},
-        include:{
-            tags:{
-                include: {tag: true}
-            }
+        where: {
+            userId: Number(session.user.id),
+            ...(lang && { language: lang }),
+            ...(filter === "favorites" && { isFavorite: true }),
+            ...(tag && { tags: { some: { tag: { name: tag } } } }),
+            ...(collection && { collections: { some: { collectionId: Number(collection) } } }),
         },
-        orderBy: {createdAt: 'desc'}
+        include: {
+            tags: { include: { tag: true } }
+        },
+        orderBy: { createdAt: "desc" }
     })
 
     return NextResponse.json({ snippets })

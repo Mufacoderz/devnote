@@ -2,6 +2,7 @@
 
 import { Snippet } from "./SnippetDetail"
 import { getLang } from "@/lib/languages"
+import { useAppStore } from "@/lib/store"
 
 export default function SnippetCard({ snippet, active, onClick }: {
     snippet: Snippet
@@ -9,6 +10,7 @@ export default function SnippetCard({ snippet, active, onClick }: {
     onClick?: () => void
 }) {
     const lang = getLang(snippet.language)
+    const isFav = useAppStore(s => s.favoriteIds.has(snippet.id))
 
     return (
         <div
@@ -19,14 +21,12 @@ export default function SnippetCard({ snippet, active, onClick }: {
                     : 'border-transparent hover:bg-[var(--surface2)] hover:border-[var(--border)]'
                 }`}
         >
-            {/* stripe — pakai inline style karena color dari languages.ts adalah hex, bukan class Tailwind */}
             <div
                 className="absolute left-0 top-0 h-full w-[2px] rounded-l-[6px]"
                 style={{ background: lang.color }}
             />
 
             <div className="flex items-center justify-between mb-[5px]">
-                {/* pip — pakai class dari languages.ts */}
                 <span
                     className="font-mono text-[9px] font-semibold px-[7px] py-[2px] rounded-[3px] border"
                     style={{
@@ -36,6 +36,18 @@ export default function SnippetCard({ snippet, active, onClick }: {
                     }}
                 >
                     {lang.label}
+                </span>
+
+                <span style={{ color: isFav ? '#f59e0b' : 'var(--text3)' }}>
+                    {isFav ? (
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                        </svg>
+                    ) : (
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                        </svg>
+                    )}
                 </span>
             </div>
 

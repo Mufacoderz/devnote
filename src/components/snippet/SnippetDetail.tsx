@@ -32,7 +32,8 @@ interface Collection {
 
 export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
     const router = useRouter()
-    const { incrementFav, decrementFav } = useAppStore()
+    const { incrementFav, decrementFav, toggleFavoriteId } = useAppStore()
+
 
     const [deleting, setDeleting] = useState(false)
     const [confirmOpen, setConfirmOpen] = useState(false)
@@ -131,6 +132,7 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
         setIsFavorite(next)
         if (next) incrementFav()
         else decrementFav()
+        toggleFavoriteId(snippet.id)
 
         try {
             const res = await fetch(`/api/snippets/${snippet.id}/favorite`, { method: "POST" })
@@ -139,9 +141,9 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
             setIsFavorite(!next)
             if (next) decrementFav()
             else incrementFav()
+            toggleFavoriteId(snippet.id)
         }
     }
-
     return (
         <div className="flex-1 flex flex-col h-full min-h-0 overflow-hidden">
             <div className="px-6 py-5 border-b border-[var(--border)] shrink-0">
@@ -173,7 +175,17 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
                                 : 'border-[var(--border2)] text-[var(--text3)] hover:border-yellow-400/50 hover:text-yellow-300'
                             }`}
                     >
-                        <span className={`text-[14px] transition-transform ${isFavorite ? "scale-110" : ""}`}>★</span>
+                        <span className={`text-[14px] transition-transform ${isFavorite ? "scale-110" : ""}`}>
+                            {isFavorite ? (
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                                </svg>
+                            ) : (
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                                </svg>
+                            )}
+                        </span>
                         {isFavorite ? "Favorited" : "Favorite"}
                     </button>
                 </div>

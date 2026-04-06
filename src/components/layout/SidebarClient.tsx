@@ -102,7 +102,7 @@ interface SidebarClientProps {
 }
 
 export default function SidebarClient({ totalSnippets, totalCopies, totalFavorites, languages, tags, onNavigate }: SidebarClientProps) {
-    const { favCount, setFavCount } = useAppStore()
+    const { favCount, setFavCount, setFavoriteIds } = useAppStore()
     const router = useRouter()
     const searchParams = useSearchParams()
 
@@ -163,10 +163,23 @@ export default function SidebarClient({ totalSnippets, totalCopies, totalFavorit
     const [editingId, setEditingId] = useState<number | null>(null)
     const [editingName, setEditingName] = useState("")
     const [menuOpenId, setMenuOpenId] = useState<number | null>(null)
+    const [menuPos, setMenuPos] = useState<{ x: number; y: number } | null>(null)
 
     useEffect(() => {
         setFavCount(totalFavorites)
     }, [totalFavorites, setFavCount])
+
+
+    useEffect(() => {
+        fetch("/api/snippets?filter=favorites")
+            .then(r => r.json())
+            .then(d => {
+                console.log("favorites response:", d) // ← tambah ini
+                setFavoriteIds((d.snippets ?? []).map((s: { id: number }) => s.id))
+            })
+            .catch(console.error)
+    }, [setFavoriteIds])
+
 
     // fetch collections
     useEffect(() => {
@@ -266,9 +279,8 @@ export default function SidebarClient({ totalSnippets, totalCopies, totalFavorit
                 </div>
 
                 <CollapseSection open={!collapsed.collections}>
-                    {/* Tombol tambah — selalu di atas, styled seperti NavItem */}
                     {addingCol ? (
-                        <div className="flex items-center gap-1.5 px-2 py-1 mb-1">
+                        <div className="flex flex-col gap-1.5 px-2 py-1 mb-1">
                             <input
                                 autoFocus
                                 value={newColName}
@@ -277,12 +289,29 @@ export default function SidebarClient({ totalSnippets, totalCopies, totalFavorit
                                     if (e.key === "Enter") handleAddCollection()
                                     if (e.key === "Escape") { setAddingCol(false); setNewColName("") }
                                 }}
+                                onBlur={() => {
+                                    // delay sedikit supaya click Simpan sempat ke-trigger duluan
+                                    setTimeout(() => { setAddingCol(false); setNewColName("") }, 150)
+                                }}
                                 placeholder="Nama collection..."
-                                className="flex-1 bg-[var(--bg)] border border-[var(--em-border)] rounded-md px-2 py-[4px] text-[12px] text-[var(--text)] outline-none placeholder:text-[var(--text4)]"
+                                className="w-full bg-[var(--bg)] border border-[var(--em-border)] rounded-md px-2 py-[5px] text-[12px] text-[var(--text)] outline-none placeholder:text-[var(--text4)]"
                             />
-                            <button onClick={handleAddCollection} className="text-[11px] text-[var(--em)] font-medium px-2 py-[4px] rounded-md hover:bg-[var(--em-faint)] transition-all">
-                                Simpan
-                            </button>
+                            <div className="flex gap-1.5">
+                                <button
+                                    onMouseDown={e => e.preventDefault()}
+                                    onClick={handleAddCollection}
+                                    className="flex-1 text-[11px] bg-[var(--em)] text-[#0a0a0a] font-semibold py-[5px] rounded-md hover:bg-[#2bc48a] transition-all"
+                                >
+                                    Simpan
+                                </button>
+                                <button
+                                    onMouseDown={e => e.preventDefault()}
+                                    onClick={() => { setAddingCol(false); setNewColName("") }}
+                                    className="flex-1 text-[11px] text-[var(--text1)] py-[5px] rounded-md  hover:bg-[var(--surface2)] transition-all"
+                                >
+                                    Batal
+                                </button>
+                            </div>
                         </div>
                     ) : (
                         <div
@@ -341,7 +370,17 @@ export default function SidebarClient({ totalSnippets, totalCopies, totalFavorit
                                                 {col._count.snippets}
                                             </span>
                                             <button
-                                                onClick={e => { e.stopPropagation(); setMenuOpenId(menuOpenId === col.id ? null : col.id) }}
+                                                onClick={e => {
+                                                    e.stopPropagation()
+                                                    if (menuOpenId === col.id) {
+                                                        setMenuOpenId(null)
+                                                        setMenuPos(null)
+                                                    } else {
+                                                        const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
+                                                        setMenuPos({ x: rect.right, y: rect.bottom + 4 })
+                                                        setMenuOpenId(col.id)
+                                                    }
+                                                }}
                                                 className="opacity-0 group-hover:opacity-100 w-[18px] h-[18px] flex items-center justify-center rounded text-[var(--text4)] hover:text-[var(--text)] transition-all"
                                             >
                                                 <FontAwesomeIcon icon={faEllipsis} className="w-[10px] h-[10px]" />
@@ -350,24 +389,7 @@ export default function SidebarClient({ totalSnippets, totalCopies, totalFavorit
                                     </div>
                                 )}
 
-                                {menuOpenId === col.id && (
-                                    <div className="absolute right-0 top-8 z-50 w-[140px] rounded-lg border border-[var(--border)] bg-[var(--surface)] shadow-xl p-1">
-                                        <button
-                                            onClick={() => { setEditingId(col.id); setEditingName(col.name); setMenuOpenId(null) }}
-                                            className="flex items-center gap-2 w-full px-3 py-2 text-[12px] text-[var(--text2)] hover:bg-[var(--surface2)] rounded-md transition-all"
-                                        >
-                                            <FontAwesomeIcon icon={faPen} className="w-[10px] h-[10px]" />
-                                            Rename
-                                        </button>
-                                        <button
-                                            onClick={() => handleDelete(col.id)}
-                                            className="flex items-center gap-2 w-full px-3 py-2 text-[12px] text-red-400 hover:bg-red-500/10 rounded-md transition-all"
-                                        >
-                                            <FontAwesomeIcon icon={faTrash} className="w-[10px] h-[10px]" />
-                                            Hapus
-                                        </button>
-                                    </div>
-                                )}
+
                             </div>
                         ))}
                     </div>
@@ -487,6 +509,44 @@ export default function SidebarClient({ totalSnippets, totalCopies, totalFavorit
             >
                 <div className="w-full h-full bg-transparent group-hover:bg-[var(--em-dim)] transition-colors duration-150" />
             </div>
+
+
+            {/* Collection dropdown — fixed positioned, di luar scroll container */}
+            {menuOpenId !== null && menuPos && (
+                <>
+                    {/* backdrop transparan untuk close saat click luar */}
+                    <div
+                        className="fixed inset-0 z-40"
+                        onClick={() => { setMenuOpenId(null); setMenuPos(null) }}
+                    />
+                    <div
+                        className="fixed z-50 w-[140px] rounded-lg border border-[var(--border)] bg-[var(--surface)] shadow-xl p-1"
+                        style={{ top: menuPos.y, left: menuPos.x - 140 }}
+                    >
+                        <button
+                            onClick={() => {
+                                const col = collections.find(c => c.id === menuOpenId)
+                                if (col) { setEditingId(col.id); setEditingName(col.name) }
+                                setMenuOpenId(null); setMenuPos(null)
+                            }}
+                            className="flex items-center gap-2 w-full px-3 py-2 text-[12px] text-[var(--text2)] hover:bg-[var(--surface2)] rounded-md transition-all"
+                        >
+                            <FontAwesomeIcon icon={faPen} className="w-[10px] h-[10px]" />
+                            Rename
+                        </button>
+                        <button
+                            onClick={() => {
+                                if (menuOpenId) handleDelete(menuOpenId)
+                                setMenuPos(null)
+                            }}
+                            className="flex items-center gap-2 w-full px-3 py-2 text-[12px] text-red-400 hover:bg-red-500/10 rounded-md transition-all"
+                        >
+                            <FontAwesomeIcon icon={faTrash} className="w-[10px] h-[10px]" />
+                            Hapus
+                        </button>
+                    </div>
+                </>
+            )}
 
         </aside>
     )
