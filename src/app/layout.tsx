@@ -16,6 +16,11 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "Devnote",
   description: "Personal code snippet library for developers",
+  icons: {
+    icon: [
+      { url: "/emerald-trans.png", type: "image/png" },
+    ],
+  },
 };
 
 export default function RootLayout({
@@ -28,8 +33,9 @@ export default function RootLayout({
       lang="id"
       className={`${outfit.variable} ${jetbrainsMono.variable}`}
     >
+      
       <body className="min-h-screen bg-[#0a0a0a] text-[#e8f0e8] antialiased">
-        
+
         <Providers>
           {children}
         </Providers>

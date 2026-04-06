@@ -1,4 +1,5 @@
 import Link from "next/link"
+import Image from "next/image"
 
 export default function WelcomePage() {
     return (
@@ -29,9 +30,13 @@ export default function WelcomePage() {
             <div className="relative z-10 flex flex-col items-center text-center px-6 max-w-[500px]">
 
                 {/* Logo */}
-                <div className="w-[52px] h-[52px] bg-black/12 rounded-[12px] flex items-center justify-center text-[#0a0a0a] font-mono text-[18px] font-bold mb-6">
-                    &lt;/&gt;
-                </div>
+                <Image
+                    src="/black-trans.png"
+                    alt="devnote"
+                    width={52}
+                    height={52}
+                    className="mb-6"
+                />
 
                 {/* Brand */}
                 <p className="font-mono text-[11px] text-black/40 tracking-[3px] uppercase mb-5">

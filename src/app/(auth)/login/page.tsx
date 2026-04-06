@@ -4,6 +4,7 @@ import { useState } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import Image from "next/image"
 
 export default function LoginPage() {
     const router = useRouter()
@@ -51,9 +52,12 @@ export default function LoginPage() {
                     {/* Logo */}
                     <Link href="/welcome" className="flex flex-col gap-1 mb-5 w-fit group">
                         <div className="flex items-center gap-2">
-                            <div className="w-[26px] h-[26px] bg-[var(--em)] rounded-[6px] flex items-center justify-center text-[#0a0a0a] font-mono text-[10px] font-bold shrink-0">
-                                &lt;/&gt;
-                            </div>
+                            <Image
+                                src="/emerald-trans.png"
+                                alt="devnote"
+                                width={26}
+                                height={26}
+                            />
                             <span className="text-[15px] font-semibold tracking-tight">
                                 dev<span className="text-[var(--em)]">note</span>
                             </span>

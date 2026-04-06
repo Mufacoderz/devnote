@@ -174,7 +174,7 @@ export default function SidebarClient({ totalSnippets, totalCopies, totalFavorit
         fetch("/api/snippets?filter=favorites")
             .then(r => r.json())
             .then(d => {
-                console.log("favorites response:", d) // ← tambah ini
+                console.log("favorites response:", d)
                 setFavoriteIds((d.snippets ?? []).map((s: { id: number }) => s.id))
             })
             .catch(console.error)
@@ -234,7 +234,7 @@ export default function SidebarClient({ totalSnippets, totalCopies, totalFavorit
     return (
         <aside
             style={{ width: sidebarWidth }}
-            className="relative hidden lg:flex flex-col h-full bg-[var(--surface)] border-r border-[var(--border)] overflow-y-auto shrink-0"
+            className="relative flex flex-col h-full bg-[var(--surface)] border-r border-[var(--border)] overflow-y-auto shrink-0"
         >
             {/* Library */}
             <div className="px-3 py-2">

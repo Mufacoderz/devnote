@@ -8,7 +8,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <DashboardLayout>
                 <div className="flex flex-1 overflow-hidden">
                     {/* desktop — hidden di tablet ke bawah */}
-                    <div className="hidden md:block">
+                    <div className="hidden lg:block">
                         <Sidebar />
                     </div>
                     <main className="flex-1 overflow-y-auto bg-[var(--bg2)]">

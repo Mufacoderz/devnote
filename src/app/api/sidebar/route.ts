@@ -40,6 +40,7 @@ export async function GET() {
     return NextResponse.json({
         totalSnippets: snippets.length,
         totalCopies: snippets.reduce((acc, s) => acc + s.copyCount, 0),
+        totalFavorites: snippets.filter(s => s.isFavorite).length,
         languages,
         tags,
     })

@@ -77,9 +77,12 @@ export default function Topbar({ onNewSnippet, onToggleSidebar }: TopbarProps) {
                 </button>
 
                 <div className="flex items-center gap-2">
-                    <div className="w-[26px] h-[26px] bg-[var(--em)] rounded-[6px] flex items-center justify-center text-[#0a0a0a] font-mono text-[11px] font-bold shrink-0">
-                        &lt;/&gt;
-                    </div>
+                    <Image
+                        src="/emerald-trans.png"
+                        alt="devnote"
+                        width={30}
+                        height={30}
+                    />
                     <span className="text-[15px] font-semibold tracking-tight">
                         dev<span className="text-[var(--em)]">note</span>
                     </span>

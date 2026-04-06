@@ -34,7 +34,7 @@
 --text3:      #4a654a;
 --text4:      #86b286;
 
-/* Language colors */
+/* Language colors
 --ts:         #60a5fa;
 --js:         #fbbf24;
 --php:        #a78bfa;
@@ -57,6 +57,7 @@
 --prisma:     #34d399;
 --graphql:    #e879f9;
 --docker:     #38bdf8;
+*/
 }
 
 * {
