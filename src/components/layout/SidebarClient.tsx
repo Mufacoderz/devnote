@@ -1,6 +1,6 @@
 "use client"
-
-import { useEffect, useState } from "react"
+import { faChevronDown } from "@fortawesome/free-solid-svg-icons"
+import { useEffect, useState, useCallback, useRef } from "react"
 import { useAppStore } from "@/lib/store"
 import { useRouter, useSearchParams } from "next/navigation"
 import { getLang } from "@/lib/languages"
@@ -18,6 +18,25 @@ import {
     faPen
 } from "@fortawesome/free-solid-svg-icons"
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core"
+import { motion, AnimatePresence } from "framer-motion"
+
+function CollapseSection({ open, children }: { open: boolean; children: React.ReactNode }) {
+    return (
+        <AnimatePresence initial={false}>
+            {open && (
+                <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.2, ease: "easeInOut" }}
+                    style={{ overflow: "hidden" }}
+                >
+                    {children}
+                </motion.div>
+            )}
+        </AnimatePresence>
+    )
+}
 
 interface NavItemProps {
     label: string
@@ -61,6 +80,12 @@ function NavItem({ label, count, active, onClick, dotColor, icon }: NavItemProps
     )
 }
 
+
+const MIN_WIDTH = 170
+const MAX_WIDTH = 420
+
+
+
 interface Collection {
     id: number
     name: string
@@ -80,6 +105,50 @@ export default function SidebarClient({ totalSnippets, totalCopies, totalFavorit
     const { favCount, setFavCount } = useAppStore()
     const router = useRouter()
     const searchParams = useSearchParams()
+
+    // --- Resize logic ---
+    const [sidebarWidth, setSidebarWidth] = useState(260)
+    const isResizing = useRef(false)
+
+    const startResizing = useCallback(() => {
+        isResizing.current = true
+        document.body.style.cursor = "col-resize"
+        document.body.style.userSelect = "none"
+    }, [])
+
+    useEffect(() => {
+        const onMouseMove = (e: MouseEvent) => {
+            if (!isResizing.current) return
+            const newWidth = e.clientX
+            if (newWidth >= MIN_WIDTH && newWidth <= MAX_WIDTH) {
+                setSidebarWidth(newWidth)
+            }
+        }
+        const onMouseUp = () => {
+            if (!isResizing.current) return
+            isResizing.current = false
+            document.body.style.cursor = ""
+            document.body.style.userSelect = ""
+        }
+        window.addEventListener("mousemove", onMouseMove)
+        window.addEventListener("mouseup", onMouseUp)
+        return () => {
+            window.removeEventListener("mousemove", onMouseMove)
+            window.removeEventListener("mouseup", onMouseUp)
+        }
+    }, [])
+
+
+    const [collapsed, setCollapsed] = useState({
+        library: false,
+        collections: false,
+        languages: false,
+        tags: false,
+    })
+
+    const toggle = (key: keyof typeof collapsed) => {
+        setCollapsed(prev => ({ ...prev, [key]: !prev[key] }))
+    }
 
     const activeLang = searchParams.get("lang")
     const activeTag = searchParams.get("tag")
@@ -150,177 +219,231 @@ export default function SidebarClient({ totalSnippets, totalCopies, totalFavorit
     }
 
     return (
-        <aside className="w-[300px] h-full bg-[var(--surface)] border-r border-[var(--border)] flex flex-col overflow-y-auto">
-
+        <aside
+            style={{ width: sidebarWidth }}
+            className="relative hidden lg:flex flex-col h-full bg-[var(--surface)] border-r border-[var(--border)] overflow-y-auto shrink-0"
+        >
             {/* Library */}
-            <div className="px-3 pt-4 pb-2">
-                <p className="text-[10px] font-semibold tracking-[1.5px] uppercase text-[var(--text4)] px-2 mb-1">
-                    Library
-                </p>
-                <NavItem label="All Snippets" count={totalSnippets} active={isAll} onClick={() => setFilter(null)} icon={faLayerGroup} />
-                <NavItem label="Favorites" count={favCount} active={activeFilter === "favorites"} onClick={() => setFilter("filter", "favorites")} icon={faStar} />
-                <NavItem label="Public" count={0} icon={faGlobe} />
-                <NavItem label="Most Copied" count={0} icon={faCopy} />
+            <div className="px-3 py-2">
+                <div
+                    onClick={() => toggle("library")}
+                    className="flex items-center justify-between px-2 mb-1 cursor-pointer group"
+                >
+                    <p className="text-[10px] font-semibold tracking-[1.5px] uppercase text-[var(--text4)] group-hover:text-[var(--text3)] transition-colors">
+                        Library
+                    </p>
+                    <motion.div
+                        animate={{ rotate: collapsed.library ? -90 : 0 }}
+                        transition={{ duration: 0.2 }}
+                    >
+                        <FontAwesomeIcon icon={faChevronDown} className="w-[8px] h-[8px] text-[var(--text4)]" />
+                    </motion.div>
+                </div>
+                <CollapseSection open={!collapsed.library}>
+                    <NavItem label="All Snippets" count={totalSnippets} active={isAll} onClick={() => setFilter(null)} icon={faLayerGroup} />
+                    <NavItem label="Favorites" count={favCount} active={activeFilter === "favorites"} onClick={() => setFilter("filter", "favorites")} icon={faStar} />
+                    <NavItem label="Public" count={0} icon={faGlobe} />
+                    <NavItem label="Most Copied" count={0} icon={faCopy} />
+                </CollapseSection>
             </div>
+
 
             {/* Collections */}
             <div className="px-3 py-2 border-t border-[var(--border)]">
-                <div className="flex items-center justify-between px-2 mb-1">
-                    <p className="text-[10px] font-semibold tracking-[1.5px] uppercase text-[var(--text4)]">
+                <div
+                    onClick={() => toggle("collections")}
+                    className="flex items-center justify-between px-2 mb-1 cursor-pointer group"
+                >
+                    <p className="text-[10px] font-semibold tracking-[1.5px] uppercase text-[var(--text4)] group-hover:text-[var(--text3)] transition-colors">
                         Collections
                     </p>
-                    <button
-                        onClick={() => setAddingCol(true)}
-                        className="w-[18px] h-[18px] flex items-center justify-center rounded text-[var(--text4)] hover:text-[var(--em)] hover:bg-[var(--em-faint)] transition-all"
+                    <motion.div
+                        animate={{ rotate: collapsed.collections ? -90 : 0 }}
+                        transition={{ duration: 0.2 }}
                     >
-                        <FontAwesomeIcon icon={faPlus} className="w-[9px] h-[9px]" />
-                    </button>
+                        <FontAwesomeIcon icon={faChevronDown} className="w-[8px] h-[8px] text-[var(--text4)]" />
+                    </motion.div>
                 </div>
 
-                {/* input tambah collection */}
-                {addingCol && (
-                    <div className="flex items-center gap-1.5 px-2 py-1 mb-1">
-                        <input
-                            autoFocus
-                            value={newColName}
-                            onChange={e => setNewColName(e.target.value)}
-                            onKeyDown={e => {
-                                if (e.key === "Enter") handleAddCollection()
-                                if (e.key === "Escape") { setAddingCol(false); setNewColName("") }
-                            }}
-                            placeholder="Nama collection..."
-                            className="flex-1 bg-[var(--bg)] border border-[var(--em-border)] rounded-md px-2 py-[4px] text-[12px] text-[var(--text)] outline-none placeholder:text-[var(--text4)]"
-                        />
-                        <button onClick={handleAddCollection} className="text-[11px] text-[var(--em)] font-medium px-2 py-[4px] rounded-md hover:bg-[var(--em-faint)] transition-all">
-                            Simpan
-                        </button>
-                    </div>
-                )}
-
-                <div className="overflow-y-auto max-h-[125px]">
-                    {collections.length === 0 && !addingCol && (
-                        <p className="text-[11px] text-[var(--text4)] px-2 py-2 italic">
-                            Belum ada collection
-                        </p>
+                <CollapseSection open={!collapsed.collections}>
+                    {/* Tombol tambah — selalu di atas, styled seperti NavItem */}
+                    {addingCol ? (
+                        <div className="flex items-center gap-1.5 px-2 py-1 mb-1">
+                            <input
+                                autoFocus
+                                value={newColName}
+                                onChange={e => setNewColName(e.target.value)}
+                                onKeyDown={e => {
+                                    if (e.key === "Enter") handleAddCollection()
+                                    if (e.key === "Escape") { setAddingCol(false); setNewColName("") }
+                                }}
+                                placeholder="Nama collection..."
+                                className="flex-1 bg-[var(--bg)] border border-[var(--em-border)] rounded-md px-2 py-[4px] text-[12px] text-[var(--text)] outline-none placeholder:text-[var(--text4)]"
+                            />
+                            <button onClick={handleAddCollection} className="text-[11px] text-[var(--em)] font-medium px-2 py-[4px] rounded-md hover:bg-[var(--em-faint)] transition-all">
+                                Simpan
+                            </button>
+                        </div>
+                    ) : (
+                        <div
+                            onClick={() => setAddingCol(true)}
+                            className="flex items-center gap-2 px-2 py-[6px] rounded-[5px] cursor-pointer text-[13px] text-[var(--text4)] hover:bg-[var(--em-faint)] hover:text-[var(--em)] transition-all mb-0.5"
+                        >
+                            <FontAwesomeIcon icon={faPlus} className="w-[12px] h-[12px] shrink-0" />
+                            <span>Buat collection</span>
+                        </div>
                     )}
-                    {collections.map(col => (
-                        <div key={col.id} className="relative group">
-                            {editingId === col.id ? (
-                                <div className="flex items-center gap-1.5 px-2 py-1">
-                                    <input
-                                        autoFocus
-                                        value={editingName}
-                                        onChange={e => setEditingName(e.target.value)}
-                                        onKeyDown={e => {
-                                            if (e.key === "Enter") handleRename(col.id)
-                                            if (e.key === "Escape") setEditingId(null)
-                                        }}
-                                        className="flex-1 bg-[var(--bg)] border border-[var(--em-border)] rounded-md px-2 py-[4px] text-[12px] text-[var(--text)] outline-none"
-                                    />
-                                    <button onClick={() => handleRename(col.id)} className="text-[11px] text-[var(--em)] font-medium px-2 py-[4px] rounded-md hover:bg-[var(--em-faint)] transition-all">
-                                        OK
-                                    </button>
-                                </div>
-                            ) : (
-                                <div
-                                    onClick={() => setFilter("collection", String(col.id))}
-                                    className={`flex items-center justify-between px-2 py-[6px] rounded-[5px] cursor-pointer text-[13px] transition-all
-                                    ${activeCollection === String(col.id)
-                                            ? 'bg-[var(--em-faint)] text-[var(--em)] font-medium'
-                                            : 'text-[var(--text2)] hover:bg-[var(--em-faint)] hover:text-[var(--text)]'
-                                        }`}
-                                >
-                                    <div className="flex items-center gap-2 flex-1 min-w-0">
-                                        <FontAwesomeIcon
-                                            icon={faFolder}
-                                            className={`w-[12px] h-[12px] shrink-0 ${activeCollection === String(col.id) ? 'text-[var(--em)]' : 'text-[var(--text4)]'}`}
+
+                    {/* List collections */}
+                    <div className="overflow-y-auto max-h-[125px]">
+                        {collections.length === 0 && (
+                            <p className="text-[11px] text-[var(--text4)] px-2 py-1 italic">
+                                Belum ada collection
+                            </p>
+                        )}
+                        {collections.map(col => (
+                            <div key={col.id} className="relative group">
+                                {editingId === col.id ? (
+                                    <div className="flex items-center gap-1.5 px-2 py-1">
+                                        <input
+                                            autoFocus
+                                            value={editingName}
+                                            onChange={e => setEditingName(e.target.value)}
+                                            onKeyDown={e => {
+                                                if (e.key === "Enter") handleRename(col.id)
+                                                if (e.key === "Escape") setEditingId(null)
+                                            }}
+                                            className="flex-1 bg-[var(--bg)] border border-[var(--em-border)] rounded-md px-2 py-[4px] text-[12px] text-[var(--text)] outline-none"
                                         />
-                                        <span className="truncate">{col.name}</span>
-                                    </div>
-                                    <div className="flex items-center gap-1 shrink-0">
-                                        <span className={`font-mono text-[10px] px-2 py-[1px] rounded-full
-                                            ${activeCollection === String(col.id) ? 'text-[var(--em-dim)] bg-[var(--em-faint)]' : 'text-[var(--text4)] bg-[var(--surface3)]'}`}>
-                                            {col._count.snippets}
-                                        </span>
-                                        {/* menu btn — muncul saat hover */}
-                                        <button
-                                            onClick={e => { e.stopPropagation(); setMenuOpenId(menuOpenId === col.id ? null : col.id) }}
-                                            className="opacity-0 group-hover:opacity-100 w-[18px] h-[18px] flex items-center justify-center rounded text-[var(--text4)] hover:text-[var(--text)] transition-all"
-                                        >
-                                            <FontAwesomeIcon icon={faEllipsis} className="w-[10px] h-[10px]" />
+                                        <button onClick={() => handleRename(col.id)} className="text-[11px] text-[var(--em)] font-medium px-2 py-[4px] rounded-md hover:bg-[var(--em-faint)] transition-all">
+                                            OK
                                         </button>
                                     </div>
-                                </div>
-                            )}
+                                ) : (
+                                    <div
+                                        onClick={() => setFilter("collection", String(col.id))}
+                                        className={`flex items-center justify-between px-2 py-[6px] rounded-[5px] cursor-pointer text-[13px] transition-all
+                                ${activeCollection === String(col.id)
+                                                ? 'bg-[var(--em-faint)] text-[var(--em)] font-medium'
+                                                : 'text-[var(--text2)] hover:bg-[var(--em-faint)] hover:text-[var(--text)]'
+                                            }`}
+                                    >
+                                        <div className="flex items-center gap-2 flex-1 min-w-0">
+                                            <FontAwesomeIcon
+                                                icon={faFolder}
+                                                className={`w-[12px] h-[12px] shrink-0 ${activeCollection === String(col.id) ? 'text-[var(--em)]' : 'text-[var(--text4)]'}`}
+                                            />
+                                            <span className="truncate">{col.name}</span>
+                                        </div>
+                                        <div className="flex items-center gap-1 shrink-0">
+                                            <span className={`font-mono text-[10px] px-2 py-[1px] rounded-full
+                                    ${activeCollection === String(col.id) ? 'text-[var(--em-dim)] bg-[var(--em-faint)]' : 'text-[var(--text4)] bg-[var(--surface3)]'}`}>
+                                                {col._count.snippets}
+                                            </span>
+                                            <button
+                                                onClick={e => { e.stopPropagation(); setMenuOpenId(menuOpenId === col.id ? null : col.id) }}
+                                                className="opacity-0 group-hover:opacity-100 w-[18px] h-[18px] flex items-center justify-center rounded text-[var(--text4)] hover:text-[var(--text)] transition-all"
+                                            >
+                                                <FontAwesomeIcon icon={faEllipsis} className="w-[10px] h-[10px]" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
 
-                            {/* dropdown menu */}
-                            {menuOpenId === col.id && (
-                                <div className="absolute right-0 top-8 z-50 w-[140px] rounded-lg border border-[var(--border)] bg-[var(--surface)] shadow-xl p-1">
-                                    <button
-                                        onClick={() => { setEditingId(col.id); setEditingName(col.name); setMenuOpenId(null) }}
-                                        className="flex items-center gap-2 w-full px-3 py-2 text-[12px] text-[var(--text2)] hover:bg-[var(--surface2)] rounded-md transition-all"
-                                    >
-                                        <FontAwesomeIcon icon={faPen} className="w-[10px] h-[10px]" />
-                                        Rename
-                                    </button>
-                                    <button
-                                        onClick={() => handleDelete(col.id)}
-                                        className="flex items-center gap-2 w-full px-3 py-2 text-[12px] text-red-400 hover:bg-red-500/10 rounded-md transition-all"
-                                    >
-                                        <FontAwesomeIcon icon={faTrash} className="w-[10px] h-[10px]" />
-                                        Hapus
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                    ))}
-                </div>
+                                {menuOpenId === col.id && (
+                                    <div className="absolute right-0 top-8 z-50 w-[140px] rounded-lg border border-[var(--border)] bg-[var(--surface)] shadow-xl p-1">
+                                        <button
+                                            onClick={() => { setEditingId(col.id); setEditingName(col.name); setMenuOpenId(null) }}
+                                            className="flex items-center gap-2 w-full px-3 py-2 text-[12px] text-[var(--text2)] hover:bg-[var(--surface2)] rounded-md transition-all"
+                                        >
+                                            <FontAwesomeIcon icon={faPen} className="w-[10px] h-[10px]" />
+                                            Rename
+                                        </button>
+                                        <button
+                                            onClick={() => handleDelete(col.id)}
+                                            className="flex items-center gap-2 w-full px-3 py-2 text-[12px] text-red-400 hover:bg-red-500/10 rounded-md transition-all"
+                                        >
+                                            <FontAwesomeIcon icon={faTrash} className="w-[10px] h-[10px]" />
+                                            Hapus
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </CollapseSection>
             </div>
 
-            {/* Language */}
+            {/* Languages */}
             <div className="px-3 py-2 border-t border-[var(--border)]">
-                <p className="text-[10px] font-semibold tracking-[1.5px] uppercase text-[var(--text4)] px-2 mb-1">
-                    Language
-                </p>
-                <div className="overflow-y-auto max-h-[125px]">
-                    {languages.map(({ name, count }) => {
-                        const langConfig = getLang(name)
-                        return (
-                            <NavItem
-                                key={name}
-                                label={name.charAt(0).toUpperCase() + name.slice(1)}
-                                count={count}
-                                active={activeLang === name}
-                                dotColor={langConfig.color}
-                                onClick={() => setFilter("lang", name)}
-                            />
-                        )
-                    })}
+                <div
+                    onClick={() => toggle("languages")}
+                    className="flex items-center justify-between px-2 mb-1 cursor-pointer group"
+                >
+                    <p className="text-[10px] font-semibold tracking-[1.5px] uppercase text-[var(--text4)] group-hover:text-[var(--text3)] transition-colors">
+                        Language
+                    </p>
+                    <motion.div
+                        animate={{ rotate: collapsed.languages ? -90 : 0 }}
+                        transition={{ duration: 0.2 }}
+                    >
+                        <FontAwesomeIcon icon={faChevronDown} className="w-[8px] h-[8px] text-[var(--text4)]" />
+                    </motion.div>
                 </div>
+                <CollapseSection open={!collapsed.languages}>
+                    <div className="overflow-y-auto max-h-[125px]">
+                        {languages.map(({ name, count }) => {
+                            const langConfig = getLang(name)
+                            return (
+                                <NavItem
+                                    key={name}
+                                    label={name.charAt(0).toUpperCase() + name.slice(1)}
+                                    count={count}
+                                    active={activeLang === name}
+                                    dotColor={langConfig.color}
+                                    onClick={() => setFilter("lang", name)}
+                                />
+                            )
+                        })}
+                    </div>
+                </CollapseSection>
             </div>
 
             {/* Tags */}
             <div className="px-3 py-2 border-t border-[var(--border)]">
-                <p className="text-[10px] font-semibold tracking-[1.5px] uppercase text-[var(--text4)] px-2 mb-1">
-                    Tags
-                </p>
-                <div className="overflow-y-auto max-h-[100px]">
-                    <div className="flex flex-wrap gap-[5px] px-2 pt-1">
-                        {tags.map(({ name }) => (
-                            <span
-                                key={name}
-                                onClick={() => setFilter("tag", name)}
-                                className={`font-mono text-[10px] px-2 py-[3px] rounded-full border cursor-pointer transition-all
-                                    ${activeTag === name
-                                        ? 'border-[var(--em-border)] text-[var(--em)] bg-[var(--em-faint)]'
-                                        : 'border-[var(--border2)] text-[var(--text3)] hover:border-[var(--em-border)] hover:text-[var(--em)]'
-                                    }`}
-                            >
-                                #{name}
-                            </span>
-                        ))}
-                    </div>
+                <div
+                    onClick={() => toggle("tags")}
+                    className="flex items-center justify-between px-2 mb-1 cursor-pointer group"
+                >
+                    <p className="text-[10px] font-semibold tracking-[1.5px] uppercase text-[var(--text4)] group-hover:text-[var(--text3)] transition-colors">
+                        Tags
+                    </p>
+                    <motion.div
+                        animate={{ rotate: collapsed.tags ? -90 : 0 }}
+                        transition={{ duration: 0.2 }}
+                    >
+                        <FontAwesomeIcon icon={faChevronDown} className="w-[8px] h-[8px] text-[var(--text4)]" />
+                    </motion.div>
                 </div>
+                <CollapseSection open={!collapsed.tags}>
+                    <div className="overflow-y-auto max-h-[100px]">
+                        <div className="flex flex-wrap gap-[5px] px-2 pt-1">
+                            {tags.map(({ name }) => (
+                                <span
+                                    key={name}
+                                    onClick={() => setFilter("tag", name)}
+                                    className={`font-mono text-[10px] px-2 py-[3px] rounded-full border cursor-pointer transition-all
+                                    ${activeTag === name
+                                            ? 'border-[var(--em-border)] text-[var(--em)] bg-[var(--em-faint)]'
+                                            : 'border-[var(--border2)] text-[var(--text3)] hover:border-[var(--em-border)] hover:text-[var(--em)]'
+                                        }`}
+                                >
+                                    #{name}
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+                </CollapseSection>
             </div>
 
             {/* Explore */}
@@ -356,6 +479,13 @@ export default function SidebarClient({ totalSnippets, totalCopies, totalFavorit
                         </div>
                     ))}
                 </div>
+            </div>
+
+            <div
+                onMouseDown={startResizing}
+                className="absolute top-0 right-0 w-[4px] h-full cursor-col-resize z-50 group"
+            >
+                <div className="w-full h-full bg-transparent group-hover:bg-[var(--em-dim)] transition-colors duration-150" />
             </div>
 
         </aside>

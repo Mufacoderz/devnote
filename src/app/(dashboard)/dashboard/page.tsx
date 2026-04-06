@@ -7,13 +7,13 @@ import { Snippet } from "@/components/snippet/SnippetDetail"
 export default async function DashboardPage({
   searchParams
 }: {
-  searchParams: Promise<{ lang?: string; tag?: string; filter?: string }>
+  searchParams: Promise<{ lang?: string; tag?: string; filter?: string; collection?:string }>
 }) {
   const session = await auth()
   if (!session?.user) redirect("/login")
 
   // await searchParams karena Next.js 15+ searchParams adalah Promise
-  const { lang, tag, filter } = await searchParams
+  const { lang, tag, filter, collection } = await searchParams
 
   const rawSnippets = await prisma.snippet.findMany({
     where: {
@@ -21,6 +21,13 @@ export default async function DashboardPage({
       ...(lang && { language: lang }),
       ...(tag && { tags: { some: { tag: { name: tag } } } }),
       ...(filter === "favorites" && { isFavorite: true }),
+      ...(collection && {
+        collections: { 
+          some: {
+            collectionId: Number(collection) 
+          }
+        }
+      })
     },
     include: { tags: { include: { tag: true } } },
     orderBy: { createdAt: "desc" }
