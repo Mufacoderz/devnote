@@ -212,7 +212,7 @@ export default function Topbar({ onNewSnippet, onToggleSidebar }: TopbarProps) {
                                 Batal
                             </button>
                             <button
-                                onClick={() => signOut({ callbackUrl: "/welcome" })}
+                                onClick={() => signOut({ callbackUrl: "/" })}
                                 className="px-4 py-2 rounded-lg text-[13px] font-medium bg-red-500 hover:bg-red-600 text-white transition-all"
                             >
                                 Ya, Logout
