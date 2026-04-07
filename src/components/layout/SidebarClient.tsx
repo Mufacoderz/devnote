@@ -141,9 +141,9 @@ export default function SidebarClient({ totalSnippets, totalCopies, totalFavorit
 
     const [collapsed, setCollapsed] = useState({
         library: false,
-        collections: false,
-        languages: false,
-        tags: false,
+        collections: true,
+        languages: true,
+        tags: true,
     })
 
     const toggle = (key: keyof typeof collapsed) => {
