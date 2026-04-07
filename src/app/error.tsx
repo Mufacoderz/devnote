@@ -1,7 +1,17 @@
-import Link from "next/link"
+"use client"
+
+import { useEffect } from "react"
 import Image from "next/image"
 
-export default function NotFound() {
+export default function Error({ error }: { error: Error }) {
+    useEffect(() => {
+        console.error(error)
+    }, [error])
+
+    const handleRetry = () => {
+        window.location.reload()
+    }
+
     return (
         <div className="min-h-screen relative overflow-hidden bg-[#0a0a0a] flex items-center justify-center">
 
@@ -17,17 +27,20 @@ export default function NotFound() {
             <div className="absolute inset-0 flex items-center justify-center">
                 <div className="relative w-[450px] h-[450px]">
 
-                    <div className="absolute inset-0 rounded-full bg-[#34d399] overflow-hidden">
-                        <div className="absolute w-[200px] h-[200px]  rounded-full bg-black/[0.08] -top-[40px] -right-[40px]" />
+                    <div
+                        className="absolute inset-0 bg-[#34d399]"
+                        style={{
+                            clipPath: "polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%)"
+                        }}
+                    >
+                        <div className="absolute w-[200px] h-[200px] rounded-full bg-black/[0.08] -top-[40px] -right-[40px]" />
                         <div className="absolute w-[180px] h-[180px] rounded-full bg-black/[0.08] bottom-[-30px] left-[20px]" />
                     </div>
 
-                    <div className="absolute inset-0 rounded-full bg-[#34d399] blur-[120px] opacity-40 scale-110" />
 
 
                 </div>
             </div>
-
 
             <div className="relative z-10 flex flex-col items-center text-center px-6 max-w-[500px]">
 
@@ -43,26 +56,26 @@ export default function NotFound() {
                     devnote
                 </p>
 
-                <h1 className="text-[70px] font-bold tracking-[-2px] text-[#0a0a0a] leading-none mb-3">
-                    404
+                <h1 className="text-[60px] font-bold tracking-[-2px] text-[#0a0a0a] leading-none mb-3">
+                    Error
                 </h1>
 
                 <h2 className="text-[22px] font-semibold text-black/70 mb-3">
-                    Halaman tidak ditemukan
+                    Terjadi gangguan
                 </h2>
 
                 <p className="text-[14px] text-black/50 font-light leading-relaxed max-w-[340px] mb-10">
-                    Sepertinya halaman yang kamu cari tidak ada atau sudah dipindahkan.
+                    Layanan sedang tidak dapat digunakan sementara waktu.
+                    Silakan coba lagi.
                 </p>
 
                 <div className="flex items-center gap-3">
-                    <Link
-                        href="/"
+                    <button
+                        onClick={handleRetry}
                         className="px-7 py-3 rounded-lg bg-[#0a0a0a] text-white font-semibold text-[14px] hover:bg-[#1c1c1c] transition-all shadow-[0_4px_20px_rgba(0,0,0,0.2)]"
                     >
-                        Kembali ke Home
-                    </Link>
-
+                        Coba lagi
+                    </button>
                 </div>
 
             </div>
