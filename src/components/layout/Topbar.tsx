@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faMagnifyingGlass, faPlus, faBars, faTimes, faRightFromBracket, faUserPen } from '@fortawesome/free-solid-svg-icons'
 import { useSession, signOut } from "next-auth/react"
 import Image from "next/image"
+import { useRouter, useSearchParams } from "next/navigation"
 
 interface TopbarProps {
     onNewSnippet: () => void
@@ -24,6 +25,20 @@ export default function Topbar({ onNewSnippet, onToggleSidebar }: TopbarProps) {
     const [dropdownOpen, setDropdownOpen] = useState(false)
     const [confirmLogout, setConfirmLogout] = useState(false)
     const dropdownRef = useRef<HTMLDivElement>(null)
+    const router = useRouter()
+    const searchParams = useSearchParams()
+    const [searchQuery, setSearchQuery] = useState(searchParams.get("search") ?? "")
+
+    const handleSearch = (val: string) => {
+        setSearchQuery(val)
+        const params = new URLSearchParams(window.location.search)
+        if (val.trim()) {
+            params.set("search", val.trim())
+        } else {
+            params.delete("search")
+        }
+        router.push(`/dashboard?${params.toString()}`)
+    }
 
     useEffect(() => {
         function handleClickOutside(e: MouseEvent) {
@@ -51,8 +66,10 @@ export default function Topbar({ onNewSnippet, onToggleSidebar }: TopbarProps) {
                             <input
                                 autoFocus
                                 type="text"
+                                value={searchQuery}
+                                onChange={e => handleSearch(e.target.value)}
                                 placeholder="Cari snippets..."
-                                className="w-full bg-[var(--surface2)] border border-[var(--em-border)] rounded-full px-4 py-[6px] pl-8 text-[12px] font-mono text-[var(--text)] placeholder:text-[var(--text4)] outline-none focus:shadow-[0_0_0_3px_var(--em-faint)] transition-all"
+                                className="w-full bg-[var(--surface2)] border border-[var(--em-border)] focus:border-[var(--em)] rounded-full px-4 py-[6px] pl-8 text-[12px] font-mono text-[var(--text)] placeholder:text-[var(--text4)] outline-none  transition-all"
                             />
                             <FontAwesomeIcon
                                 icon={faMagnifyingGlass}
@@ -97,8 +114,10 @@ export default function Topbar({ onNewSnippet, onToggleSidebar }: TopbarProps) {
                     <div className="relative hidden lg:block">
                         <input
                             type="text"
+                            value={searchQuery}
+                            onChange={e => handleSearch(e.target.value)}
                             placeholder="Cari snippets..."
-                            className="bg-[var(--surface2)] border border-[var(--border2)] rounded-full px-4 py-[6px] pl-8 text-[12px] font-mono text-[var(--text)] placeholder:text-[var(--text4)] outline-none w-[200px] focus:border-[var(--em-border)] focus:shadow-[0_0_0_3px_var(--em-faint)] transition-all"
+                            className="bg-[var(--surface2)] border border-[var(--border2)] focus:border-[var(--em)] rounded-full px-4 py-[6px] pl-8 text-[12px] font-mono text-[var(--text)] placeholder:text-[var(--text4)] outline-none w-[200px]   transition-all"
                         />
                         <FontAwesomeIcon
                             icon={faMagnifyingGlass}
