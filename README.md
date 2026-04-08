@@ -1,53 +1,65 @@
 # DevNote — Personal Code Snippet Library
 
-**DevNote** adalah web aplikasi developer tool modern untuk menyimpan, mengelola, dan menggunakan kembali potongan kode (snippet) secara efisien.
-Dirancang dengan fokus pada kecepatan, keindahan, kerapihan, dan kemudahan akses, DevNote membantu developer menghindari copy-paste berulang dan menjaga kode tetap terorganisir.
+**DevNote** adalah web aplikasi modern untuk developer yang membantu menyimpan, mengelola, dan menggunakan kembali potongan kode (code snippets) dengan cepat dan efisien.
 
-
-# Tech Stack
-- **Next + TypeScript + Vite**
-- **TailwindCSS**
-- **Prisma, MySql** 
+Dirancang dengan fokus pada **kecepatan**, **keindahan UI**, **kerapihan**, dan **kemudahan akses**, DevNote membantu developer menghindari copy-paste berulang dan menjaga kode tetap terorganisir.
 
 ---
 
-# Fitur Aplikasi
+## Tech Stack
 
-
-- Sistem login / registrasi
-- CRUD Snippet
-- Collection Snippet
-- Filter snippets berdasarkan language, tag, favorite, publik
-- Highlight code dan siap salin
-- (Rencana) Halaman snippet publik
-- (Rencana) Share snippet
-
-
----
-
-
-# Preview Aplikasi
+- **Next.js 16** (App Router) + **TypeScript**
+- **TailwindCSS v3**
+- **Prisma** + **MySQL**
+- **NextAuth.js v5** (Authentication)
+- **Shiki** (Syntax Highlighting)
+- **Zustand** (State Management)
+- **Framer Motion** (Animasi)
+- **@uiw/react-codemirror** (Code Editor di form)
 
 ---
 
-## Welcome Page
+## Fitur Aplikasi
+
+- Sistem Login & Registrasi
+- CRUD Snippet (Create, Read, Update, Delete)
+- Collection / Folder untuk mengelompokkan snippet
+- Filter snippet berdasarkan: Language, Tag, Collection, Favorite
+- Syntax Highlighting yang indah (mirip VS Code)
+- Tombol Salin Kode + tracking jumlah copy
+- Favorite snippet
+- Responsive design (Desktop split-view & Mobile friendly)
+- Dark theme modern dengan desain yang bersih
+
+### Fitur yang akan datang:
+- Halaman Snippet Publik
+- Fitur Share Snippet
+
+---
+
+## Preview Aplikasi
+
+### Welcome Page
 <img src="PreviewIMG/welcome.png" width="100%"/>
----
 
-## Login & Register
+### Login & Register
 <img src="PreviewIMG/login.png" width="100%"/>
 <img src="PreviewIMG/registrasi.png" width="100%"/>
----
 
-## Home Page 
+### Home Page (Dashboard)
 <img src="PreviewIMG/dashboard.png" width="100%"/>
----
 
-## Form Create Snippet
+### Form Create Snippet
 <img src="PreviewIMG/tambah-snippet.png" width="100%"/>
+
 ---
 
+## Getting Started
 
+### 1. Clone repository
+```bash
+git clone <url-repository-anda>
+cd devnote-main
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
