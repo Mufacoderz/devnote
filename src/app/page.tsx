@@ -28,7 +28,7 @@ function WelcomePage() {
             />
 
             <div
-                className="absolute inset-y-0 bg-[#34d399]"
+                className="absolute inset-y-0 bg-[var(--em)]"
                 style={{
                     left: "15%",
                     right: "15%",
@@ -39,10 +39,8 @@ function WelcomePage() {
                 <div className="absolute w-[350px] h-[350px] rounded-full bg-black/[0.04] -bottom-[100px] left-[50px]" />
             </div>
 
-            {/* Hero */}
             <div className="relative z-10 flex flex-col items-center text-center px-6 max-w-[500px]">
 
-                {/* Logo */}
                 <Image
                     src="/black-trans.png"
                     alt="devnote"
@@ -51,25 +49,21 @@ function WelcomePage() {
                     className="mb-6"
                 />
 
-                {/* Brand */}
                 <p className="font-mono text-[11px] text-black/40 tracking-[3px] uppercase mb-5">
                     devnote
                 </p>
 
-                {/* Headline */}
                 <h1 className="text-[50px] sm:text-[58px] font-bold tracking-[-2px] text-[#0a0a0a] leading-[1.05] mb-5">
                     Simpan.<br />
                     <span className="text-black/25">Temukan.</span><br />
                     Bagikan.
                 </h1>
 
-                {/* Subheadline */}
                 <p className="text-[15px] text-black/50 font-light leading-relaxed max-w-[360px] mb-10">
                     Semua snippet kodemu di satu tempat —
                     terorganisir, mudah dicari, siap dipakai kapan saja.
                 </p>
 
-                {/* CTA */}
                 <div className="flex items-center gap-3">
                     <Link
                         href="/login"

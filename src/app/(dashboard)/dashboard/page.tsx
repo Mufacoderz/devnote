@@ -35,8 +35,9 @@ export default async function DashboardPage({
         ]
       }),
     },
-    include: { tags: { include: { tag: true } } },
-    orderBy: { createdAt: "desc" }
+    orderBy: filter === "most-copied"
+    ? { copyCount: "desc" } : { createdAt: "desc" },
+    include: { tags: { include: { tag: true } } }
   })
 
   // transformasi dari Prisma model ke Snippet interface yang dipakai komponen

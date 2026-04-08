@@ -256,7 +256,7 @@ export default function SidebarClient({ totalSnippets, totalCopies, totalFavorit
                     <NavItem label="All Snippets" count={totalSnippets} active={isAll} onClick={() => setFilter(null)} icon={faLayerGroup} />
                     <NavItem label="Favorites" count={favCount} active={activeFilter === "favorites"} onClick={() => setFilter("filter", "favorites")} icon={faStar} />
                     <NavItem label="Public" count={0} icon={faGlobe} />
-                    <NavItem label="Most Copied" count={0} icon={faCopy} />
+                    <NavItem label="Most Copied" count={totalSnippets} icon={faCopy} active={activeFilter === "most-copied"} onClick={() => setFilter("filter", "most-copied")}/>
                 </CollapseSection>
             </div>
 

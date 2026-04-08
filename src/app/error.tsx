@@ -28,7 +28,7 @@ export default function Error({ error }: { error: Error }) {
                 <div className="relative w-[450px] h-[450px]">
 
                     <div
-                        className="absolute inset-0 bg-[#34d399]"
+                        className="absolute inset-0 bg-[var(--em)]"
                         style={{
                             clipPath: "polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%)"
                         }}

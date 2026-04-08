@@ -17,12 +17,12 @@ export default function NotFound() {
             <div className="absolute inset-0 flex items-center justify-center">
                 <div className="relative w-[450px] h-[450px]">
 
-                    <div className="absolute inset-0 rounded-full bg-[#34d399] overflow-hidden">
+                    <div className="absolute inset-0 rounded-full bg-[var(--em)] overflow-hidden">
                         <div className="absolute w-[200px] h-[200px]  rounded-full bg-black/[0.08] -top-[40px] -right-[40px]" />
                         <div className="absolute w-[180px] h-[180px] rounded-full bg-black/[0.08] bottom-[-30px] left-[20px]" />
                     </div>
 
-                    <div className="absolute inset-0 rounded-full bg-[#34d399] blur-[120px] opacity-40 scale-110" />
+                    <div className="absolute inset-0 rounded-full bg-[var(--em)] blur-[120px] opacity-40 scale-110" />
 
 
                 </div>
