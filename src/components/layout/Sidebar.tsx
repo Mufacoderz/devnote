@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import SidebarClient from "./SidebarClient"
 
+
 export default async function Sidebar() {
     const session = await auth()
     const userId = Number(session?.user?.id)

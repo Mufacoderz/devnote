@@ -1,10 +1,9 @@
 "use client"
 
-import { useState, createContext, useContext } from "react"
+import { useState, createContext, useContext, Suspense } from "react"
 import Topbar from "@/components/layout/Topbar"
 import SnippetModal from "@/components/snippet/SnippetModal"
 
-// context untuk share state sidebar ke Topbar dan MobileSidebar
 export const SidebarContext = createContext<{
     sidebarOpen: boolean
     setSidebarOpen: (value: boolean) => void
@@ -23,10 +22,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
     return (
         <SidebarContext.Provider value={{ sidebarOpen, setSidebarOpen }}>
-            <Topbar
-                onNewSnippet={() => setModalOpen(true)}
-                onToggleSidebar={() => setSidebarOpen(prev => !prev)}
-            />
+            <Suspense fallback={<div className="h-[52px] border-b border-[var(--border)] bg-[var(--surface)]" />}>
+                <Topbar
+                    onNewSnippet={() => setModalOpen(true)}
+                    onToggleSidebar={() => setSidebarOpen(prev => !prev)}
+                />
+            </Suspense>
             {children}
             <SnippetModal isOpen={modalOpen} onClose={() => setModalOpen(false)} />
         </SidebarContext.Provider>

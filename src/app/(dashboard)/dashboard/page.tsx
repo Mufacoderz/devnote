@@ -20,7 +20,8 @@ async function DashboardContent({
   const session = await auth()
   if (!session?.user) redirect("/login")
 
-  const { lang, tag, filter, collection, search } = await searchParams
+  const params = await searchParams
+  const { lang, tag, filter, collection, search } = params
 
   const rawSnippets = await prisma.snippet.findMany({
     where: {
@@ -78,10 +79,11 @@ export default function DashboardPage({
 }) {
   return (
     <div className="h-full overflow-hidden">
-      {/* Bungkus dengan Suspense karena kemungkinan SnippetList menggunakan useSearchParams */}
       <Suspense fallback={
-        <div className="flex h-full items-center justify-center">
-          <p className="text-gray-500">Memuat snippet...</p>
+        <div className="flex h-[80vh] items-center justify-center">
+          <div className="text-center">
+            <p className="text-lg text-gray-500">Memuat daftar snippet...</p>
+          </div>
         </div>
       }>
         <DashboardContent searchParams={searchParams} />
