@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
+import {signIn} from "next-auth/react"
 
 export default function RegisterPage() {
     const router = useRouter()
@@ -177,7 +178,7 @@ export default function RegisterPage() {
                     <div className="grid grid-cols-2 gap-3">
                         <button
                             type="button"
-                            onClick={() => { }}
+                            onClick={() => signIn("google", {callbackUrl: "/dashboard"})}
                             className="flex items-center justify-center gap-2.5 bg-[var(--surface)] border border-[var(--border2)] rounded-lg py-2.5 text-[13px] font-medium text-[var(--text2)] hover:border-red-500 hover:text-[var(--text)] transition-all"
                         >
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
