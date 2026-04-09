@@ -62,7 +62,7 @@ export default function SnippetList({ snippets }: { snippets: Snippet[] }) {
 
     return (
         <>
-            {/* ────────── DESKTOP (lg ke atas) ────────── */}
+            {/*  desktop */}
             <div className="hidden lg:flex h-full overflow-hidden">
                 <div className="w-[300px] border-r border-[var(--border)] flex flex-col shrink-0">
                     <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border)] shrink-0">
@@ -93,7 +93,7 @@ export default function SnippetList({ snippets }: { snippets: Snippet[] }) {
                 )}
             </div>
 
-            {/* ────────── MOBILE (di bawah lg) ────────── */}
+            {/* responsif */}
             <div className="flex lg:hidden h-full overflow-hidden relative">
                 <AnimatePresence initial={false}>
 

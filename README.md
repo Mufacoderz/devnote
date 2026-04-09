@@ -39,18 +39,27 @@ Dirancang dengan fokus pada **kecepatan**, **keindahan UI**, **kerapihan**, dan 
 
 ## Preview Aplikasi
 
-### Welcome Page
+## Welcome Page
 <img src="PreviewIMG/welcome.png" width="100%"/>
 
-### Login & Register
+## Login & Register
 <img src="PreviewIMG/login.png" width="100%"/>
 <img src="PreviewIMG/registrasi.png" width="100%"/>
 
-### Home Page (Dashboard)
+## Home Page (Dashboard)
+### Sidebar close
 <img src="PreviewIMG/dashboard.png" width="100%"/>
+### Sidebar open
+<img src="PreviewIMG/dashboard2.png" width="100%"/>
 
-### Form Create Snippet
+## Form Create Snippet
 <img src="PreviewIMG/tambah-snippet.png" width="100%"/>
+
+## 404 Not-found Page
+<img src="PreviewIMG/404.png" width="100%"/>
+
+## Error Page
+<img src="PreviewIMG/error.png" width="100%"/>
 
 ---
 
