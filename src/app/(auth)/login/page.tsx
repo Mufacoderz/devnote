@@ -50,7 +50,7 @@ export default function LoginPage() {
 
                 <div className="relative ml-0 md:ml-28 z-10 max-w-[360px]">
                     {/* Logo */}
-                    <Link href="/welcome" className="flex flex-col gap-1 mb-5 w-fit group">
+                    <Link href="/" className="flex flex-col gap-1 mb-5 w-fit group">
                         <div className="flex items-center gap-2">
                             <Image
                                 src="/emerald-trans.png"

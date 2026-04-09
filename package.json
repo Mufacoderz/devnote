@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "postinstall": "prisma generate && prisma migrate deploy",
     "dev": "next dev --webpack",
     "build": "next build",
     "start": "next start",

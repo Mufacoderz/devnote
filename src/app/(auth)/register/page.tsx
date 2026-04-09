@@ -80,7 +80,7 @@ export default function RegisterPage() {
                 />
 
                 <div className="relative z-10 ml-0 md:ml-28 max-w-[360px]">
-                    <Link href="/welcome" className="flex flex-col gap-1 mb-5 w-fit group">
+                    <Link href="/" className="flex flex-col gap-1 mb-5 w-fit group">
                         <div className="flex items-center gap-2">
                             <Image
                                 src="/emerald-trans.png"
