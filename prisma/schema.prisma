@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 // ───────────────────────────────
@@ -31,19 +32,19 @@ model User {
 model Snippet {
   id          Int      @id @default(autoincrement())
   title       String
-  description String?  @db.Text
-  code        String   @db.LongText
+  description String?
+  code        String
   language    String
   isPublic    Boolean  @default(false)
   shareId     String?  @unique
   copyCount   Int      @default(0)
   isFavorite  Boolean  @default(false)
-  
+
   userId      Int
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   tags        SnippetTag[]
-  collections SnippetCollection[]  // ← ganti dari collectionId
+  collections SnippetCollection[]
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -51,6 +52,9 @@ model Snippet {
   @@map("snippets")
 }
 
+// ───────────────────────────────
+// COLLECTION
+// ───────────────────────────────
 model Collection {
   id        Int      @id @default(autoincrement())
   name      String
@@ -75,6 +79,7 @@ model SnippetCollection {
   @@id([snippetId, collectionId])
   @@map("snippet_collections")
 }
+
 // ───────────────────────────────
 // TAG
 // ───────────────────────────────
