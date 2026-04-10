@@ -1,6 +1,6 @@
 "use client"
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons"
-import { useEffect, useState, useCallback, useRef } from "react"
+import { useEffect, useState, useCallback, useRef, useTransition } from "react"
 import { useAppStore } from "@/lib/store"
 import { useRouter, useSearchParams } from "next/navigation"
 import { getLang } from "@/lib/languages"
@@ -139,6 +139,8 @@ export default function SidebarClient({ totalSnippets, totalCopies, totalFavorit
     }, [])
 
 
+
+
     const [collapsed, setCollapsed] = useState({
         library: false,
         collections: true,
@@ -189,14 +191,7 @@ export default function SidebarClient({ totalSnippets, totalCopies, totalFavorit
             .catch(console.error)
     }, [])
 
-    const setFilter = (type: "lang" | "tag" | "filter" | "collection" | null, value?: string) => {
-        if (type === null) {
-            router.push("/dashboard")
-        } else {
-            router.push(`/dashboard?${type}=${value}`)
-        }
-        onNavigate?.()
-    }
+
 
     const handleAddCollection = async () => {
         if (!newColName.trim()) return
@@ -229,6 +224,19 @@ export default function SidebarClient({ totalSnippets, totalCopies, totalFavorit
         setMenuOpenId(null)
         // kalau lagi di collection yang dihapus, balik ke all
         if (activeCollection === String(id)) router.push("/dashboard")
+    }
+
+        const [, startTransition] = useTransition()
+
+    const setFilter = (type: "lang" | "tag" | "filter" | "collection" | null, value?: string) => {
+        startTransition(() => {
+            if (type === null) {
+                router.replace("/dashboard")
+            } else {
+                router.replace(`/dashboard?${type}=${value}`)
+            }
+        })
+        onNavigate?.()
     }
 
     return (

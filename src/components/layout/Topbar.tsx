@@ -1,11 +1,12 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useTransition } from "react"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faMagnifyingGlass, faPlus, faBars, faTimes, faRightFromBracket, faUserPen } from '@fortawesome/free-solid-svg-icons'
+import { faMagnifyingGlass, faPlus, faBars, faTimes, faRightFromBracket, faUserPen, faGear } from '@fortawesome/free-solid-svg-icons'
 import { useSession, signOut } from "next-auth/react"
 import Image from "next/image"
 import { useRouter, useSearchParams } from "next/navigation"
+import { useDebouncedCallback } from "use-debounce"
 
 interface TopbarProps {
     onNewSnippet: () => void
@@ -28,16 +29,23 @@ export default function Topbar({ onNewSnippet, onToggleSidebar }: TopbarProps) {
     const router = useRouter()
     const searchParams = useSearchParams()
     const [searchQuery, setSearchQuery] = useState(searchParams.get("search") ?? "")
+    const [, startTransition] = useTransition()
 
-    const handleSearch = (val: string) => {
-        setSearchQuery(val)
+    const pushSearch = useDebouncedCallback((val: string) => {
         const params = new URLSearchParams(window.location.search)
         if (val.trim()) {
             params.set("search", val.trim())
         } else {
             params.delete("search")
         }
-        router.push(`/dashboard?${params.toString()}`)
+        startTransition(() => {
+            router.replace(`/dashboard?${params.toString()}`)
+        })
+    }, 400)
+
+    const handleSearch = (val: string) => {
+        setSearchQuery(val)
+        pushSearch(val)
     }
 
     useEffect(() => {
@@ -59,7 +67,6 @@ export default function Topbar({ onNewSnippet, onToggleSidebar }: TopbarProps) {
         <>
             <header className="h-[52px] bg-[var(--surface)] border-b border-[var(--border)] flex items-center justify-between px-5 shrink-0 relative">
 
-                {/* search expanded overlay — mobile only */}
                 {searchOpen && (
                     <div className="absolute inset-0 z-10 flex items-center gap-2 px-3 bg-[var(--surface)] lg:hidden">
                         <div className="relative flex-1">
@@ -69,7 +76,7 @@ export default function Topbar({ onNewSnippet, onToggleSidebar }: TopbarProps) {
                                 value={searchQuery}
                                 onChange={e => handleSearch(e.target.value)}
                                 placeholder="Cari snippets..."
-                                className="w-full bg-[var(--surface2)] border border-[var(--em-border)] focus:border-[var(--em)] rounded-full px-4 py-[6px] pl-8 text-[12px] font-mono text-[var(--text)] placeholder:text-[var(--text4)] outline-none  transition-all"
+                                className="w-full bg-[var(--surface2)] border border-[var(--em-border)] focus:border-[var(--em)] rounded-full px-4 py-[6px] pl-8 text-[12px] font-mono text-[var(--text)] placeholder:text-[var(--text4)] outline-none transition-all"
                             />
                             <FontAwesomeIcon
                                 icon={faMagnifyingGlass}
@@ -95,12 +102,7 @@ export default function Topbar({ onNewSnippet, onToggleSidebar }: TopbarProps) {
                     </button>
 
                     <div className="flex items-center gap-2">
-                        <Image
-                            src="/emerald-trans.png"
-                            alt="devnote"
-                            width={30}
-                            height={30}
-                        />
+                        <Image src="/emerald-trans.png" alt="devnote" width={30} height={30} />
                         <span className="text-[15px] font-semibold tracking-tight">
                             dev<span className="text-[var(--em)]">note</span>
                         </span>
@@ -117,7 +119,7 @@ export default function Topbar({ onNewSnippet, onToggleSidebar }: TopbarProps) {
                             value={searchQuery}
                             onChange={e => handleSearch(e.target.value)}
                             placeholder="Cari snippets..."
-                            className="bg-[var(--surface2)] border border-[var(--border2)] focus:border-[var(--em)] rounded-full px-4 py-[6px] pl-8 text-[12px] font-mono text-[var(--text)] placeholder:text-[var(--text4)] outline-none w-[200px]   transition-all"
+                            className="bg-[var(--surface2)] border border-[var(--border2)] focus:border-[var(--em)] rounded-full px-4 py-[6px] pl-8 text-[12px] font-mono text-[var(--text)] placeholder:text-[var(--text4)] outline-none w-[200px] transition-all"
                         />
                         <FontAwesomeIcon
                             icon={faMagnifyingGlass}
@@ -125,7 +127,7 @@ export default function Topbar({ onNewSnippet, onToggleSidebar }: TopbarProps) {
                         />
                     </div>
 
-                    {/* search icon — mobile only */}
+                    {/* search icon mobile  */}
                     <button
                         onClick={() => setSearchOpen(true)}
                         className="lg:hidden w-[32px] h-[32px] flex items-center justify-center rounded-lg text-[var(--text3)] hover:bg-[var(--surface2)] hover:text-[var(--text)] transition-all"
@@ -144,10 +146,7 @@ export default function Topbar({ onNewSnippet, onToggleSidebar }: TopbarProps) {
 
                     {/* avatar + dropdown */}
                     <div className="relative" ref={dropdownRef}>
-                        <div
-                            onClick={() => setDropdownOpen(!dropdownOpen)}
-                            className="cursor-pointer"
-                        >
+                        <div onClick={() => setDropdownOpen(!dropdownOpen)} className="cursor-pointer">
                             {user.image ? (
                                 <Image
                                     src={user.image}
@@ -167,17 +166,17 @@ export default function Topbar({ onNewSnippet, onToggleSidebar }: TopbarProps) {
                         {dropdownOpen && (
                             <div className="absolute right-0 mt-2 w-[220px] rounded-xl border border-[var(--border)] bg-[rgba(20,20,20,0.7)] backdrop-blur-md shadow-xl p-2 z-50">
                                 <div className="px-3 py-2 border-b border-[var(--border)]">
-                                    <div className="text-[13px] font-semibold text-[var(--text)]">
-                                        {user.name || "User"}
-                                    </div>
-                                    <div className="text-[11px] text-[var(--text4)]">
-                                        {user.email}
-                                    </div>
+                                    <div className="text-[13px] font-semibold text-[var(--text)]">{user.name || "User"}</div>
+                                    <div className="text-[11px] text-[var(--text4)]">{user.email}</div>
                                 </div>
                                 <div className="flex flex-col mt-1">
                                     <button className="flex items-center gap-2 px-3 py-2 text-[12px] text-[var(--text2)] hover:bg-[var(--surface2)] rounded-md transition-all">
                                         <FontAwesomeIcon icon={faUserPen} className="w-[11px] h-[11px]" />
                                         Edit Profil
+                                    </button>
+                                    <button className="flex items-center gap-2 px-3 py-2 text-[12px] text-[var(--text2)] hover:bg-[var(--surface2)] rounded-md transition-all">
+                                        <FontAwesomeIcon icon={faGear} className="w-[11px] h-[11px]" />
+                                        Preferences
                                     </button>
                                     <button
                                         onClick={() => { setConfirmLogout(true); setDropdownOpen(false) }}
@@ -190,19 +189,15 @@ export default function Topbar({ onNewSnippet, onToggleSidebar }: TopbarProps) {
                             </div>
                         )}
                     </div>
-
                 </div>
             </header>
 
-            {/* Confirm Logout Modal */}
             {confirmLogout && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
                     <div className="flex flex-col gap-4 rounded-xl p-6 w-full max-w-sm bg-[var(--surface)] border border-[var(--border)] shadow-2xl">
                         <div>
                             <h3 className="text-[15px] font-semibold mb-1">Logout?</h3>
-                            <p className="text-[13px] text-[var(--text3)]">
-                                Kamu akan keluar dari sesi ini.
-                            </p>
+                            <p className="text-[13px] text-[var(--text3)]">Kamu akan keluar dari sesi ini.</p>
                         </div>
                         <div className="flex justify-end gap-2">
                             <button

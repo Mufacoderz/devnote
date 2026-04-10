@@ -144,7 +144,7 @@ export const languages: Record<string, LanguageConfig> = {
 
 export const defaultLang: LanguageConfig = languages.other
 
-// 🔥 alias biar fleksibel input
+// alias biar fleksibel input
 const alias: Record<string, string> = {
     ts: "typescript",
     js: "javascript",
@@ -158,7 +158,7 @@ const alias: Record<string, string> = {
     "c++": "cpp",
 }
 
-// 🔥 helper utama (SUDAH FIX TOTAL)
+
 export function getLang(language: string): LanguageConfig {
     if (!language) return defaultLang
 
