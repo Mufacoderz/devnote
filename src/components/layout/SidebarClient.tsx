@@ -1,12 +1,9 @@
 "use client"
-import { faChevronDown } from "@fortawesome/free-solid-svg-icons"
 import { useEffect, useState, useCallback, useRef, useTransition } from "react"
-import { useAppStore } from "@/lib/store"
 import { useRouter, useSearchParams } from "next/navigation"
-import { getLang } from "@/lib/languages"
-import { faCompass } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import {
+    faChevronDown,
     faLayerGroup,
     faStar,
     faGlobe,
@@ -15,10 +12,15 @@ import {
     faPlus,
     faEllipsis,
     faTrash,
-    faPen
+    faPen,
+    faCompass
 } from "@fortawesome/free-solid-svg-icons"
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core"
 import { motion, AnimatePresence } from "framer-motion"
+
+import { useAppStore } from "@/lib/store"
+import { getLang } from "@/lib/languages"
+
 
 function CollapseSection({ open, children }: { open: boolean; children: React.ReactNode }) {
     return (
@@ -38,19 +40,24 @@ function CollapseSection({ open, children }: { open: boolean; children: React.Re
     )
 }
 
+
 interface NavItemProps {
     label: string
     count: number
     active?: boolean
     onClick?: () => void
+    onPrefetch?: () => void
     dotColor?: string
     icon?: IconDefinition
 }
 
-function NavItem({ label, count, active, onClick, dotColor, icon }: NavItemProps) {
+function NavItem({ label, count, active, onClick, onPrefetch, dotColor, icon }: NavItemProps) {
     return (
         <div
             onClick={onClick}
+            onPointerEnter={onPrefetch}
+            onTouchStart={onPrefetch}
+            onFocus={onPrefetch}
             className={`flex items-center justify-between px-2 py-[6px] rounded-[5px] cursor-pointer text-[13px] transition-all
             ${active
                     ? 'bg-[var(--em-faint)] text-[var(--em)] font-medium'
@@ -81,11 +88,6 @@ function NavItem({ label, count, active, onClick, dotColor, icon }: NavItemProps
 }
 
 
-const MIN_WIDTH = 170
-const MAX_WIDTH = 420
-
-
-
 interface Collection {
     id: number
     name: string
@@ -101,45 +103,22 @@ interface SidebarClientProps {
     onNavigate?: () => void
 }
 
-export default function SidebarClient({ totalSnippets, totalCopies, totalFavorites, languages, tags, onNavigate }: SidebarClientProps) {
+export default function SidebarClient({
+    totalSnippets,
+    totalCopies,
+    totalFavorites,
+    languages,
+    tags,
+    onNavigate
+}: SidebarClientProps) {
+
     const { favCount, setFavCount, setFavoriteIds } = useAppStore()
     const router = useRouter()
     const searchParams = useSearchParams()
 
-    // --- Resize logic ---
     const [sidebarWidth, setSidebarWidth] = useState(260)
     const isResizing = useRef(false)
-
-    const startResizing = useCallback(() => {
-        isResizing.current = true
-        document.body.style.cursor = "col-resize"
-        document.body.style.userSelect = "none"
-    }, [])
-
-    useEffect(() => {
-        const onMouseMove = (e: MouseEvent) => {
-            if (!isResizing.current) return
-            const newWidth = e.clientX
-            if (newWidth >= MIN_WIDTH && newWidth <= MAX_WIDTH) {
-                setSidebarWidth(newWidth)
-            }
-        }
-        const onMouseUp = () => {
-            if (!isResizing.current) return
-            isResizing.current = false
-            document.body.style.cursor = ""
-            document.body.style.userSelect = ""
-        }
-        window.addEventListener("mousemove", onMouseMove)
-        window.addEventListener("mouseup", onMouseUp)
-        return () => {
-            window.removeEventListener("mousemove", onMouseMove)
-            window.removeEventListener("mouseup", onMouseUp)
-        }
-    }, [])
-
-
-
+    const [isPending, startTransition] = useTransition()
 
     const [collapsed, setCollapsed] = useState({
         library: false,
@@ -148,17 +127,6 @@ export default function SidebarClient({ totalSnippets, totalCopies, totalFavorit
         tags: true,
     })
 
-    const toggle = (key: keyof typeof collapsed) => {
-        setCollapsed(prev => ({ ...prev, [key]: !prev[key] }))
-    }
-
-    const activeLang = searchParams.get("lang")
-    const activeTag = searchParams.get("tag")
-    const activeFilter = searchParams.get("filter")
-    const activeCollection = searchParams.get("collection")
-    const isAll = !activeLang && !activeTag && !activeFilter && !activeCollection
-
-    // state collections
     const [collections, setCollections] = useState<Collection[]>([])
     const [newColName, setNewColName] = useState("")
     const [addingCol, setAddingCol] = useState(false)
@@ -167,23 +135,50 @@ export default function SidebarClient({ totalSnippets, totalCopies, totalFavorit
     const [menuOpenId, setMenuOpenId] = useState<number | null>(null)
     const [menuPos, setMenuPos] = useState<{ x: number; y: number } | null>(null)
 
+    // Active states
+    const activeLang = searchParams.get("lang")
+    const activeTag = searchParams.get("tag")
+    const activeFilter = searchParams.get("filter")
+    const activeCollection = searchParams.get("collection")
+    const isAll = !activeLang && !activeTag && !activeFilter && !activeCollection
+
+    // auto refetch smua route
+    useEffect(() => {
+        const prefetchAllRoutes = () => {
+            router.prefetch("/dashboard")
+
+            languages.forEach(({ name }) => {
+                if (name) router.prefetch(`/dashboard?lang=${encodeURIComponent(name)}`)
+            })
+
+            collections.forEach((col) => {
+                router.prefetch(`/dashboard?collection=${col.id}`)
+            })
+
+            tags.forEach(({ name }) => {
+                if (name) router.prefetch(`/dashboard?tag=${encodeURIComponent(name)}`)
+            })
+
+            router.prefetch("/dashboard?filter=favorites")
+            router.prefetch("/dashboard?filter=most-copied")
+        }
+
+        const timeout = setTimeout(prefetchAllRoutes, 250)
+        return () => clearTimeout(timeout)
+    }, [router, languages, collections, tags])
+
+    // fetch data
     useEffect(() => {
         setFavCount(totalFavorites)
     }, [totalFavorites, setFavCount])
 
-
     useEffect(() => {
         fetch("/api/snippets?filter=favorites")
             .then(r => r.json())
-            .then(d => {
-                console.log("favorites response:", d)
-                setFavoriteIds((d.snippets ?? []).map((s: { id: number }) => s.id))
-            })
+            .then(d => setFavoriteIds((d.snippets ?? []).map((s: { id: number }) => s.id)))
             .catch(console.error)
     }, [setFavoriteIds])
 
-
-    // fetch collections
     useEffect(() => {
         fetch("/api/collections")
             .then(r => r.json())
@@ -191,8 +186,30 @@ export default function SidebarClient({ totalSnippets, totalCopies, totalFavorit
             .catch(console.error)
     }, [])
 
+    // helper
+    const toggle = (key: keyof typeof collapsed) => {
+        setCollapsed(prev => ({ ...prev, [key]: !prev[key] }))
+    }
 
+    const setFilter = (type: "lang" | "tag" | "filter" | "collection" | null, value?: string) => {
+        startTransition(() => {
+            if (type === null) {
+                router.replace("/dashboard")
+            } else {
+                router.replace(`/dashboard?${type}=${value}`)
+            }
+        })
+        onNavigate?.()
+    }
 
+    const prefetchRoute = useCallback((type: "lang" | "tag" | "filter" | "collection" | null, value?: string) => {
+        const url = type === null 
+            ? "/dashboard" 
+            : `/dashboard?${type}=${value}`
+        router.prefetch(url)
+    }, [router])
+
+    //hanlde collection
     const handleAddCollection = async () => {
         if (!newColName.trim()) return
         const res = await fetch("/api/collections", {
@@ -222,29 +239,53 @@ export default function SidebarClient({ totalSnippets, totalCopies, totalFavorit
         await fetch(`/api/collections/${id}`, { method: "DELETE" })
         setCollections(prev => prev.filter(c => c.id !== id))
         setMenuOpenId(null)
-        // kalau lagi di collection yang dihapus, balik ke all
-        if (activeCollection === String(id)) router.push("/dashboard")
+        if (activeCollection === String(id)) router.replace("/dashboard")
     }
 
-        const [, startTransition] = useTransition()
+    // resize logic
+    const startResizing = useCallback(() => {
+        isResizing.current = true
+        document.body.style.cursor = "col-resize"
+        document.body.style.userSelect = "none"
+    }, [])
 
-    const setFilter = (type: "lang" | "tag" | "filter" | "collection" | null, value?: string) => {
-        startTransition(() => {
-            if (type === null) {
-                router.replace("/dashboard")
-            } else {
-                router.replace(`/dashboard?${type}=${value}`)
+    useEffect(() => {
+        const onMouseMove = (e: MouseEvent) => {
+            if (!isResizing.current) return
+            const newWidth = e.clientX
+            if (newWidth >= 170 && newWidth <= 420) {
+                setSidebarWidth(newWidth)
             }
-        })
-        onNavigate?.()
-    }
+        }
+        const onMouseUp = () => {
+            if (!isResizing.current) return
+            isResizing.current = false
+            document.body.style.cursor = ""
+            document.body.style.userSelect = ""
+        }
+
+        window.addEventListener("mousemove", onMouseMove)
+        window.addEventListener("mouseup", onMouseUp)
+
+        return () => {
+            window.removeEventListener("mousemove", onMouseMove)
+            window.removeEventListener("mouseup", onMouseUp)
+        }
+    }, [])
 
     return (
         <aside
             style={{ width: sidebarWidth }}
             className="relative flex flex-col h-full bg-[var(--surface)] border-r border-[var(--border)] overflow-y-auto shrink-0"
         >
-            {/* Library */}
+            {/* Loading Indicator */}
+            {isPending && (
+                <div className="absolute top-0 left-0 right-0 h-[2px] z-50 overflow-hidden">
+                    <div className="h-full bg-[var(--em)] animate-pulse" />
+                </div>
+            )}
+
+            {/* library */}
             <div className="px-3 py-2">
                 <div
                     onClick={() => toggle("library")}
@@ -253,23 +294,20 @@ export default function SidebarClient({ totalSnippets, totalCopies, totalFavorit
                     <p className="text-[10px] font-semibold tracking-[1.5px] uppercase text-[var(--text4)] group-hover:text-[var(--text3)] transition-colors">
                         Library
                     </p>
-                    <motion.div
-                        animate={{ rotate: collapsed.library ? -90 : 0 }}
-                        transition={{ duration: 0.2 }}
-                    >
+                    <motion.div animate={{ rotate: collapsed.library ? -90 : 0 }} transition={{ duration: 0.2 }}>
                         <FontAwesomeIcon icon={faChevronDown} className="w-[8px] h-[8px] text-[var(--text4)]" />
                     </motion.div>
                 </div>
+
                 <CollapseSection open={!collapsed.library}>
-                    <NavItem label="All Snippets" count={totalSnippets} active={isAll} onClick={() => setFilter(null)} icon={faLayerGroup} />
-                    <NavItem label="Favorites" count={favCount} active={activeFilter === "favorites"} onClick={() => setFilter("filter", "favorites")} icon={faStar} />
-                    <NavItem label="Public" count={0} icon={faGlobe} />
-                    <NavItem label="Most Copied" count={totalSnippets} icon={faCopy} active={activeFilter === "most-copied"} onClick={() => setFilter("filter", "most-copied")}/>
+                    <NavItem label="All Snippets" count={totalSnippets} active={isAll} onClick={() => setFilter(null)} onPrefetch={() => prefetchRoute(null)} icon={faLayerGroup} />
+                    <NavItem label="Favorites" count={favCount} active={activeFilter === "favorites"} onClick={() => setFilter("filter", "favorites")} onPrefetch={() => prefetchRoute("filter", "favorites")} icon={faStar} />
+                    <NavItem label="Public" count={0} icon={faGlobe} onPrefetch={() => prefetchRoute(null)} />
+                    <NavItem label="Most Copied" count={totalSnippets} active={activeFilter === "most-copied"} onClick={() => setFilter("filter", "most-copied")} onPrefetch={() => prefetchRoute("filter", "most-copied")} icon={faCopy} />
                 </CollapseSection>
             </div>
 
-
-            {/* Collections */}
+            {/* folder colect */}
             <div className="px-3 py-2 border-t border-[var(--border)]">
                 <div
                     onClick={() => toggle("collections")}
@@ -278,10 +316,7 @@ export default function SidebarClient({ totalSnippets, totalCopies, totalFavorit
                     <p className="text-[10px] font-semibold tracking-[1.5px] uppercase text-[var(--text4)] group-hover:text-[var(--text3)] transition-colors">
                         Collections
                     </p>
-                    <motion.div
-                        animate={{ rotate: collapsed.collections ? -90 : 0 }}
-                        transition={{ duration: 0.2 }}
-                    >
+                    <motion.div animate={{ rotate: collapsed.collections ? -90 : 0 }} transition={{ duration: 0.2 }}>
                         <FontAwesomeIcon icon={faChevronDown} className="w-[8px] h-[8px] text-[var(--text4)]" />
                     </motion.div>
                 </div>
@@ -297,26 +332,14 @@ export default function SidebarClient({ totalSnippets, totalCopies, totalFavorit
                                     if (e.key === "Enter") handleAddCollection()
                                     if (e.key === "Escape") { setAddingCol(false); setNewColName("") }
                                 }}
-                                onBlur={() => {
-                                    // delay sedikit supaya click Simpan sempat ke-trigger duluan
-                                    setTimeout(() => { setAddingCol(false); setNewColName("") }, 150)
-                                }}
                                 placeholder="Nama collection..."
                                 className="w-full bg-[var(--bg)] border border-[var(--em-border)] rounded-md px-2 py-[5px] text-[12px] text-[var(--text)] outline-none placeholder:text-[var(--text4)]"
                             />
                             <div className="flex gap-1.5">
-                                <button
-                                    onMouseDown={e => e.preventDefault()}
-                                    onClick={handleAddCollection}
-                                    className="flex-1 text-[11px] bg-[var(--em)] text-[#0a0a0a] font-semibold py-[5px] rounded-md hover:bg-[#2bc48a] transition-all"
-                                >
+                                <button onClick={handleAddCollection} className="flex-1 text-[11px] bg-[var(--em)] text-[#0a0a0a] font-semibold py-[5px] rounded-md hover:bg-[#2bc48a] transition-all">
                                     Simpan
                                 </button>
-                                <button
-                                    onMouseDown={e => e.preventDefault()}
-                                    onClick={() => { setAddingCol(false); setNewColName("") }}
-                                    className="flex-1 text-[11px] text-[var(--text1)] py-[5px] rounded-md  hover:bg-[var(--surface2)] transition-all"
-                                >
+                                <button onClick={() => { setAddingCol(false); setNewColName("") }} className="flex-1 text-[11px] text-[var(--text1)] py-[5px] rounded-md hover:bg-[var(--surface2)] transition-all">
                                     Batal
                                 </button>
                             </div>
@@ -331,12 +354,9 @@ export default function SidebarClient({ totalSnippets, totalCopies, totalFavorit
                         </div>
                     )}
 
-                    {/* List collections */}
                     <div className="overflow-y-auto max-h-[125px]">
                         {collections.length === 0 && (
-                            <p className="text-[11px] text-[var(--text4)] px-2 py-1 italic">
-                                Belum ada collection
-                            </p>
+                            <p className="text-[11px] text-[var(--text4)] px-2 py-1 italic">Belum ada collection</p>
                         )}
                         {collections.map(col => (
                             <div key={col.id} className="relative group">
@@ -359,8 +379,10 @@ export default function SidebarClient({ totalSnippets, totalCopies, totalFavorit
                                 ) : (
                                     <div
                                         onClick={() => setFilter("collection", String(col.id))}
+                                        onPointerEnter={() => prefetchRoute("collection", String(col.id))}
+                                        onTouchStart={() => prefetchRoute("collection", String(col.id))}
                                         className={`flex items-center justify-between px-2 py-[6px] rounded-[5px] cursor-pointer text-[13px] transition-all
-                                ${activeCollection === String(col.id)
+                                            ${activeCollection === String(col.id)
                                                 ? 'bg-[var(--em-faint)] text-[var(--em)] font-medium'
                                                 : 'text-[var(--text2)] hover:bg-[var(--em-faint)] hover:text-[var(--text)]'
                                             }`}
@@ -374,20 +396,15 @@ export default function SidebarClient({ totalSnippets, totalCopies, totalFavorit
                                         </div>
                                         <div className="flex items-center gap-1 shrink-0">
                                             <span className={`font-mono text-[10px] px-2 py-[1px] rounded-full
-                                    ${activeCollection === String(col.id) ? 'text-[var(--em-dim)] bg-[var(--em-faint)]' : 'text-[var(--text4)] bg-[var(--surface3)]'}`}>
+                                                ${activeCollection === String(col.id) ? 'text-[var(--em-dim)] bg-[var(--em-faint)]' : 'text-[var(--text4)] bg-[var(--surface3)]'}`}>
                                                 {col._count.snippets}
                                             </span>
                                             <button
-                                                onClick={e => {
+                                                onClick={(e) => {
                                                     e.stopPropagation()
-                                                    if (menuOpenId === col.id) {
-                                                        setMenuOpenId(null)
-                                                        setMenuPos(null)
-                                                    } else {
-                                                        const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
-                                                        setMenuPos({ x: rect.right, y: rect.bottom + 4 })
-                                                        setMenuOpenId(col.id)
-                                                    }
+                                                    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
+                                                    setMenuPos({ x: rect.right, y: rect.bottom + 4 })
+                                                    setMenuOpenId(col.id)
                                                 }}
                                                 className="opacity-0 group-hover:opacity-100 w-[18px] h-[18px] flex items-center justify-center rounded text-[var(--text4)] hover:text-[var(--text)] transition-all"
                                             >
@@ -396,30 +413,23 @@ export default function SidebarClient({ totalSnippets, totalCopies, totalFavorit
                                         </div>
                                     </div>
                                 )}
-
-
                             </div>
                         ))}
                     </div>
                 </CollapseSection>
             </div>
 
-            {/* Languages */}
+            {/* lang  */}
             <div className="px-3 py-2 border-t border-[var(--border)]">
-                <div
-                    onClick={() => toggle("languages")}
-                    className="flex items-center justify-between px-2 mb-1 cursor-pointer group"
-                >
+                <div onClick={() => toggle("languages")} className="flex items-center justify-between px-2 mb-1 cursor-pointer group">
                     <p className="text-[10px] font-semibold tracking-[1.5px] uppercase text-[var(--text4)] group-hover:text-[var(--text3)] transition-colors">
                         Language
                     </p>
-                    <motion.div
-                        animate={{ rotate: collapsed.languages ? -90 : 0 }}
-                        transition={{ duration: 0.2 }}
-                    >
+                    <motion.div animate={{ rotate: collapsed.languages ? -90 : 0 }} transition={{ duration: 0.2 }}>
                         <FontAwesomeIcon icon={faChevronDown} className="w-[8px] h-[8px] text-[var(--text4)]" />
                     </motion.div>
                 </div>
+
                 <CollapseSection open={!collapsed.languages}>
                     <div className="overflow-y-auto max-h-[125px]">
                         {languages.map(({ name, count }) => {
@@ -432,6 +442,7 @@ export default function SidebarClient({ totalSnippets, totalCopies, totalFavorit
                                     active={activeLang === name}
                                     dotColor={langConfig.color}
                                     onClick={() => setFilter("lang", name)}
+                                    onPrefetch={() => prefetchRoute("lang", name)}
                                 />
                             )
                         })}
@@ -439,22 +450,17 @@ export default function SidebarClient({ totalSnippets, totalCopies, totalFavorit
                 </CollapseSection>
             </div>
 
-            {/* Tags */}
+            {/* tag */}
             <div className="px-3 py-2 border-t border-[var(--border)]">
-                <div
-                    onClick={() => toggle("tags")}
-                    className="flex items-center justify-between px-2 mb-1 cursor-pointer group"
-                >
+                <div onClick={() => toggle("tags")} className="flex items-center justify-between px-2 mb-1 cursor-pointer group">
                     <p className="text-[10px] font-semibold tracking-[1.5px] uppercase text-[var(--text4)] group-hover:text-[var(--text3)] transition-colors">
                         Tags
                     </p>
-                    <motion.div
-                        animate={{ rotate: collapsed.tags ? -90 : 0 }}
-                        transition={{ duration: 0.2 }}
-                    >
+                    <motion.div animate={{ rotate: collapsed.tags ? -90 : 0 }} transition={{ duration: 0.2 }}>
                         <FontAwesomeIcon icon={faChevronDown} className="w-[8px] h-[8px] text-[var(--text4)]" />
                     </motion.div>
                 </div>
+
                 <CollapseSection open={!collapsed.tags}>
                     <div className="overflow-y-auto max-h-[100px]">
                         <div className="flex flex-wrap gap-[5px] px-2 pt-1">
@@ -462,8 +468,10 @@ export default function SidebarClient({ totalSnippets, totalCopies, totalFavorit
                                 <span
                                     key={name}
                                     onClick={() => setFilter("tag", name)}
+                                    onPointerEnter={() => prefetchRoute("tag", name)}
+                                    onTouchStart={() => prefetchRoute("tag", name)}
                                     className={`font-mono text-[10px] px-2 py-[3px] rounded-full border cursor-pointer transition-all
-                                    ${activeTag === name
+                                        ${activeTag === name
                                             ? 'border-[var(--em-border)] text-[var(--em)] bg-[var(--em-faint)]'
                                             : 'border-[var(--border2)] text-[var(--text3)] hover:border-[var(--em-border)] hover:text-[var(--em)]'
                                         }`}
@@ -476,7 +484,7 @@ export default function SidebarClient({ totalSnippets, totalCopies, totalFavorit
                 </CollapseSection>
             </div>
 
-            {/* Explore */}
+            {/* explore*/}
             <div className="px-3 py-2 border-t border-[var(--border)]">
                 <div
                     onClick={() => { router.push("/explore"); onNavigate?.() }}
@@ -492,7 +500,7 @@ export default function SidebarClient({ totalSnippets, totalCopies, totalFavorit
                 </div>
             </div>
 
-            {/* Stats */}
+            {/* stat */}
             <div className="mt-auto px-3 py-3 border-t border-[var(--border)]">
                 <div className="grid grid-cols-2 gap-[6px]">
                     {[
@@ -511,6 +519,7 @@ export default function SidebarClient({ totalSnippets, totalCopies, totalFavorit
                 </div>
             </div>
 
+            {/* Resize Handle */}
             <div
                 onMouseDown={startResizing}
                 className="absolute top-0 right-0 w-[4px] h-full cursor-col-resize z-50 group"
@@ -518,11 +527,9 @@ export default function SidebarClient({ totalSnippets, totalCopies, totalFavorit
                 <div className="w-full h-full bg-transparent group-hover:bg-[var(--em-dim)] transition-colors duration-150" />
             </div>
 
-
-            {/* Collection dropdown — fixed positioned, di luar scroll container */}
+            {/* Collection Context Menu */}
             {menuOpenId !== null && menuPos && (
                 <>
-                    {/* backdrop transparan untuk close saat click luar */}
                     <div
                         className="fixed inset-0 z-40"
                         onClick={() => { setMenuOpenId(null); setMenuPos(null) }}
@@ -534,8 +541,12 @@ export default function SidebarClient({ totalSnippets, totalCopies, totalFavorit
                         <button
                             onClick={() => {
                                 const col = collections.find(c => c.id === menuOpenId)
-                                if (col) { setEditingId(col.id); setEditingName(col.name) }
-                                setMenuOpenId(null); setMenuPos(null)
+                                if (col) {
+                                    setEditingId(col.id)
+                                    setEditingName(col.name)
+                                }
+                                setMenuOpenId(null)
+                                setMenuPos(null)
                             }}
                             className="flex items-center gap-2 w-full px-3 py-2 text-[12px] text-[var(--text2)] hover:bg-[var(--surface2)] rounded-md transition-all"
                         >
@@ -543,10 +554,7 @@ export default function SidebarClient({ totalSnippets, totalCopies, totalFavorit
                             Rename
                         </button>
                         <button
-                            onClick={() => {
-                                if (menuOpenId) handleDelete(menuOpenId)
-                                setMenuPos(null)
-                            }}
+                            onClick={() => handleDelete(menuOpenId)}
                             className="flex items-center gap-2 w-full px-3 py-2 text-[12px] text-red-400 hover:bg-red-500/10 rounded-md transition-all"
                         >
                             <FontAwesomeIcon icon={faTrash} className="w-[10px] h-[10px]" />
@@ -555,7 +563,6 @@ export default function SidebarClient({ totalSnippets, totalCopies, totalFavorit
                     </div>
                 </>
             )}
-
         </aside>
     )
 }
