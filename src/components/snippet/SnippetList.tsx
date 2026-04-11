@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { type Snippet } from "./SnippetDetail"
 import SnippetCard from "./SnippetCard"
 import SnippetDetail from "./SnippetDetail"
@@ -27,8 +27,12 @@ export default function SnippetList({ snippets }: { snippets: Snippet[] }) {
         setEditSnippet(null)
     }
 
-
     const isNavigating = useAppStore(s => s.isNavigating)
+    const setIsNavigating = useAppStore(s => s.setIsNavigating)
+
+    useEffect(() => {
+        setIsNavigating(false)
+    }, [snippets, setIsNavigating])
 
     if (isNavigating) return <SnippetListSkeleton />
 

@@ -203,9 +203,7 @@ export default function SidebarClient({
         onNavigate?.()
     }
 
-    useEffect(() => {
-        if (!isPending) setIsNavigating(false)
-    }, [isPending, setIsNavigating])
+
 
     const prefetchRoute = useCallback((type: "lang" | "tag" | "filter" | "collection" | null, value?: string) => {
         const url = type === null
