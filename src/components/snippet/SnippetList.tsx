@@ -112,7 +112,7 @@ export default function SnippetList({ snippets }: { snippets: Snippet[] }) {
                             initial={{ x: "-100%" }}
                             animate={{ x: 0 }}
                             exit={{ x: "-100%" }}
-                            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                            transition={{ type: "tween", duration: 0.2, ease: "easeOut" }}
                             className="absolute inset-0 flex flex-col bg-[var(--bg2)]"
                         >
                             <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border)] shrink-0">
@@ -143,7 +143,7 @@ export default function SnippetList({ snippets }: { snippets: Snippet[] }) {
                             initial={{ x: "100%" }}
                             animate={{ x: 0 }}
                             exit={{ x: "100%" }}
-                            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                            transition={{ type: "tween", duration: 0.2, ease: "easeOut" }}
                             className="absolute inset-0 flex flex-col bg-[var(--bg2)]"
                         >
                             {/* tombol back di mobile */}
