@@ -112,7 +112,7 @@ export default function SidebarClient({
     onNavigate
 }: SidebarClientProps) {
 
-    const { favCount, setFavCount, setFavoriteIds } = useAppStore()
+    const { favCount, setFavCount, setFavoriteIds, setIsNavigating } = useAppStore()
     const router = useRouter()
     const searchParams = useSearchParams()
 
@@ -192,6 +192,7 @@ export default function SidebarClient({
     }
 
     const setFilter = (type: "lang" | "tag" | "filter" | "collection" | null, value?: string) => {
+        setIsNavigating(true)
         startTransition(() => {
             if (type === null) {
                 router.replace("/dashboard")
@@ -202,9 +203,13 @@ export default function SidebarClient({
         onNavigate?.()
     }
 
+    useEffect(() => {
+        if (!isPending) setIsNavigating(false)
+    }, [isPending, setIsNavigating])
+
     const prefetchRoute = useCallback((type: "lang" | "tag" | "filter" | "collection" | null, value?: string) => {
-        const url = type === null 
-            ? "/dashboard" 
+        const url = type === null
+            ? "/dashboard"
             : `/dashboard?${type}=${value}`
         router.prefetch(url)
     }, [router])

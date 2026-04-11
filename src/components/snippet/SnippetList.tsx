@@ -8,11 +8,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCode, faPlus, faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 import SnippetModal from "./SnippetModal"
 import { AnimatePresence, motion } from "framer-motion"
+import { useAppStore } from "@/lib/store"
+import SnippetListSkeleton from "./SnippetListSkeleton"
 
 export default function SnippetList({ snippets }: { snippets: Snippet[] }) {
     const [selectedId, setSelectedId] = useState<number | null>(snippets[0]?.id ?? null)
     const [modalOpen, setModalOpen] = useState(false)
     const [editSnippet, setEditSnippet] = useState<Snippet | null>(null)
+
 
     // state khusus mobile — apakah detail sedang ditampilkan
     const [showDetail, setShowDetail] = useState(false)
@@ -23,6 +26,11 @@ export default function SnippetList({ snippets }: { snippets: Snippet[] }) {
         setModalOpen(false)
         setEditSnippet(null)
     }
+
+
+    const isNavigating = useAppStore(s => s.isNavigating)
+
+    if (isNavigating) return <SnippetListSkeleton />
 
     // klik snippet di mobile → set selected + tampilkan detail
     const handleSelectMobile = (id: number) => {

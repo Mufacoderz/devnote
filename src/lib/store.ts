@@ -8,6 +8,8 @@ interface AppStore {
     favoriteIds: Set<number>
     setFavoriteIds: (ids: number[]) => void
     toggleFavoriteId: (id: number) => void
+    isNavigating: boolean
+    setIsNavigating: (val: boolean) => void
 }
 
 export const useAppStore = create<AppStore>((set) => ({
@@ -26,4 +28,6 @@ export const useAppStore = create<AppStore>((set) => ({
         }
         return { favoriteIds: next }
     }),
+    isNavigating: false,
+    setIsNavigating: (val) => set({ isNavigating: val }),
 }))
