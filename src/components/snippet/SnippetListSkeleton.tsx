@@ -16,18 +16,53 @@ export default function SnippetListSkeleton() {
                         ))}
                     </div>
                 </div>
-                <div className="flex-1 flex flex-col animate-pulse">
-                    <div className="px-6 py-4 border-b border-[var(--border)] flex items-center justify-between shrink-0">
-                        <div className="flex flex-col gap-2">
-                            <div className="h-[16px] w-[180px] rounded bg-[var(--surface3)]" />
-                            <div className="h-[10px] w-[100px] rounded bg-[var(--surface3)]" />
+
+                {/* Detail Panel Skeleton */}
+                <div className="flex-1 flex flex-col animate-pulse overflow-hidden">
+                    {/* Top bar — favorite button area */}
+                    <div className="px-6 py-3 border-b border-[var(--border)] flex items-center justify-end shrink-0">
+                        <div className="h-[28px] w-[110px] rounded-lg bg-[var(--surface3)]" />
+                    </div>
+
+                    {/* Title + tags + action buttons + metadata */}
+                    <div className="px-6 py-4 border-b border-[var(--border)] flex flex-col gap-3 shrink-0">
+                        {/* Language badge + title */}
+                        <div className="flex items-center gap-2">
+                            <div className="h-[20px] w-[40px] rounded bg-[var(--surface3)]" />
+                            <div className="h-[10px] w-[60px] rounded bg-[var(--surface3)]" />
                         </div>
+                        <div className="h-[28px] w-[280px] rounded bg-[var(--surface3)]" />
+
+                        {/* Tags */}
                         <div className="flex gap-2">
-                            <div className="h-[30px] w-[70px] rounded-lg bg-[var(--surface3)]" />
-                            <div className="h-[30px] w-[70px] rounded-lg bg-[var(--surface3)]" />
+                            <div className="h-[22px] w-[80px] rounded-full bg-[var(--surface3)]" />
+                        </div>
+
+                        {/* Action buttons */}
+                        <div className="flex gap-2">
+                            <div className="h-[34px] w-[100px] rounded-lg bg-[var(--surface3)]" />
+                            <div className="h-[34px] w-[100px] rounded-lg bg-[var(--surface3)]" />
+                            <div className="h-[34px] w-[70px] rounded-lg bg-[var(--surface3)]" />
+                            <div className="h-[34px] w-[70px] rounded-lg bg-[var(--surface3)]" />
+                        </div>
+
+                        {/* Metadata — saved date, copies, visibility */}
+                        <div className="flex gap-4">
+                            <div className="h-[10px] w-[120px] rounded bg-[var(--surface3)]" />
+                            <div className="h-[10px] w-[80px] rounded bg-[var(--surface3)]" />
+                            <div className="h-[10px] w-[50px] rounded bg-[var(--surface3)]" />
                         </div>
                     </div>
+
+                    {/* Code area */}
                     <div className="flex-1 m-4 rounded-[8px] bg-[var(--surface3)]" />
+
+                    {/* Footer — line count, encoding, lang */}
+                    <div className="px-4 py-2 border-t border-[var(--border)] flex items-center gap-4 shrink-0">
+                        <div className="h-[10px] w-[50px] rounded bg-[var(--surface3)]" />
+                        <div className="h-[10px] w-[40px] rounded bg-[var(--surface3)]" />
+                        <div className="h-[10px] w-[30px] rounded bg-[var(--surface3)]" />
+                    </div>
                 </div>
             </div>
 
