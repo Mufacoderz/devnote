@@ -44,7 +44,7 @@ export default function RegisterPage() {
     }
 
     return (
-        <div className="overflow-hidden h-screen grid md:grid-cols-2 grid-cols-1 ">
+        <div className="overflow-hidden min-h-screen grid md:grid-cols-2 grid-cols-1 ">
 
             {/* kiri */}
             <div className="relative flex flex-col justify-center px-14 py-12 bg-[var(--em)] overflow-hidden order-2 md:order-1">

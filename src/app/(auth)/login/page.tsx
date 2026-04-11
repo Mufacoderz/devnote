@@ -38,7 +38,7 @@ export default function LoginPage() {
     return (
         <div className="min-h-screen grid grid-cols-1 md:grid-cols-2">
 
-            {/* Left — Form */}
+            {/* kiri */}
             <div className="flex flex-col justify-center px-14 py-12 bg-[var(--bg)] relative overflow-hidden">
                 {/* Grid bg */}
                 <div className="absolute inset-0 opacity-40"
