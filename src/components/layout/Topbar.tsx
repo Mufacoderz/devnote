@@ -170,11 +170,16 @@ export default function Topbar({ onNewSnippet, onToggleSidebar }: TopbarProps) {
                                     <div className="text-[11px] text-[var(--text4)]">{user.email}</div>
                                 </div>
                                 <div className="flex flex-col mt-1">
-                                    <button className="flex items-center gap-2 px-3 py-2 text-[12px] text-[var(--text2)] hover:bg-[var(--surface2)] rounded-md transition-all">
+                                    <button
+                                    onClick={() => { router.push("/profile"); setDropdownOpen(false) }}
+                                    className="flex items-center gap-2 px-3 py-2 text-[12px] text-[var(--text2)] hover:bg-[var(--surface2)] rounded-md transition-all">
                                         <FontAwesomeIcon icon={faUserPen} className="w-[11px] h-[11px]" />
                                         Edit Profil
                                     </button>
-                                    <button className="flex items-center gap-2 px-3 py-2 text-[12px] text-[var(--text2)] hover:bg-[var(--surface2)] rounded-md transition-all">
+                                    <button
+                                        onClick={() => { router.push("/preferences"); setDropdownOpen(false) }}
+                                        className="flex items-center gap-2 px-3 py-2 text-[12px] text-[var(--text2)] hover:bg-[var(--surface2)] rounded-md transition-all"
+                                    >
                                         <FontAwesomeIcon icon={faGear} className="w-[11px] h-[11px]" />
                                         Preferences
                                     </button>
