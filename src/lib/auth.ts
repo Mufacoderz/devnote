@@ -25,6 +25,9 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
                 const user = await prisma.user.findUnique({ where: { email } })
                 if (!user) return null
 
+                // reject OAuth user yang coba login via form
+                if (!user.password) return null
+
                 const isValid = await bcrypt.compare(password, user.password)
                 if (!isValid) return null
 
@@ -37,27 +40,22 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     pages: { signIn: "/login" },
 
     callbacks: {
-        // jwt callback dipanggil saat login dan saat session di-access
         async jwt({ token, user, account, profile }) {
-            // login credentials biasa — user.id sudah ada
             if (user?.id) {
                 token.id = user.id
             }
 
-            // login Google — perlu cek/buat user di DB
             if (account?.provider === "google" && profile?.email) {
                 let dbUser = await prisma.user.findUnique({
                     where: { email: profile.email }
                 })
 
-                // kalau belum ada di DB, buat user baru
                 if (!dbUser) {
                     dbUser = await prisma.user.create({
                         data: {
                             name: profile.name ?? "User",
                             email: profile.email,
-                            // password random karena Google user tidak pakai password
-                            password: await bcrypt.hash(Math.random().toString(36), 10),
+                            password: null,
                             avatar: (profile as { picture?: string }).picture ?? null,
                         }
                     })
