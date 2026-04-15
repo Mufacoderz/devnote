@@ -7,11 +7,11 @@ export async function GET(req: NextRequest) {
     const currentUserId = session?.user?.id ? Number(session.user.id) : null
 
     const { searchParams } = new URL(req.url)
-    const sort = searchParams.get("sort") ?? "newest"       // newest | oldest | popular | most-copied
+    const sort = searchParams.get("sort") ?? "newest"
     const lang = searchParams.get("lang") ?? ""
     const search = searchParams.get("search") ?? ""
     const page = Math.max(1, Number(searchParams.get("page") ?? "1"))
-    const limit = 10
+    const limit = 5
 
     const where = {
         isPublic: true,
