@@ -41,6 +41,7 @@ export async function GET() {
         totalSnippets: snippets.length,
         totalCopies: snippets.reduce((acc, s) => acc + s.copyCount, 0),
         totalFavorites: snippets.filter(s => s.isFavorite).length,
+        totalPublic: snippets.filter(s => s.isPublic).length,
         languages,
         tags,
     })

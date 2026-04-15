@@ -9,6 +9,7 @@ interface SidebarData {
     totalSnippets: number
     totalCopies: number
     totalFavorites: number
+    totalPublic: number
     languages: { name: string; count: number }[]
     tags: { name: string; count: number }[]
 }
@@ -62,6 +63,7 @@ export default function MobileSidebar() {
                                 totalSnippets={data.totalSnippets}
                                 totalCopies={data.totalCopies}
                                 totalFavorites={data.totalFavorites}
+                                totalPublic={data.totalPublic}
                                 languages={data.languages}
                                 tags={data.tags}
                                 onNavigate={() => setSidebarOpen(false)}
