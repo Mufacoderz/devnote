@@ -99,6 +99,7 @@ interface SidebarClientProps {
     totalCopies: number
     totalFavorites: number
     totalPublic: number
+    totalSnippetCopied: number
     languages: { name: string; count: number }[]
     tags: { name: string; count: number }[]
     onNavigate?: () => void
@@ -109,6 +110,7 @@ export default function SidebarClient({
     totalCopies,
     totalFavorites,
     totalPublic,
+    totalSnippetCopied,
     languages,
     tags,
     onNavigate
@@ -326,7 +328,7 @@ export default function SidebarClient({
                         onPrefetch={() => prefetchRoute("filter", "public")}
                         icon={faGlobe}
                     />
-                    <NavItem label="Most Copied" count={totalSnippets} active={activeFilter === "most-copied"} onClick={() => setFilter("filter", "most-copied")} onPrefetch={() => prefetchRoute("filter", "most-copied")} icon={faCopy} />
+                    <NavItem label="Most Copied" count={totalSnippetCopied} active={activeFilter === "most-copied"} onClick={() => setFilter("filter", "most-copied")} onPrefetch={() => prefetchRoute("filter", "most-copied")} icon={faCopy} />
                 </CollapseSection>
             </div>
 

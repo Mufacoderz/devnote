@@ -42,11 +42,16 @@ export default async function Sidebar() {
     // total copies dari semua snippet
     const totalCopies = snippets.reduce((acc, s) => acc + s.copyCount, 0)
 
+    //snippet yg dicpy
+    const totalSnippetCopied = snippets.filter(s => s.copyCount>0).length
+
 
     //total fav
     const totalFavorites = snippets.filter(s => s.isFavorite).length
 
     const totalPublic = snippets.filter(s => s.isPublic).length
+
+
 
     return (
         <SidebarClient
@@ -54,8 +59,10 @@ export default async function Sidebar() {
             totalCopies={totalCopies}
             totalFavorites={totalFavorites}
             totalPublic={totalPublic}
+            totalSnippetCopied={totalSnippetCopied}
             languages={languages}
             tags={tags}
+            
         />
     )
 }

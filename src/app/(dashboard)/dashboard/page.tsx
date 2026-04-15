@@ -39,6 +39,11 @@ async function DashboardContent({
           { tags: { some: { tag: { name: { contains: search } } } } },
         ]
       }),
+      ...(filter === "most-copied" && {
+        copyCount : {
+          gt: 0
+        }
+      })
     },
     orderBy: filter === "most-copied"
       ? { copyCount: "desc" }
