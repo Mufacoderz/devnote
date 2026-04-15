@@ -15,11 +15,20 @@ interface AppStore {
     setFavCount: (count: number) => void
     incrementFav: () => void
     decrementFav: () => void
+
+    // === BARU: Public Count ===
+    publicCount: number
+    setPublicCount: (count: number) => void
+    incrementPublicCount: () => void
+    decrementPublicCount: () => void
+
     favoriteIds: Set<number>
     setFavoriteIds: (ids: number[]) => void
     toggleFavoriteId: (id: number) => void
+
     isNavigating: boolean
     setIsNavigating: (val: boolean) => void
+
     prefs: Prefs
     updatePref: <K extends keyof Prefs>(key: K, val: Prefs[K]) => void
 }
@@ -40,19 +49,25 @@ export const useAppStore = create<AppStore>()(
             setFavCount: (count) => set({ favCount: count }),
             incrementFav: () => set((s) => ({ favCount: s.favCount + 1 })),
             decrementFav: () => set((s) => ({ favCount: Math.max(0, s.favCount - 1) })),
+
+            // Public Count
+            publicCount: 0,
+            setPublicCount: (count) => set({ publicCount: count }),
+            incrementPublicCount: () => set((s) => ({ publicCount: s.publicCount + 1 })),
+            decrementPublicCount: () => set((s) => ({ publicCount: Math.max(0, s.publicCount - 1) })),
+
             favoriteIds: new Set(),
             setFavoriteIds: (ids) => set({ favoriteIds: new Set(ids) }),
             toggleFavoriteId: (id) => set((s) => {
                 const next = new Set(s.favoriteIds)
-                if (next.has(id)) {
-                    next.delete(id)
-                } else {
-                    next.add(id)
-                }
+                if (next.has(id)) next.delete(id)
+                else next.add(id)
                 return { favoriteIds: next }
             }),
+
             isNavigating: false,
             setIsNavigating: (val) => set({ isNavigating: val }),
+
             prefs: DEFAULT_PREFS,
             updatePref: (key, val) => set((s) => ({
                 prefs: { ...s.prefs, [key]: val }
@@ -60,10 +75,10 @@ export const useAppStore = create<AppStore>()(
         }),
         {
             name: "devnote_store",
-            // Set tidak bisa di-serialize JSON, skip favoriteIds dan isNavigating dari persist
             partialize: (s) => ({
                 prefs: s.prefs,
                 favCount: s.favCount,
+                publicCount: s.publicCount,
             }),
         }
     )

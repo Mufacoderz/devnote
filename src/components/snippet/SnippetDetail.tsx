@@ -22,6 +22,7 @@ export interface Snippet {
     tags: string[]
     copyCount: number
     isFavorite?: boolean
+    isPublic?: boolean
     createdAt: string
 }
 
@@ -39,6 +40,7 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
     const [confirmOpen, setConfirmOpen] = useState(false)
     const [copyCount, setCopyCount] = useState(snippet.copyCount)
     const [isFavorite, setIsFavorite] = useState(snippet.isFavorite)
+    const [isPublic, setIsPublic] = useState(snippet.isPublic)
 
     const [colOpen, setColOpen] = useState(false)
     const [collections, setCollections] = useState<Collection[]>([])
@@ -84,6 +86,20 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
             })
         // .finally(() => setColLoading(false))
     }, [colOpen, snippet.id])
+
+    const togglePublic = async () => {
+        const next = !isPublic
+        setIsPublic(next)
+
+        try {
+            const res = await fetch(`/api/snippets/${snippet.id}/publish`, {
+                method: "POST",
+            })
+            if (!res.ok) throw new Error()
+        } catch {
+            setIsPublic(!next)
+        }
+    }
 
     const handleToggleCollection = async (colId: number) => {
         const isAssigned = assignedIds.includes(colId)
@@ -167,27 +183,53 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
                         </h2>
                     </div>
 
-                    <button
-                        onClick={handleFavorite}
-                        className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-[12px] font-medium transition-all
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={handleFavorite}
+                            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-[12px] font-medium transition-all
                             ${isFavorite
-                                ? 'bg-yellow-400/10 border-yellow-400/50 text-yellow-300'
-                                : 'border-[var(--border2)] text-[var(--text3)] hover:border-yellow-400/50 hover:text-yellow-300'
-                            }`}
-                    >
-                        <span className={`text-[14px] transition-transform ${isFavorite ? "scale-110" : ""}`}>
-                            {isFavorite ? (
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                                </svg>
-                            ) : (
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                                </svg>
-                            )}
-                        </span>
-                        {isFavorite ? "Favorited" : "Favorite"}
-                    </button>
+                                    ? 'bg-yellow-400/10 border-yellow-400/50 text-yellow-300'
+                                    : 'border-[var(--border2)] text-[var(--text3)] hover:border-yellow-400/50 hover:text-yellow-300'
+                                }`}
+                        >
+                            <span className={`text-[14px] transition-transform ${isFavorite ? "scale-110" : ""}`}>
+                                {isFavorite ? (
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                                    </svg>
+                                ) : (
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                                    </svg>
+                                )}
+                            </span>
+                            {isFavorite ? "Favorited" : "Favorite"}
+                        </button>
+                        <button
+                            onClick={togglePublic}
+                            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-[12px] font-medium transition-all
+        ${isPublic
+                                    ? 'bg-blue-500/10 border-blue-500/50 text-blue-300'
+                                    : 'border-[var(--border2)] text-[var(--text3)] hover:border-blue-500/50 hover:text-blue-300'
+                                }`}
+                        >
+                            <span className="text-[14px]">
+                                {isPublic ? (
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm7.93 9h-3.17a15.5 15.5 0 00-1.09-4.37A8.03 8.03 0 0119.93 11zM12 4c.89 1.17 1.57 2.6 2.03 4H9.97C10.43 6.6 11.11 5.17 12 4zM4.07 13h3.17c.2 1.57.67 3.02 1.36 4.27A8.03 8.03 0 014.07 13zM7.24 11H4.07a8.03 8.03 0 014.53-4.27A15.5 15.5 0 007.24 11zm1.73 2h4.06c-.46 1.4-1.14 2.83-2.03 4-.89-1.17-1.57-2.6-2.03-4zm5.73 4.27c.69-1.25 1.16-2.7 1.36-4.27h3.17a8.03 8.03 0 01-4.53 4.27z" />
+                                    </svg>
+                                ) : (
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M17 8h-1V6a4 4 0 10-8 0v2H7a2 2 0 00-2 2v8a2 2 0 002 2h10a2 2 0 002-2v-8a2 2 0 00-2-2zm-6 0V6a2 2 0 114 0v2h-4z" />
+                                    </svg>
+                                )}
+                            </span>
+
+                            {isPublic ? "Public" : "Private"}
+                        </button>
+                    </div>
+
+
                 </div>
 
                 {snippet.description && (

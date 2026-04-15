@@ -20,6 +20,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  likes    Like[]
   snippets    Snippet[]
   collections Collection[]
 
@@ -43,6 +44,7 @@ model Snippet {
   userId      Int
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  likes    Like[]
   tags        SnippetTag[]
   collections SnippetCollection[]
 
@@ -104,4 +106,17 @@ model SnippetTag {
 
   @@id([snippetId, tagId])
   @@map("snippet_tags")
+}
+
+
+model Like {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  snippetId Int
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  snippet Snippet @relation(fields: [snippetId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, snippetId])
+  @@map("likes")
 }
