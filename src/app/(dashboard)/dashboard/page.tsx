@@ -29,6 +29,7 @@ async function DashboardContent({
       ...(lang && { language: lang }),
       ...(tag && { tags: { some: { tag: { name: tag } } } }),
       ...(filter === "favorites" && { isFavorite: true }),
+      ...(filter === "public" && { isPublic: true }),
       ...(collection && { collections: { some: { collectionId: Number(collection) } } }),
       ...(search && {
         OR: [
@@ -55,6 +56,7 @@ async function DashboardContent({
     code: s.code,
     copyCount: s.copyCount,
     isFavorite: s.isFavorite,
+    isPublic: s.isPublic,
     createdAt: s.createdAt.toLocaleDateString("id-ID", {
       day: "numeric",
       month: "long",

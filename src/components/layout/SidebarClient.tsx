@@ -98,6 +98,7 @@ interface SidebarClientProps {
     totalSnippets: number
     totalCopies: number
     totalFavorites: number
+    totalPublic: number
     languages: { name: string; count: number }[]
     tags: { name: string; count: number }[]
     onNavigate?: () => void
@@ -107,12 +108,13 @@ export default function SidebarClient({
     totalSnippets,
     totalCopies,
     totalFavorites,
+    totalPublic,
     languages,
     tags,
     onNavigate
 }: SidebarClientProps) {
 
-    const { favCount, setFavCount, setFavoriteIds, setIsNavigating } = useAppStore()
+    const { favCount, setFavCount, setFavoriteIds, setIsNavigating, publicCount, setPublicCount, setPublicIds } = useAppStore()
     const router = useRouter()
     const searchParams = useSearchParams()
 
@@ -161,6 +163,7 @@ export default function SidebarClient({
 
             router.prefetch("/dashboard?filter=favorites")
             router.prefetch("/dashboard?filter=most-copied")
+            router.prefetch("/dashboard?filter=public")
         }
 
         const timeout = setTimeout(prefetchAllRoutes, 250)
@@ -171,6 +174,9 @@ export default function SidebarClient({
     useEffect(() => {
         setFavCount(totalFavorites)
     }, [totalFavorites, setFavCount])
+    useEffect(() => {
+        setPublicCount(totalPublic)
+    }, [totalPublic, setPublicCount])
 
     useEffect(() => {
         fetch("/api/snippets?filter=favorites")
@@ -178,6 +184,13 @@ export default function SidebarClient({
             .then(d => setFavoriteIds((d.snippets ?? []).map((s: { id: number }) => s.id)))
             .catch(console.error)
     }, [setFavoriteIds])
+    useEffect(() => {
+        fetch("/api/snippets?filter=public")
+            .then(r => r.json())
+            .then(d => setPublicIds((d.snippets ?? []).map((s: { id: number }) => s.id)))
+            .catch(console.error)
+    }, [setPublicIds])
+    
 
     useEffect(() => {
         fetch("/api/collections")
@@ -305,7 +318,14 @@ export default function SidebarClient({
                 <CollapseSection open={!collapsed.library}>
                     <NavItem label="All Snippets" count={totalSnippets} active={isAll} onClick={() => setFilter(null)} onPrefetch={() => prefetchRoute(null)} icon={faLayerGroup} />
                     <NavItem label="Favorites" count={favCount} active={activeFilter === "favorites"} onClick={() => setFilter("filter", "favorites")} onPrefetch={() => prefetchRoute("filter", "favorites")} icon={faStar} />
-                    <NavItem label="Public" count={0} icon={faGlobe} onPrefetch={() => prefetchRoute(null)} />
+                    <NavItem
+                        label="Public"
+                        count={publicCount}
+                        active={activeFilter === "public"}
+                        onClick={() => setFilter("filter", "public")}
+                        onPrefetch={() => prefetchRoute("filter", "public")}
+                        icon={faGlobe}
+                    />
                     <NavItem label="Most Copied" count={totalSnippets} active={activeFilter === "most-copied"} onClick={() => setFilter("filter", "most-copied")} onPrefetch={() => prefetchRoute("filter", "most-copied")} icon={faCopy} />
                 </CollapseSection>
             </div>

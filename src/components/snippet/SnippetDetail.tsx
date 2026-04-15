@@ -33,7 +33,16 @@ interface Collection {
 
 export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
     const router = useRouter()
-    const { incrementFav, decrementFav, toggleFavoriteId } = useAppStore()
+    const {
+        incrementFav,
+        decrementFav,
+        toggleFavoriteId,
+        favoriteIds,
+        incrementPublicCount,
+        decrementPublicCount,
+        togglePublicId,
+        publicIds,
+    } = useAppStore()
 
 
     const [deleting, setDeleting] = useState(false)
@@ -55,8 +64,12 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
     }, [snippet.id, snippet.copyCount])
 
     useEffect(() => {
-        setIsFavorite(snippet.isFavorite)
-    }, [snippet.id, snippet.isFavorite])
+        setIsFavorite(favoriteIds.has(snippet.id))
+    }, [snippet.id, favoriteIds])
+
+    useEffect(() => {
+        setIsPublic(publicIds.has(snippet.id))
+    }, [snippet.id, publicIds])
 
     // Click outside handler untuk dropdown
     useEffect(() => {
@@ -87,19 +100,7 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
         // .finally(() => setColLoading(false))
     }, [colOpen, snippet.id])
 
-    const togglePublic = async () => {
-        const next = !isPublic
-        setIsPublic(next)
 
-        try {
-            const res = await fetch(`/api/snippets/${snippet.id}/publish`, {
-                method: "POST",
-            })
-            if (!res.ok) throw new Error()
-        } catch {
-            setIsPublic(!next)
-        }
-    }
 
     const handleToggleCollection = async (colId: number) => {
         const isAssigned = assignedIds.includes(colId)
@@ -160,6 +161,24 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
             toggleFavoriteId(snippet.id)
         }
     }
+
+    const handlePublic = async () => {
+        const next = !isPublic
+        setIsPublic(next)
+        if (next) incrementPublicCount()
+        else decrementPublicCount()
+        togglePublicId(snippet.id)
+
+        try {
+            const res = await fetch(`/api/snippets/${snippet.id}/publish`, { method: "POST" })
+            if (!res.ok) throw new Error()
+        } catch {
+            setIsPublic(!next)
+            if (next) decrementPublicCount()
+            else incrementPublicCount()
+            togglePublicId(snippet.id)
+        }
+    }
     return (
         <div className="flex-1 flex flex-col h-full min-h-0 overflow-hidden">
             <div className="px-6 py-5 border-b border-[var(--border)] shrink-0">
@@ -206,7 +225,7 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
                             {isFavorite ? "Favorited" : "Favorite"}
                         </button>
                         <button
-                            onClick={togglePublic}
+                            onClick={handlePublic}
                             className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-[12px] font-medium transition-all
         ${isPublic
                                     ? 'bg-blue-500/10 border-blue-500/50 text-blue-300'
@@ -318,7 +337,7 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
                 <div className="flex items-center gap-4 mt-4 font-mono text-[11px] text-[var(--text4)]">
                     <span>Disimpan {snippet.createdAt}</span>
                     <span>{copyCount} kali disalin</span>
-                    <span>Privat</span>
+                    <span>{isPublic ? "Public" : "Private"}</span>
                 </div>
             </div>
 

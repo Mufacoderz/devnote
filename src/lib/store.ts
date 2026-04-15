@@ -16,7 +16,6 @@ interface AppStore {
     incrementFav: () => void
     decrementFav: () => void
 
-    // === BARU: Public Count ===
     publicCount: number
     setPublicCount: (count: number) => void
     incrementPublicCount: () => void
@@ -25,6 +24,10 @@ interface AppStore {
     favoriteIds: Set<number>
     setFavoriteIds: (ids: number[]) => void
     toggleFavoriteId: (id: number) => void
+    
+    publicIds: Set<number>
+    setPublicIds: (ids: number[]) => void
+    togglePublicId: (id: number) => void
 
     isNavigating: boolean
     setIsNavigating: (val: boolean) => void
@@ -48,30 +51,46 @@ export const useAppStore = create<AppStore>()(
             favCount: 0,
             setFavCount: (count) => set({ favCount: count }),
             incrementFav: () => set((s) => ({ favCount: s.favCount + 1 })),
-            decrementFav: () => set((s) => ({ favCount: Math.max(0, s.favCount - 1) })),
-
-            // Public Count
-            publicCount: 0,
-            setPublicCount: (count) => set({ publicCount: count }),
-            incrementPublicCount: () => set((s) => ({ publicCount: s.publicCount + 1 })),
-            decrementPublicCount: () => set((s) => ({ publicCount: Math.max(0, s.publicCount - 1) })),
+            decrementFav: () =>
+                set((s) => ({ favCount: Math.max(0, s.favCount - 1) })),
 
             favoriteIds: new Set(),
             setFavoriteIds: (ids) => set({ favoriteIds: new Set(ids) }),
-            toggleFavoriteId: (id) => set((s) => {
-                const next = new Set(s.favoriteIds)
-                if (next.has(id)) next.delete(id)
-                else next.add(id)
-                return { favoriteIds: next }
-            }),
+            toggleFavoriteId: (id) =>
+                set((s) => {
+                    const next = new Set(s.favoriteIds)
+                    if (next.has(id)) next.delete(id)
+                    else next.add(id)
+                    return { favoriteIds: next }
+                }),
+
+            publicCount: 0,
+            setPublicCount: (count) => set({ publicCount: count }),
+            incrementPublicCount: () =>
+                set((s) => ({ publicCount: s.publicCount + 1 })),
+            decrementPublicCount: () =>
+                set((s) => ({
+                    publicCount: Math.max(0, s.publicCount - 1),
+                })),
+
+            publicIds: new Set(),
+            setPublicIds: (ids) => set({ publicIds: new Set(ids) }),
+            togglePublicId: (id) =>
+                set((s) => {
+                    const next = new Set(s.publicIds)
+                    if (next.has(id)) next.delete(id)
+                    else next.add(id)
+                    return { publicIds: next }
+                }),
 
             isNavigating: false,
             setIsNavigating: (val) => set({ isNavigating: val }),
 
             prefs: DEFAULT_PREFS,
-            updatePref: (key, val) => set((s) => ({
-                prefs: { ...s.prefs, [key]: val }
-            })),
+            updatePref: (key, val) =>
+                set((s) => ({
+                    prefs: { ...s.prefs, [key]: val },
+                })),
         }),
         {
             name: "devnote_store",

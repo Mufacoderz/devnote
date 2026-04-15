@@ -20,6 +20,7 @@ export async function GET(req: NextRequest) {
             userId: Number(session.user.id),
             ...(lang && { language: lang }),
             ...(filter === "favorites" && { isFavorite: true }),
+            ...(filter === "public" && { isPublic: true }),
             ...(tag && { tags: { some: { tag: { name: tag } } } }),
             ...(collection && { collections: { some: { collectionId: Number(collection) } } }),
         },
