@@ -150,7 +150,10 @@ export default function ExploreClient() {
     }
 
     return (
-        <div className="min-h-screen bg-[var(--bg)] flex flex-col">
+        <div className="min-h-screen  flex flex-col">
+
+
+
             <ExploreTopbar search={search} onSearch={handleSearch} />
 
             {/* Hero Section yang sudah dipisah */}
@@ -169,8 +172,8 @@ export default function ExploreClient() {
                                 key={f.value}
                                 onClick={() => handleSort(f.value)}
                                 className={`text-[12px] px-3 py-1.5 rounded-lg transition-all font-medium ${sort === f.value
-                                        ? "bg-[var(--em-faint)] text-[var(--em)] border border-[var(--em-border)]"
-                                        : "text-[var(--text3)] hover:text-[var(--text)]"
+                                    ? "bg-[var(--em-faint)] text-[var(--em)] border border-[var(--em-border)]"
+                                    : "text-[var(--text3)] hover:text-[var(--text)]"
                                     }`}
                             >
                                 {f.label}
@@ -211,6 +214,7 @@ export default function ExploreClient() {
                 </div>
 
                 {/* Snippet list */}
+
                 {loading ? (
                     <div className="flex flex-col gap-4">
                         {Array.from({ length: 5 }).map((_, i) => <SkeletonCard key={i} />)}

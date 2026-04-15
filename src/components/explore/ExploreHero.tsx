@@ -1,3 +1,4 @@
+import AnimatedGradient from "@/components/ui/AnimatedGradient"
 
 interface ExploreHeroProps {
     total: number
@@ -5,32 +6,31 @@ interface ExploreHeroProps {
 
 export default function ExploreHero({ total }: ExploreHeroProps) {
     return (
-        <section className="relative overflow-hidden bg-gradient-to-br from-[#0a0f0c] via-[#0f1a14] to-[#0a0f0c] border-b border-emerald-950">
-            {/* Background Pattern */}
+        <section className="relative h-auto md:h-screen -mt-14 overflow-hidden border-b border-emerald-950">
+
+<AnimatedGradient />
+
+            <div className="absolute inset-0 bg-[#0a0f0c]/70 backdrop-blur-[2px]" />
+
             <div className="absolute inset-0 opacity-10">
-                <div 
+                <div
                     className="absolute inset-0"
                     style={{
                         backgroundImage: `
-                            linear-gradient(to right, #10b981 1px, transparent 1px),
-                            linear-gradient(to bottom, #10b981 1px, transparent 1px)
+                        linear-gradient(to right, #10b981 1px, transparent 1px),
+                        linear-gradient(to bottom, #10b981 1px, transparent 1px)
                         `,
                         backgroundSize: "60px 60px"
                     }}
                 />
             </div>
 
-            {/* Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-transparent to-black/40" />
-
-            {/* Glow Effects */}
             <div className="absolute top-0 left-1/3 w-[800px] h-[600px] bg-emerald-500/20 blur-[120px] rounded-full" />
             <div className="absolute bottom-0 right-1/4 w-[600px] h-[500px] bg-teal-500/10 blur-[100px] rounded-full" />
 
-            <div className="relative max-w-5xl mx-auto px-5 py-20 lg:py-24">
+            <div className="relative z-10 max-w-5xl mx-auto px-5 h-full flex items-center">
                 <div className="grid lg:grid-cols-12 gap-12 items-center">
-                    
-                    {/* Left Content */}
+
                     <div className="lg:col-span-7 space-y-8">
                         <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-emerald-950/60 border border-emerald-800 rounded-full text-emerald-400 text-xs font-medium tracking-widest">
                             DISCOVER • SHARE • INSPIRE
@@ -44,11 +44,9 @@ export default function ExploreHero({ total }: ExploreHeroProps) {
                         </h1>
 
                         <p className="text-lg text-emerald-100/80 max-w-md leading-relaxed">
-                            Temukan ribuan potongan kode berkualitas dari developer Indonesia dan dunia. 
-                            Inspirasi langsung untuk project kamu berikutnya.
+                            Temukan ribuan potongan kode berkualitas dari developer Indonesia dan dunia.
                         </p>
 
-                        {/* Stats */}
                         <div className="flex items-center gap-10 pt-4">
                             <div>
                                 <div className="text-4xl font-semibold text-white font-mono tracking-tight">
@@ -66,21 +64,21 @@ export default function ExploreHero({ total }: ExploreHeroProps) {
                         </div>
                     </div>
 
-                    {/* Right Decorative Card */}
                     <div className="lg:col-span-5 relative">
-                        <div className="relative bg-[#0a0f0c] border border-emerald-900/80 rounded-3xl overflow-hidden shadow-2xl shadow-emerald-950/50">
-                            {/* Window Header */}
+                        <div className="relative bg-[#0a0f0c]/80 backdrop-blur-md border border-emerald-900/80 rounded-3xl overflow-hidden shadow-2xl shadow-emerald-950/50">
+
                             <div className="flex items-center gap-2 px-5 py-3 border-b border-emerald-950 bg-black/40">
                                 <div className="flex gap-1.5">
                                     <div className="w-3 h-3 rounded-full bg-red-500" />
                                     <div className="w-3 h-3 rounded-full bg-yellow-500" />
                                     <div className="w-3 h-3 rounded-full bg-emerald-500" />
                                 </div>
-                                <div className="mx-auto text-[10px] text-emerald-500/70 font-mono">beautiful-snippet.tsx</div>
+                                <div className="mx-auto text-[10px] text-emerald-500/70 font-mono">
+                                    beautiful-snippet.tsx
+                                </div>
                             </div>
 
-                            {/* Code Content */}
-                            <div className="p-6 font-mono text-sm leading-relaxed text-emerald-100/90 bg-[#050805]">
+                            <div className="p-6 font-mono text-sm leading-relaxed text-emerald-100/90 bg-[#050805]/80">
                                 <div>
                                     <span className="text-emerald-400">export</span>{" "}
                                     <span className="text-emerald-300">async function</span>{" "}
@@ -98,7 +96,6 @@ export default function ExploreHero({ total }: ExploreHeroProps) {
                                 <div>{"}"}</div>
                             </div>
 
-                            {/* Bottom Bar */}
                             <div className="px-5 py-3 bg-black/60 border-t border-emerald-950 flex items-center justify-between text-[10px] text-emerald-500/60">
                                 <div>12 likes • 8 copies</div>
                                 <div className="flex items-center gap-1">
@@ -108,11 +105,11 @@ export default function ExploreHero({ total }: ExploreHeroProps) {
                             </div>
                         </div>
 
-                        {/* Floating Badge */}
                         <div className="absolute -top-4 -right-4 bg-emerald-600 text-white text-xs font-semibold px-4 py-1.5 rounded-2xl shadow-xl shadow-emerald-900/70 border border-emerald-400/30">
                             Join Now
                         </div>
                     </div>
+
                 </div>
             </div>
         </section>
