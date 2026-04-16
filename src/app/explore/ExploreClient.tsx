@@ -6,10 +6,11 @@ import { useRouter, useSearchParams } from "next/navigation"
 import ExploreSnippetCard, { PublicSnippet } from "@/components/explore/ExploreSnippetCard"
 import ExplorePagination from "@/components/explore/ExplorePagination"
 import ExploreTopbar from "@/components/explore/ExploreTopbar"
-import ExploreHero from "@/components/explore/ExploreHero"   // ← Import Hero yang baru
+import ExploreHero from "@/components/explore/ExploreHero"
 
-// Import languages
 import { languages } from "@/lib/languages"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faSliders, faTimes } from "@fortawesome/free-solid-svg-icons"
 
 // ── Sort filter list
 const SORT_FILTERS = [
@@ -19,46 +20,16 @@ const SORT_FILTERS = [
     { label: "Paling Banyak Dicopy", value: "most-copied" },
 ]
 
-// ── Language filter untuk dropdown
+// ── Language filter
 const LANG_FILTERS = [
     { label: "Semua Bahasa", value: "" },
     ...Object.entries(languages)
         .filter(([key]) => key !== "other")
         .map(([key, config]) => ({
-            label: config.label === "?"
-                ? "Lainnya"
-                : `${config.label} - ${key.charAt(0).toUpperCase() + key.slice(1)}`,
+            label: config.label === "?" ? "Lainnya" : `${config.label} - ${key.charAt(0).toUpperCase() + key.slice(1)}`,
             value: key,
         }))
 ]
-
-// ── Skeleton card
-function SkeletonCard() {
-    return (
-        <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5 animate-pulse">
-            <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-lg bg-[var(--surface3)]" />
-                <div className="flex-1 space-y-2">
-                    <div className="h-4 bg-[var(--surface3)] rounded w-2/5" />
-                    <div className="h-3 bg-[var(--surface3)] rounded w-3/5" />
-                </div>
-                <div className="w-24 h-7 bg-[var(--surface3)] rounded-lg" />
-            </div>
-            <div className="flex gap-2">
-                {[40, 55, 35].map(w => (
-                    <div key={w} className="h-5 bg-[var(--surface3)] rounded-full" style={{ width: w }} />
-                ))}
-            </div>
-            <div className="flex items-center justify-between mt-4">
-                <div className="flex gap-3">
-                    <div className="h-6 w-14 bg-[var(--surface3)] rounded-lg" />
-                    <div className="h-6 w-10 bg-[var(--surface3)] rounded-lg" />
-                </div>
-                <div className="h-6 w-20 bg-[var(--surface3)] rounded-lg" />
-            </div>
-        </div>
-    )
-}
 
 export default function ExploreClient() {
     const router = useRouter()
@@ -75,6 +46,9 @@ export default function ExploreClient() {
     const [total, setTotal] = useState(0)
     const [totalPages, setTotalPages] = useState(1)
     const [loading, setLoading] = useState(true)
+
+    // Mobile Filter Modal
+    const [showMobileFilter, setShowMobileFilter] = useState(false)
 
     // Sync URL
     const pushParams = useCallback((overrides: Record<string, string>) => {
@@ -123,12 +97,14 @@ export default function ExploreClient() {
         setSort(val)
         setPage(1)
         pushParams({ sort: val, page: "1" })
+        setShowMobileFilter(false)
     }
 
     const handleLang = (val: string) => {
         setLang(val)
         setPage(1)
         pushParams({ lang: val, page: "1" })
+        setShowMobileFilter(false)
     }
 
     const handleSearch = (val: string) => {
@@ -152,26 +128,23 @@ export default function ExploreClient() {
     return (
         <div className="min-h-screen flex flex-col pt-16">
 
-
-
             <ExploreTopbar search={search} onSearch={handleSearch} />
 
-            {/* Hero Section yang sudah dipisah */}
             <ExploreHero total={total} loading={loading} />
 
             {/* Filter + List */}
             <div className="max-w-5xl mx-auto w-full px-5 py-8 flex-1">
 
-                {/* Sort + Language Dropdown */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                {/* Filter Bar - Responsif */}
+                <div className="flex items-center justify-between mb-6">
 
-                    {/* Sort Filter Buttons */}
-                    <div className="flex items-center gap-1.5 bg-[var(--surface)] border border-[var(--border)] rounded-xl p-1 w-fit">
+                    {/* Desktop: Sort Buttons */}
+                    <div className="hidden sm:flex items-center gap-1.5 bg-[var(--surface)] border border-[var(--border)] rounded-xl p-1">
                         {SORT_FILTERS.map(f => (
                             <button
                                 key={f.value}
                                 onClick={() => handleSort(f.value)}
-                                className={`text-[12px] px-3 py-1.5 rounded-lg transition-all font-medium ${sort === f.value
+                                className={`text-[13px] px-4 py-1.5 rounded-lg transition-all font-medium ${sort === f.value
                                     ? "bg-[var(--em-faint)] text-[var(--em)] border border-[var(--em-border)]"
                                     : "text-[var(--text3)] hover:text-[var(--text)]"
                                     }`}
@@ -181,8 +154,21 @@ export default function ExploreClient() {
                         ))}
                     </div>
 
-                    {/* Language Dropdown (native) */}
-                    <div className="flex items-center gap-3">
+                    {/* Mobile: Filter Button Only */}
+                    <button
+                        onClick={() => setShowMobileFilter(true)}
+                        className="sm:hidden flex items-center gap-2 bg-[var(--surface)] border border-[var(--border)] 
+                                   rounded-xl px-4 py-2.5 text-sm font-medium text-[var(--text)] hover:bg-[var(--surface2)] transition-all"
+                    >
+                        <FontAwesomeIcon icon={faSliders} className="w-4 h-4" />
+                        Filter
+                        <span className="text-[var(--text3)] text-xs ml-1">
+                            ({SORT_FILTERS.find(f => f.value === sort)?.label})
+                        </span>
+                    </button>
+
+                    {/* Language Dropdown - Hanya muncul di Desktop */}
+                    <div className="hidden sm:flex items-center gap-3">
                         <span className="text-[12px] text-[var(--text3)] font-medium whitespace-nowrap">
                             Bahasa:
                         </span>
@@ -200,21 +186,18 @@ export default function ExploreClient() {
                             ))}
                         </select>
                     </div>
-
-
                 </div>
 
-                <div className="mb-2">
-                    {/* Total count */}
-                    {!loading && (
-                        <span className="text-[12px] text-[var(--text3)] font-mono ml-auto">
+                {/* Total Count */}
+                {!loading && (
+                    <div className="mb-4 text-right">
+                        <span className="text-[12px] text-[var(--text3)] font-mono">
                             {total.toLocaleString()} snippet ditemukan
                         </span>
-                    )}
-                </div>
+                    </div>
+                )}
 
-                {/* Snippet list */}
-
+                {/* Snippet List */}
                 {loading ? (
                     <div className="flex flex-col gap-4">
                         {Array.from({ length: 5 }).map((_, i) => <SkeletonCard key={i} />)}
@@ -243,6 +226,60 @@ export default function ExploreClient() {
 
                 <ExplorePagination page={page} totalPages={totalPages} onChange={handlePage} />
             </div>
+
+            {/* ==================== MOBILE FILTER MODAL ==================== */}
+            {showMobileFilter && (
+                <div className="fixed inset-0 bg-black/80 z-[70] flex items-end sm:hidden">
+                    <div className="bg-[var(--surface)] w-full rounded-t-3xl p-6 max-h-[85vh] overflow-y-auto">
+                        <div className="flex items-center justify-between mb-6">
+                            <h3 className="text-lg font-semibold">Urutkan & Filter</h3>
+                            <button
+                                onClick={() => setShowMobileFilter(false)}
+                                className="w-10 h-10 flex items-center justify-center text-[var(--text3)] hover:text-white"
+                            >
+                                <FontAwesomeIcon icon={faTimes} className="w-5 h-5" />
+                            </button>
+                        </div>
+
+                        {/* Sort Options */}
+                        <div className="mb-8">
+                            <p className="text-[var(--text3)] text-sm mb-3 font-medium">Urutkan Berdasarkan</p>
+                            <div className="flex flex-col gap-2">
+                                {SORT_FILTERS.map(f => (
+                                    <button
+                                        key={f.value}
+                                        onClick={() => handleSort(f.value)}
+                                        className={`w-full text-left px-5 py-3.5 rounded-2xl transition-all text-[15px] font-medium
+                                            ${sort === f.value 
+                                                ? "bg-[var(--em-faint)] text-[var(--em)] border border-[var(--em-border)]" 
+                                                : "bg-[var(--surface2)] hover:bg-[var(--surface3)]"
+                                            }`}
+                                    >
+                                        {f.label}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Language Filter di Modal */}
+                        <div>
+                            <p className="text-[var(--text3)] text-sm mb-3 font-medium">Bahasa</p>
+                            <select
+                                value={lang}
+                                onChange={(e) => handleLang(e.target.value)}
+                                className="w-full bg-[var(--surface2)] border border-[var(--border)] text-[var(--text)] 
+                                           rounded-2xl px-5 py-3.5 text-base focus:outline-none focus:border-[var(--em-border)]"
+                            >
+                                {LANG_FILTERS.map(f => (
+                                    <option key={f.value} value={f.value}>
+                                        {f.label}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Footer */}
             <footer className="border-t border-[var(--border)] bg-[var(--surface)] mt-auto">
@@ -284,11 +321,40 @@ export default function ExploreClient() {
                             © 2026 DevNote. All rights reserved.
                         </div>
                         <div className="text-[11px] text-[var(--text3)]">
-                            Made with <span className="text-red-400">♥</span> for developers
+                            By Muhammad Fadil
                         </div>
                     </div>
                 </div>
             </footer>
+
+        </div>
+    )
+}
+
+// SkeletonCard
+function SkeletonCard() {
+    return (
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5 animate-pulse">
+            <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-lg bg-[var(--surface3)]" />
+                <div className="flex-1 space-y-2">
+                    <div className="h-4 bg-[var(--surface3)] rounded w-2/5" />
+                    <div className="h-3 bg-[var(--surface3)] rounded w-3/5" />
+                </div>
+                <div className="w-24 h-7 bg-[var(--surface3)] rounded-lg" />
+            </div>
+            <div className="flex gap-2">
+                {[40, 55, 35].map(w => (
+                    <div key={w} className="h-5 bg-[var(--surface3)] rounded-full" style={{ width: w }} />
+                ))}
+            </div>
+            <div className="flex items-center justify-between mt-4">
+                <div className="flex gap-3">
+                    <div className="h-6 w-14 bg-[var(--surface3)] rounded-lg" />
+                    <div className="h-6 w-10 bg-[var(--surface3)] rounded-lg" />
+                </div>
+                <div className="h-6 w-20 bg-[var(--surface3)] rounded-lg" />
+            </div>
         </div>
     )
 }

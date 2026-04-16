@@ -65,11 +65,11 @@ export default function ExploreHero({ total, loading }: ExploreHeroProps) {
 
             <div className="relative z-10 text-center px-6 py-12 max-w-[900px] w-full">
 
-            <h1 className="text-[64px] lg:text-[80px] font-bold text-white tracking-[-2.5px] leading-[1.1] mb-2">
+            <h1 className="text-[55px] lg:text-[80px] font-bold text-white tracking-[-2.5px] leading-[1.1] mb-2">
                 Jelajahi Snippet
             </h1>
 
-            <div className="text-[64px] lg:text-[80px] font-bold tracking-[-2.5px] leading-[1.1] mb-6 min-h-[1.2em]">
+            <div className="text-[55px] lg:text-[80px] font-bold tracking-[-2.5px] leading-[1.1] mb-6 min-h-[1.2em]">
                 <span
                     ref={typedRef}
                     className="bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-300 bg-clip-text text-transparent"
