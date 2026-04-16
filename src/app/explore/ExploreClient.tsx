@@ -44,7 +44,7 @@ function SkeletonCard() {
                 </div>
                 <div className="w-24 h-7 bg-[var(--surface3)] rounded-lg" />
             </div>
-            <div className="flex gap-2 mt-4">
+            <div className="flex gap-2">
                 {[40, 55, 35].map(w => (
                     <div key={w} className="h-5 bg-[var(--surface3)] rounded-full" style={{ width: w }} />
                 ))}
@@ -150,14 +150,14 @@ export default function ExploreClient() {
     }
 
     return (
-        <div className="min-h-screen  flex flex-col">
+        <div className="min-h-screen flex flex-col pt-16">
 
 
 
             <ExploreTopbar search={search} onSearch={handleSearch} />
 
             {/* Hero Section yang sudah dipisah */}
-            <ExploreHero total={total} />
+            <ExploreHero total={total} loading={loading} />
 
             {/* Filter + List */}
             <div className="max-w-5xl mx-auto w-full px-5 py-8 flex-1">
