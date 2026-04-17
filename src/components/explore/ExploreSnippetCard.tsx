@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation"
 import { getLang } from "@/lib/languages"
 import CodeBlock from "@/components/snippet/CodeBlock"
 import Image from "next/image"
-import { motion , AnimatePresence} from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 
 export interface PublicSnippet {
     id: number
@@ -47,13 +47,17 @@ export default function ExploreSnippetCard({ snippet, onLikeToggle }: Props) {
     const { data: session } = useSession()
     const router = useRouter()
     const lang = getLang(snippet.language)
+
     const [expanded, setExpanded] = useState(false)
     const [liking, setLiking] = useState(false)
     const [copied, setCopied] = useState(false)
 
     const handleLike = async (e: React.MouseEvent) => {
         e.stopPropagation()
-        if (!session?.user) { router.push("/login"); return }
+        if (!session?.user) {
+            router.push("/login")
+            return
+        }
         if (liking) return
         setLiking(true)
         try {
@@ -74,9 +78,16 @@ export default function ExploreSnippetCard({ snippet, onLikeToggle }: Props) {
     }
 
     return (
-        <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] overflow-hidden transition-all hover:border-[var(--border2)]">
+        <div className="group relative rounded-xl border border-[var(--border)] bg-[var(--surface)] overflow-hidden transition-all hover:border-[var(--border2)]">
+            
+            {/* border kiri sesaui wrma bhs */}
+            <div
+                className="absolute left-0 top-0 bottom-0 w-1 rounded-l-xl z-10"
+                style={{ backgroundColor: lang.color }}
+            />
+
             {/* Header */}
-            <div className="px-5 pt-5 pb-4">
+            <div className="px-5 pt-5 pb-4 pl-7"> 
                 <div className="flex items-start justify-between gap-3">
                     <div className="flex items-start gap-3 min-w-0">
                         <div
@@ -87,9 +98,10 @@ export default function ExploreSnippetCard({ snippet, onLikeToggle }: Props) {
                                 background: lang.color + "18",
                             }}
                         >
-                            {lang.label.slice(0, 2).toUpperCase()}
+                            {lang.label}
                         </div>
-                        <div className="min-w-0">
+
+                        <div className="min-w-0 flex-1">
                             <h3 className="text-[14px] font-semibold text-[var(--text)] truncate leading-tight mb-1">
                                 {snippet.title}
                             </h3>
@@ -101,16 +113,19 @@ export default function ExploreSnippetCard({ snippet, onLikeToggle }: Props) {
                         </div>
                     </div>
 
-                    {/* Kanan: author + time */}
                     <div className="shrink-0 flex items-center gap-2 text-right">
                         <div className="text-right hidden sm:block">
-                            <div className="text-[12px] font-medium text-[var(--text2)]">{snippet.user.name}</div>
-                            <div className="text-[11px] text-[var(--text3)]">{timeAgo(snippet.createdAt)}</div>
+                            <div className="text-[12px] font-medium text-[var(--text2)]">
+                                {snippet.user.name}
+                            </div>
+                            <div className="text-[11px] text-[var(--text3)]">
+                                {timeAgo(snippet.createdAt)}
+                            </div>
                         </div>
                         {snippet.user.avatar ? (
                             <Image
-                            width={40}
-                            height={40}
+                                width={40}
+                                height={40}
                                 src={snippet.user.avatar}
                                 alt={snippet.user.name}
                                 className="w-7 h-7 rounded-full object-cover border border-[var(--border)]"
@@ -185,44 +200,45 @@ export default function ExploreSnippetCard({ snippet, onLikeToggle }: Props) {
 
             <AnimatePresence>
                 {expanded && (
-                <motion.div
-                key="content"
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.25 }}
-                className="border-t border-[var(--border)] relative">
-                    <button
-                        onClick={handleCopy}
-                        className={`absolute top-3 right-3 z-10 flex items-center gap-1.5 text-[11px] font-mono px-3 py-1.5 rounded-lg border transition-all ${
-                            copied
-                                ? "text-[var(--em)] border-[var(--em-border)] bg-[var(--em-faint)]"
-                                : "text-[var(--text3)] border-[var(--border)] bg-[var(--surface2)] hover:text-[var(--text)] hover:border-[var(--border2)]"
-                        }`}
+                    <motion.div
+                        key="content"
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.25 }}
+                        className="border-t border-[var(--border)] relative"
                     >
-                        {copied ? (
-                            <>
-                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                    <polyline points="20 6 9 17 4 12" />
-                                </svg>
-                                Disalin
-                            </>
-                        ) : (
-                            <>
-                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-                                </svg>
-                                Salin
-                            </>
-                        )}
-                    </button>
+                        <button
+                            onClick={handleCopy}
+                            className={`absolute top-3 right-3 z-10 flex items-center gap-1.5 text-[11px] font-mono px-3 py-1.5 rounded-lg border transition-all ${
+                                copied
+                                    ? "text-[var(--em)] border-[var(--em-border)] bg-[var(--em-faint)]"
+                                    : "text-[var(--text3)] border-[var(--border)] bg-[var(--surface2)] hover:text-[var(--text)] hover:border-[var(--border2)]"
+                            }`}
+                        >
+                            {copied ? (
+                                <>
+                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                        <polyline points="20 6 9 17 4 12" />
+                                    </svg>
+                                    Disalin
+                                </>
+                            ) : (
+                                <>
+                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                                    </svg>
+                                    Salin
+                                </>
+                            )}
+                        </button>
 
-                    <div className="max-h-[360px] overflow-auto">
-                        <CodeBlock code={snippet.code} language={snippet.language} />
-                    </div>
-                </motion.div>
-            )}
+                        <div className="max-h-[360px] overflow-auto">
+                            <CodeBlock code={snippet.code} language={snippet.language} />
+                        </div>
+                    </motion.div>
+                )}
             </AnimatePresence>
         </div>
     )

@@ -109,7 +109,6 @@ export default function Topbar({ onNewSnippet, onToggleSidebar }: TopbarProps) {
                     </div>
                 </div>
 
-                {/* kanan */}
                 <div className="flex items-center gap-2">
 
                     {/* search input — desktop only */}

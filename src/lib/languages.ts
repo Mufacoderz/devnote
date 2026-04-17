@@ -245,10 +245,11 @@ export function getLang(language: string): LanguageConfig {
     return languages[normalized] ?? defaultLang
 }
 
-// Untuk dropdown / autocomplete
+
 export const LANGUAGE_OPTIONS = Object.keys(languages).filter(key => key !== "other")
 
-// Optional: sorted version untuk dropdown (lebih rapi)
+export const TOTAL_LANGUAGES = LANGUAGE_OPTIONS.length
+
 export const SORTED_LANGUAGE_OPTIONS = [...LANGUAGE_OPTIONS].sort((a, b) => 
     a.localeCompare(b)
 )
