@@ -6,7 +6,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faMagnifyingGlass,  faTimes } from "@fortawesome/free-solid-svg-icons"
+import { faMagnifyingGlass, faUser, faTimes } from "@fortawesome/free-solid-svg-icons"
 import { useDebouncedCallback } from "use-debounce"
 
 interface ExploreTopbarProps {
@@ -121,6 +121,20 @@ export default function ExploreTopbar({ search, onSearch }: ExploreTopbarProps) 
                             />
                         </button>
                     ) : (
+                        <button
+                            onClick={handleProfileClick}
+                            className=" sm:hidden w-10 h-10 flex items-center justify-center 
+                                bg-emerald-500 hover:bg-emerald-400 
+                                text-black rounded-full 
+                                transition-all active:scale-95"
+                            title="Masuk ke Dashboard"
+                        >
+                            <FontAwesomeIcon icon={faUser} className="w-5 h-5" />
+                        </button>
+                    )}
+
+                    {/* Login & Register (hanya jika belum login) */}
+                    {!session?.user && (
                         <div className="hidden sm:flex items-center gap-2">
                             <Link
                                 href="/login"
@@ -138,8 +152,6 @@ export default function ExploreTopbar({ search, onSearch }: ExploreTopbarProps) 
                             </Link>
                         </div>
                     )}
-
-                
                 </div>
             </div>
 

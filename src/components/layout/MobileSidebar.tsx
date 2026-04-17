@@ -15,9 +15,13 @@ interface SidebarData {
     tags: { name: string; count: number }[]
 }
 
+
+
 export default function MobileSidebar() {
     const { sidebarOpen, setSidebarOpen } = useSidebar()
     const [data, setData] = useState<SidebarData | null>(null)
+
+    
 
     useEffect(() => {
         if (sidebarOpen) {
