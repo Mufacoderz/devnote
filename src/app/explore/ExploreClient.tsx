@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useTransition } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
+import { motion, AnimatePresence } from "framer-motion"
 
 import ExploreSnippetCard, { PublicSnippet } from "@/components/explore/ExploreSnippetCard"
 import ExplorePagination from "@/components/explore/ExplorePagination"
@@ -154,11 +155,10 @@ export default function ExploreClient() {
                         ))}
                     </div>
 
-                    {/* Mobile: Filter Button Only */}
+                    {/* MFilter Button responsif */}
                     <button
                         onClick={() => setShowMobileFilter(true)}
-                        className="sm:hidden flex items-center gap-2 bg-[var(--surface)] border border-[var(--border)] 
-                                   rounded-xl px-4 py-2.5 text-sm font-medium text-[var(--text)] hover:bg-[var(--surface2)] transition-all"
+                        className="sm:hidden flex items-center gap-2 bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-2.5 text-sm font-medium text-[var(--text)] hover:bg-[var(--surface2)] transition-all"
                     >
                         <FontAwesomeIcon icon={faSliders} className="w-4 h-4" />
                         Filter
@@ -167,7 +167,6 @@ export default function ExploreClient() {
                         </span>
                     </button>
 
-                    {/* Language Dropdown - Hanya muncul di Desktop */}
                     <div className="hidden sm:flex items-center gap-3">
                         <span className="text-[12px] text-[var(--text3)] font-medium whitespace-nowrap">
                             Bahasa:
@@ -175,9 +174,7 @@ export default function ExploreClient() {
                         <select
                             value={lang}
                             onChange={(e) => handleLang(e.target.value)}
-                            className="bg-[var(--surface)] border border-[var(--border)] text-[var(--text)] 
-                                     rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-[var(--em-border)] 
-                                     cursor-pointer transition-all min-w-[180px]"
+                            className="bg-[var(--surface)] border border-[var(--border)] text-[var(--text)] rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-[var(--em-border)] cursor-pointer transition-all min-w-[180px]"
                         >
                             {LANG_FILTERS.map(f => (
                                 <option key={f.value} value={f.value}>
@@ -227,61 +224,80 @@ export default function ExploreClient() {
                 <ExplorePagination page={page} totalPages={totalPages} onChange={handlePage} />
             </div>
 
-            {/* ==================== MOBILE FILTER MODAL ==================== */}
-            {showMobileFilter && (
-                <div className="fixed inset-0 bg-black/80 z-[70] flex items-end sm:hidden">
-                    <div className="bg-[var(--surface)] w-full rounded-t-3xl p-6 max-h-[85vh] overflow-y-auto">
-                        <div className="flex items-center justify-between mb-6">
-                            <h3 className="text-lg font-semibold">Urutkan & Filter</h3>
-                            <button
-                                onClick={() => setShowMobileFilter(false)}
-                                className="w-10 h-10 flex items-center justify-center text-[var(--text3)] hover:text-white"
-                            >
-                                <FontAwesomeIcon icon={faTimes} className="w-5 h-5" />
-                            </button>
-                        </div>
+            {/*modal filter responsif*/}
+            <AnimatePresence>
+                {showMobileFilter && (
+                    <motion.div className="fixed inset-0 sm:hidden z-[70] ">
+                        <motion.div
+                        initial={{opacity: 0}}
+                        animate={{opacity: 1}}
+                        exit={{opacity: 0}}
+                            className=" absolute inset-0 bg-black/80  flex items-end " />
 
-                        {/* Sort Options */}
-                        <div className="mb-8">
-                            <p className="text-[var(--text3)] text-sm mb-3 font-medium">Urutkan Berdasarkan</p>
-                            <div className="flex flex-col gap-2">
-                                {SORT_FILTERS.map(f => (
-                                    <button
-                                        key={f.value}
-                                        onClick={() => handleSort(f.value)}
-                                        className={`w-full text-left px-5 py-3.5 rounded-2xl transition-all text-[15px] font-medium
-                                            ${sort === f.value 
-                                                ? "bg-[var(--em-faint)] text-[var(--em)] border border-[var(--em-border)]" 
-                                                : "bg-[var(--surface2)] hover:bg-[var(--surface3)]"
-                                            }`}
-                                    >
-                                        {f.label}
-                                    </button>
-                                ))}
+
+                        <motion.div
+                            initial={{ y: "100%" }}
+                            animate={{ y: 0 }}
+                            exit={{ y: "100%" }}
+                            transition={{
+                                type: "spring",
+                                stiffness: 120,
+                                damping: 18,
+                            }}
+                            className="absolute bottom-0 left-0 right-0 bg-[var(--surface)] w-full rounded-t-3xl p-6 max-h-[85vh] overflow-y-auto z-[71]">
+                            <div className="flex items-center justify-between mb-6">
+                                <h3 className="text-lg font-semibold">Urutkan & Filter</h3>
+                                <button
+                                    onClick={() => setShowMobileFilter(false)}
+                                    className="w-10 h-10 flex items-center justify-center text-[var(--text3)] hover:text-white"
+                                >
+                                    <FontAwesomeIcon icon={faTimes} className="w-5 h-5" />
+                                </button>
                             </div>
-                        </div>
 
-                        {/* Language Filter di Modal */}
-                        <div>
-                            <p className="text-[var(--text3)] text-sm mb-3 font-medium">Bahasa</p>
-                            <select
-                                value={lang}
-                                onChange={(e) => handleLang(e.target.value)}
-                                className="w-full bg-[var(--surface2)] border border-[var(--border)] text-[var(--text)] 
-                                           rounded-2xl px-5 py-3.5 text-base focus:outline-none focus:border-[var(--em-border)]"
-                            >
-                                {LANG_FILTERS.map(f => (
-                                    <option key={f.value} value={f.value}>
-                                        {f.label}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            )}
+                            {/* Sort Options */}
+                            <motion.div
 
-            {/* Footer */}
+                                className="mb-8">
+                                <p className="text-[var(--text3)] text-sm mb-3 font-medium">Urutkan Berdasarkan</p>
+                                <div className="flex flex-col gap-2">
+                                    {SORT_FILTERS.map(f => (
+                                        <button
+                                            key={f.value}
+                                            onClick={() => handleSort(f.value)}
+                                            className={`w-full text-left px-5 py-3.5 rounded-2xl transition-all text-[15px] font-medium
+                                            ${sort === f.value
+                                                    ? "bg-[var(--em-faint)] text-[var(--em)] border border-[var(--em-border)]"
+                                                    : "bg-[var(--surface2)] hover:bg-[var(--surface3)]"
+                                                }`}
+                                        >
+                                            {f.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            </motion.div>
+
+                            {/* Language Filter di Modal */}
+                            <div>
+                                <p className="text-[var(--text3)] text-sm mb-3 font-medium">Bahasa</p>
+                                <select
+                                    value={lang}
+                                    onChange={(e) => handleLang(e.target.value)}
+                                    className="w-full bg-[var(--surface2)] border border-[var(--border)] text-[var(--text)] rounded-2xl px-5 py-3.5 text-base focus:outline-none focus:border-[var(--em-border)]"
+                                >
+                                    {LANG_FILTERS.map(f => (
+                                        <option key={f.value} value={f.value}>
+                                            {f.label}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+
             <footer className="border-t border-[var(--border)] bg-[var(--surface)] mt-auto">
                 <div className="max-w-5xl mx-auto px-5 py-10">
                     <div className="flex flex-col md:flex-row justify-between gap-8">
