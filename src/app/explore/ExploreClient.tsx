@@ -210,15 +210,25 @@ export default function ExploreClient() {
                         <div className="text-[12px] text-[var(--text3)]">Coba ubah filter atau kata kunci pencarian</div>
                     </div>
                 ) : (
-                    <div className="flex flex-col gap-4">
-                        {snippets.map(s => (
-                            <ExploreSnippetCard
-                                key={s.id}
-                                snippet={s}
-                                onLikeToggle={handleLikeToggle}
-                            />
-                        ))}
-                    </div>
+                    <AnimatePresence>
+
+                        <div className="flex flex-col gap-4" >
+                            {snippets.map((s) => (
+                                <motion.div
+                                    key={s.id}
+                                    layout
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, scale: 0.98 }}
+                                >
+                                    <ExploreSnippetCard
+                                        snippet={s}
+                                        onLikeToggle={handleLikeToggle}
+                                    />
+                                </motion.div>
+                            ))}
+                        </div>
+                    </AnimatePresence>
                 )}
 
                 <ExplorePagination page={page} totalPages={totalPages} onChange={handlePage} />
@@ -229,9 +239,9 @@ export default function ExploreClient() {
                 {showMobileFilter && (
                     <motion.div className="fixed inset-0 sm:hidden z-[70] ">
                         <motion.div
-                        initial={{opacity: 0}}
-                        animate={{opacity: 1}}
-                        exit={{opacity: 0}}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
                             className=" absolute inset-0 bg-black/80  flex items-end " />
 
 
@@ -241,8 +251,8 @@ export default function ExploreClient() {
                             exit={{ y: "100%" }}
                             transition={{
                                 type: "spring",
-                                stiffness: 120,
-                                damping: 18,
+                                stiffness: 200,
+                                damping: 20,
                             }}
                             className="absolute bottom-0 left-0 right-0 bg-[var(--surface)] w-full rounded-t-3xl p-6 max-h-[85vh] overflow-y-auto z-[71]">
                             <div className="flex items-center justify-between mb-6">

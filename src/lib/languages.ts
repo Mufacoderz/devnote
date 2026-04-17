@@ -39,7 +39,7 @@ export const languages: Record<string, LanguageConfig> = {
         stripe: "bg-[#cc6699]",
     },
 
-    // --- Frontend ---
+    // --- Frontend Frameworks ---
     vue: {
         label: "VUE",
         color: "#42b883",
@@ -51,6 +51,12 @@ export const languages: Record<string, LanguageConfig> = {
         color: "#61dafb",
         pip: "bg-[rgba(97,218,251,0.1)] text-[#61dafb] border-[rgba(97,218,251,0.25)]",
         stripe: "bg-[#61dafb]",
+    },
+    svelte: {
+        label: "SV",
+        color: "#ff3e00",
+        pip: "bg-[rgba(255,62,0,0.1)] text-[#ff3e00] border-[rgba(255,62,0,0.25)]",
+        stripe: "bg-[#ff3e00]",
     },
 
     // --- Backend ---
@@ -74,9 +80,21 @@ export const languages: Record<string, LanguageConfig> = {
     },
     csharp: {
         label: "C#",
-        color: "#9b4f96",
+        color: "#9b4f96", // atau #239120 (warna resmi .NET lebih hijau)
         pip: "bg-[rgba(155,79,150,0.1)] text-[#9b4f96] border-[rgba(155,79,150,0.25)]",
         stripe: "bg-[#9b4f96]",
+    },
+    cpp: {
+        label: "C++",
+        color: "#00599c",
+        pip: "bg-[rgba(0,89,156,0.1)] text-[#00599c] border-[rgba(0,89,156,0.25)]",
+        stripe: "bg-[#00599c]",
+    },
+    c: {
+        label: "C",
+        color: "#a8b9cc",
+        pip: "bg-[rgba(168,185,204,0.1)] text-[#a8b9cc] border-[rgba(168,185,204,0.25)]",
+        stripe: "bg-[#a8b9cc]",
     },
     go: {
         label: "GO",
@@ -89,6 +107,24 @@ export const languages: Record<string, LanguageConfig> = {
         color: "#dea584",
         pip: "bg-[rgba(222,165,132,0.1)] text-[#dea584] border-[rgba(222,165,132,0.25)]",
         stripe: "bg-[#dea584]",
+    },
+    kotlin: {
+        label: "KT",
+        color: "#7f52ff",
+        pip: "bg-[rgba(127,82,255,0.1)] text-[#7f52ff] border-[rgba(127,82,255,0.25)]",
+        stripe: "bg-[#7f52ff]",
+    },
+    swift: {
+        label: "SW",
+        color: "#f05138",
+        pip: "bg-[rgba(240,81,56,0.1)] text-[#f05138] border-[rgba(240,81,56,0.25)]",
+        stripe: "bg-[#f05138]",
+    },
+    dart: {
+        label: "DART",
+        color: "#0175c2",
+        pip: "bg-[rgba(1,117,194,0.1)] text-[#0175c2] border-[rgba(1,117,194,0.25)]",
+        stripe: "bg-[#0175c2]",
     },
 
     // --- Database ---
@@ -110,16 +146,46 @@ export const languages: Record<string, LanguageConfig> = {
         pip: "bg-[rgba(71,162,72,0.1)] text-[#47a248] border-[rgba(71,162,72,0.25)]",
         stripe: "bg-[#47a248]",
     },
+    sql: {
+        label: "SQL",
+        color: "#e38c00",
+        pip: "bg-[rgba(227,140,0,0.1)] text-[#e38c00] border-[rgba(227,140,0,0.25)]",
+        stripe: "bg-[#e38c00]",
+    },
 
-    // --- DevOps ---
+    // --- DevOps & Tools ---
     dockerfile: {
         label: "DOCK",
         color: "#2496ed",
         pip: "bg-[rgba(36,150,237,0.1)] text-[#2496ed] border-[rgba(36,150,237,0.25)]",
         stripe: "bg-[#2496ed]",
     },
+    docker: {
+        label: "DOCKER",
+        color: "#2496ed",
+        pip: "bg-[rgba(36,150,237,0.1)] text-[#2496ed] border-[rgba(36,150,237,0.25)]",
+        stripe: "bg-[#2496ed]",
+    },
+    bash: {
+        label: "SH",
+        color: "#4eaa25",
+        pip: "bg-[rgba(78,170,37,0.1)] text-[#4eaa25] border-[rgba(78,170,37,0.25)]",
+        stripe: "bg-[#4eaa25]",
+    },
+    yaml: {
+        label: "YAML",
+        color: "#f7c244",
+        pip: "bg-[rgba(247,194,68,0.1)] text-[#f7c244] border-[rgba(247,194,68,0.25)]",
+        stripe: "bg-[#f7c244]",
+    },
+    nginx: {
+        label: "NGINX",
+        color: "#009900",
+        pip: "bg-[rgba(0,153,0,0.1)] text-[#009900] border-[rgba(0,153,0,0.25)]",
+        stripe: "bg-[#009900]",
+    },
 
-    // --- Data ---
+    // --- Data & Markup ---
     json: {
         label: "JSON",
         color: "#f5a623",
@@ -133,7 +199,7 @@ export const languages: Record<string, LanguageConfig> = {
         stripe: "bg-[#94a3b8]",
     },
 
-    // --- fallback ---
+    // --- Fallback ---
     other: {
         label: "?",
         color: "#64748b",
@@ -142,35 +208,47 @@ export const languages: Record<string, LanguageConfig> = {
     },
 }
 
+// Default
 export const defaultLang: LanguageConfig = languages.other
 
-// alias biar fleksibel input
+// Alias untuk fleksibilitas input (sangat berguna)
 const alias: Record<string, string> = {
     ts: "typescript",
     js: "javascript",
     py: "python",
     sh: "bash",
+    shell: "bash",
     yml: "yaml",
     md: "markdown",
     rs: "rust",
     golang: "go",
     "c#": "csharp",
     "c++": "cpp",
+    cpp: "cpp",
+    cplusplus: "cpp",
+    docker: "dockerfile",
+    sql: "sql",
+    kt: "kotlin",
+    dart: "dart",
+    swift: "swift",
 }
-
 
 export function getLang(language: string): LanguageConfig {
     if (!language) return defaultLang
 
     let key = language.toLowerCase().trim()
-
-    // hapus spasi aneh
-    key = key.replace(/\s+/g, "")
+    key = key.replace(/\s+/g, "")          // hapus semua spasi
+    key = key.replace(/^\./, "")           // hapus titik di depan (contoh: .ts → ts)
 
     const normalized = alias[key] ?? key
 
     return languages[normalized] ?? defaultLang
 }
 
-// dropdown options
-export const LANGUAGE_OPTIONS = Object.keys(languages)
+// Untuk dropdown / autocomplete
+export const LANGUAGE_OPTIONS = Object.keys(languages).filter(key => key !== "other")
+
+// Optional: sorted version untuk dropdown (lebih rapi)
+export const SORTED_LANGUAGE_OPTIONS = [...LANGUAGE_OPTIONS].sort((a, b) => 
+    a.localeCompare(b)
+)

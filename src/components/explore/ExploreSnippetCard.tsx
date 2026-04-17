@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import { getLang } from "@/lib/languages"
 import CodeBlock from "@/components/snippet/CodeBlock"
 import Image from "next/image"
+import { motion , AnimatePresence} from "framer-motion"
 
 export interface PublicSnippet {
     id: number
@@ -182,8 +183,15 @@ export default function ExploreSnippetCard({ snippet, onLikeToggle }: Props) {
                 </div>
             </div>
 
-            {expanded && (
-                <div className="border-t border-[var(--border)] relative">
+            <AnimatePresence>
+                {expanded && (
+                <motion.div
+                key="content"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.25 }}
+                className="border-t border-[var(--border)] relative">
                     <button
                         onClick={handleCopy}
                         className={`absolute top-3 right-3 z-10 flex items-center gap-1.5 text-[11px] font-mono px-3 py-1.5 rounded-lg border transition-all ${
@@ -213,8 +221,9 @@ export default function ExploreSnippetCard({ snippet, onLikeToggle }: Props) {
                     <div className="max-h-[360px] overflow-auto">
                         <CodeBlock code={snippet.code} language={snippet.language} />
                     </div>
-                </div>
+                </motion.div>
             )}
+            </AnimatePresence>
         </div>
     )
 }
