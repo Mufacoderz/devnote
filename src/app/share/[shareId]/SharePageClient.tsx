@@ -153,7 +153,7 @@ export default function SharePageSplit({ snippet }: { snippet: ShareSnippet }) {
 
                     <div className="mt-auto pt-7">
                         <Link
-                            href="/register"
+                            href="/"
                             className="group flex items-center justify-between bg-emerald-500 hover:bg-emerald-400 transition-all text-black font-semibold px-5 py-3 rounded-2xl mb-5 text-sm"
                         >
                             <span>Gabung ke Devnote</span>
@@ -173,9 +173,9 @@ export default function SharePageSplit({ snippet }: { snippet: ShareSnippet }) {
                             </Link>
                         )}
 
-                        <p className="text-emerald-100/40 text-xs tracking-wide">
+                        <a href="https:github.com/Mufacoderz" target="blank" className="text-emerald-100/40 text-xs tracking-wide">
                             Shared via <span className="text-emerald-400 font-medium">devnote</span> — by Muhammad Fadil
-                        </p>
+                        </a>
                     </div>
                 </div>
 
@@ -207,7 +207,6 @@ export default function SharePageSplit({ snippet }: { snippet: ShareSnippet }) {
                         </button>
                     </div>
 
-                    {/* Code Block dengan Height Tetap */}
                     <div className="flex-1 bg-[#0a0f0c] overflow-hidden">
                         <div className="h-[460px] lg:h-[530px] overflow-auto">
                             <CodeBlock code={snippet.code} language={snippet.language} />
