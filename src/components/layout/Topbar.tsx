@@ -92,7 +92,6 @@ export default function Topbar({ onNewSnippet, onToggleSidebar }: TopbarProps) {
                     </div>
                 )}
 
-                {/* kiri */}
                 <div className="flex items-center gap-3">
                     <button
                         onClick={onToggleSidebar}
@@ -111,7 +110,6 @@ export default function Topbar({ onNewSnippet, onToggleSidebar }: TopbarProps) {
 
                 <div className="flex items-center gap-2">
 
-                    {/* search input — desktop only */}
                     <div className="relative hidden lg:block">
                         <input
                             type="text"
@@ -126,7 +124,6 @@ export default function Topbar({ onNewSnippet, onToggleSidebar }: TopbarProps) {
                         />
                     </div>
 
-                    {/* search icon mobile  */}
                     <button
                         onClick={() => setSearchOpen(true)}
                         className="lg:hidden w-[32px] h-[32px] flex items-center justify-center rounded-lg text-[var(--text3)] hover:bg-[var(--surface2)] hover:text-[var(--text)] transition-all"
@@ -134,7 +131,6 @@ export default function Topbar({ onNewSnippet, onToggleSidebar }: TopbarProps) {
                         <FontAwesomeIcon icon={faMagnifyingGlass} className="w-[13px] h-[13px]" />
                     </button>
 
-                    {/* tambah snippet */}
                     <button
                         onClick={onNewSnippet}
                         className="flex items-center gap-2 bg-[var(--em)] text-[#0a0a0a] font-semibold text-[13px] px-4 py-[6px] rounded-full border border-transparent hover:bg-transparent hover:text-[var(--em)] hover:border-[var(--em)] hover:shadow-[0_0_20px_var(--em-glow)] transition-all"
@@ -143,7 +139,6 @@ export default function Topbar({ onNewSnippet, onToggleSidebar }: TopbarProps) {
                         <span className="hidden lg:inline">Tambah Snippet</span>
                     </button>
 
-                    {/* avatar + dropdown */}
                     <div className="relative" ref={dropdownRef}>
                         <div onClick={() => setDropdownOpen(!dropdownOpen)} className="cursor-pointer">
                             {user.image ? (

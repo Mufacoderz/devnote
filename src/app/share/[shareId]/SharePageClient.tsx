@@ -6,7 +6,7 @@ import Link from "next/link"
 import CodeBlock from "@/components/snippet/CodeBlock"
 import { getLang } from "@/lib/languages"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faUser, faCopy, faCheck, faUpRightFromSquare, faArrowRight } from "@fortawesome/free-solid-svg-icons"
+import { faUser, faCopy, faCheck, faArrowRight } from "@fortawesome/free-solid-svg-icons"
 
 interface ShareSnippet {
     id: number
@@ -163,7 +163,7 @@ export default function SharePageSplit({ snippet }: { snippet: ShareSnippet }) {
                             />
                         </Link>
 
-                        {snippet.isPublic && (
+                        {/* {snippet.isPublic && (
                             <Link
                                 href="/explore"
                                 className="flex items-center gap-2 text-emerald-400 hover:text-emerald-300 text-sm transition-colors mb-4"
@@ -171,7 +171,7 @@ export default function SharePageSplit({ snippet }: { snippet: ShareSnippet }) {
                                 Lihat di Explore 
                                 <FontAwesomeIcon icon={faUpRightFromSquare} className="w-3.5 h-3.5" />
                             </Link>
-                        )}
+                        )} */}
 
                         <a href="https:github.com/Mufacoderz" target="blank" className="text-emerald-100/40 text-xs tracking-wide">
                             Shared via <span className="text-emerald-400 font-medium">devnote</span> — by Muhammad Fadil
@@ -203,7 +203,7 @@ export default function SharePageSplit({ snippet }: { snippet: ShareSnippet }) {
                                 }`}
                         >
                             <FontAwesomeIcon icon={copied ? faCheck : faCopy} className="w-4 h-4" />
-                            {copied ? "Tersalin!" : "Salin Kode"}
+                            {copied ? "Tersalin!" : "Salin"}
                         </button>
                     </div>
 

@@ -6,7 +6,7 @@ import CodeBlock from "./CodeBlock"
 import { getLang } from "@/lib/languages"
 import { useAppStore } from "@/lib/store"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faFolderPlus, faCheck, faCopy, faLink, faLinkSlash } from "@fortawesome/free-solid-svg-icons"
+import { faFolderPlus, faCheck, faCopy, faLink, faLinkSlash, faEllipsisVertical } from "@fortawesome/free-solid-svg-icons"
 
 interface SnippetDetailProps {
     snippet: Snippet
@@ -53,6 +53,8 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
     const [colOpen, setColOpen] = useState(false)
     const [collections, setCollections] = useState<Collection[]>([])
     const [assignedIds, setAssignedIds] = useState<number[]>([])
+    const [menuOpen, setMenuOpen] = useState(false)
+    const menuRef = useRef<HTMLDivElement>(null)
 
     // Share state
     const [shareOpen, setShareOpen] = useState(false)
@@ -62,6 +64,16 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
     const [unshareConfirm, setUnshareConfirm] = useState(false)
 
     const colRef = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+                setMenuOpen(false)
+            }
+        }
+        document.addEventListener("click", handleClickOutside)
+        return () => document.removeEventListener("click", handleClickOutside)
+    }, [])
 
     useEffect(() => {
         setCopyCount(snippet.copyCount)
@@ -222,8 +234,8 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
 
     return (
         <div className="flex-1 flex flex-col h-full min-h-0 overflow-hidden">
-            <div className="px-6 py-5 border-b border-[var(--border)] shrink-0">
-                <div className="flex items-start justify-between gap-4 mb-3">
+            <div className="px-6 py-2 sm:py-5 border-b border-[var(--border)] shrink-0">
+                <div className="flex items-start justify-between gap-4 mb-1 sm:mb-3">
                     <div>
                         <div className="flex items-center gap-2 mb-2">
                             <span
@@ -238,7 +250,7 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
                             </span>
                             <span className="text-[12px] text-[var(--text3)]">{snippet.language}</span>
                         </div>
-                        <h2 className="text-[22px] font-bold tracking-[-0.5px] leading-tight">
+                        <h2 className=" text-[18px] sm:text-[22px] font-bold tracking-[-0.5px] leading-tight">
                             {snippet.title}
                         </h2>
                     </div>
@@ -263,7 +275,9 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
                                     </svg>
                                 )}
                             </span>
-                            {isFavorite ? "Favorited" : "Favorite"}
+                            <span className="hidden sm:block">
+                                {isFavorite ? "Favorited" : "Favorite"}
+                            </span>
                         </button>
                         <button
                             onClick={handlePublic}
@@ -284,22 +298,24 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
                                     </svg>
                                 )}
                             </span>
-                            {isPublic ? "Public" : "Private"}
+                            <span className="hidden sm:block">
+                                {isPublic ? "Public" : "Private"}
+                            </span>
                         </button>
                     </div>
                 </div>
 
                 {snippet.description && (
-                    <p className="text-[13px] text-[var(--text3)] mb-4 leading-relaxed max-w-2xl">
+                    <p className="text-[13px] text-[var(--text3)] mb-2 sm:mb-4 leading-relaxed max-w-2xl">
                         {snippet.description}
                     </p>
                 )}
 
-                <div className="flex gap-2 mb-4 flex-wrap">
+                <div className="flex gap-2 mb-2 sm:mb-4 flex-wrap">
                     {snippet.tags.map(tag => (
                         <span
                             key={tag}
-                            className="font-mono text-[10px] text-[var(--text3)] bg-[var(--surface2)] border border-[var(--border2)] px-2.5 py-[3px] rounded-full"
+                            className="font-mono text-[7px] sm:text-[10px] text-[var(--text3)] bg-[var(--surface2)] border border-[var(--border2)] px-2.5 py-[3px] rounded-full"
                         >
                             {tag}
                         </span>
@@ -355,34 +371,69 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
                         )}
                     </div>
 
-                    <button
-                        onClick={onEdit}
-                        className="text-[13px] font-medium px-4 py-2 rounded-lg border border-[var(--border2)] text-yellow-700 hover:border-yellow-500/60 hover:text-yellow-300 transition-all"
-                    >
-                        Edit
-                    </button>
+                    {/* Desktop */}
+                    <div className="hidden sm:flex items-center gap-2">
+                        <button
+                            onClick={onEdit}
+                            className="text-[13px] font-medium px-4 py-2 rounded-lg border border-[var(--border2)] text-yellow-700 hover:border-yellow-500/60 hover:text-yellow-300 transition-all"
+                        >
+                            Edit
+                        </button>
 
-                    <button
-                        onClick={() => setConfirmOpen(true)}
-                        disabled={deleting}
-                        className="text-[13px] font-medium px-4 py-2 rounded-lg border border-[var(--border2)] text-red-700 hover:border-red-500/60 hover:text-red-400 transition-all disabled:opacity-40"
-                    >
-                        {deleting ? "Menghapus..." : "Hapus"}
-                    </button>
+                        <button
+                            onClick={() => setConfirmOpen(true)}
+                            disabled={deleting}
+                            className="text-[13px] font-medium px-4 py-2 rounded-lg border border-[var(--border2)] text-red-700 hover:border-red-500/60 hover:text-red-400 transition-all disabled:opacity-40"
+                        >
+                            {deleting ? "Menghapus..." : "Hapus"}
+                        </button>
+                    </div>
+
+                    {/* Mobile */}
+                    <div className="sm:hidden relative" ref={menuRef}>
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation()
+                                setMenuOpen(v => !v)
+                            }}
+                            className="p-2 rounded-lg border border-[var(--border2)] text-[var(--text3)]"
+                        >
+                            <FontAwesomeIcon icon={faEllipsisVertical} />
+                        </button>
+
+                        {menuOpen && (
+                            <div className="absolute right-0 top-10 w-[150px] rounded-xl border border-[var(--border)] bg-[var(--surface)] shadow-xl p-2 z-50">
+                                <button
+                                    onClick={onEdit}
+                                    className="flex items-center gap-2 w-full px-3 py-2 text-[12px] rounded-lg hover:bg-[var(--surface2)]"
+                                >
+                                    Edit
+                                </button>
+
+                                <button
+                                    onClick={() => setConfirmOpen(true)}
+                                    className="flex items-center gap-2 w-full px-3 py-2 text-[12px] text-red-400 rounded-lg hover:bg-[var(--surface2)]"
+                                >
+                                    Hapus
+                                </button>
+                            </div>
+                        )}
+                    </div>
+
+
                 </div>
 
-                <div className="flex items-center gap-4 mt-4 font-mono text-[11px] text-[var(--text4)]">
+                <div className="flex items-center gap-4 mt-2 sm:mt-4 font-mono text-[8px] sm:text-[11px] text-[var(--text4)]">
                     <span>Disimpan {snippet.createdAt}</span>
                     <span>{copyCount} kali disalin</span>
                     <span>{isPublic ? "Public" : "Private"}</span>
                 </div>
             </div>
 
-            <div className="flex-1 min-h-0 overflow-hidden">
+            <div className="flex-1 min-h-0 overflow-hidden ">
                 <CodeBlock code={snippet.code} language={snippet.language} />
             </div>
 
-            {/* Footer */}
             <div className="flex items-center justify-between px-6 py-2.5 border-t border-[var(--border)] bg-[var(--surface)] shrink-0">
                 <div className="flex items-center gap-4 font-mono text-[10px] text-[var(--text4)]">
                     <span>{snippet.code.split('\n').length} baris</span>
@@ -397,7 +448,6 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
                     className="flex items-center gap-1.5 font-mono text-[10px] text-[var(--em-dim)] border border-[var(--em-border)] px-3 py-1.5 rounded-full hover:text-[var(--em)] transition-all disabled:opacity-50"
                 >
                     {shareLoading ? (
-                        // Spinner sederhana saat loading
                         <span className="w-[10px] h-[10px] border border-[var(--em-dim)] border-t-transparent rounded-full animate-spin" />
                     ) : (
                         <FontAwesomeIcon icon={faLink} className="w-[9px] h-[9px]" />
@@ -454,9 +504,9 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
                             </button>
                         </div>
 
-                        
+
                         <div className="flex items-center justify-between pt-1">
-                            
+
                             {unshareConfirm ? (
                                 <div className="flex items-center gap-2">
                                     <span className="text-[12px] text-[var(--text3)]">Yakin nonaktifkan link?</span>
