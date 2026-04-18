@@ -6,7 +6,7 @@ import CodeBlock from "./CodeBlock"
 import { getLang } from "@/lib/languages"
 import { useAppStore } from "@/lib/store"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faFolderPlus } from "@fortawesome/free-solid-svg-icons"
+import { faFolderPlus, faCheck, faCopy, faLink, faLinkSlash } from "@fortawesome/free-solid-svg-icons"
 
 interface SnippetDetailProps {
     snippet: Snippet
@@ -44,7 +44,6 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
         publicIds,
     } = useAppStore()
 
-
     const [deleting, setDeleting] = useState(false)
     const [confirmOpen, setConfirmOpen] = useState(false)
     const [copyCount, setCopyCount] = useState(snippet.copyCount)
@@ -54,11 +53,16 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
     const [colOpen, setColOpen] = useState(false)
     const [collections, setCollections] = useState<Collection[]>([])
     const [assignedIds, setAssignedIds] = useState<number[]>([])
-    // const [colLoading, setColLoading] = useState(false)
+
+    // Share state
+    const [shareOpen, setShareOpen] = useState(false)
+    const [shareId, setShareId] = useState<string | null>(null)
+    const [shareLoading, setShareLoading] = useState(false)
+    const [urlCopied, setUrlCopied] = useState(false)
+    const [unshareConfirm, setUnshareConfirm] = useState(false)
 
     const colRef = useRef<HTMLDivElement>(null)
 
-    // Update state ketika snippet berubah
     useEffect(() => {
         setCopyCount(snippet.copyCount)
     }, [snippet.id, snippet.copyCount])
@@ -71,24 +75,25 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
         setIsPublic(publicIds.has(snippet.id))
     }, [snippet.id, publicIds])
 
-    // Click outside handler untuk dropdown
+    // Reset share state tiap ganti snippet
+    useEffect(() => {
+        setShareOpen(false)
+        setShareId(null)
+        setUnshareConfirm(false)
+    }, [snippet.id])
+
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (colRef.current && !colRef.current.contains(event.target as Node)) {
                 setColOpen(false)
             }
         }
-
-        // ganti mousedown → click
         document.addEventListener("click", handleClickOutside)
         return () => document.removeEventListener("click", handleClickOutside)
     }, [])
 
-    // Fetch collections ketika dropdown dibuka
     useEffect(() => {
         if (!colOpen) return
-
-        // setColLoading(true)
         Promise.all([
             fetch("/api/collections").then(r => r.json()),
             fetch(`/api/snippets/${snippet.id}/collections`).then(r => r.json())
@@ -97,19 +102,13 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
                 setCollections(allCols.collections ?? [])
                 setAssignedIds(assignedCols.map((c: { id: number }) => c.id))
             })
-        // .finally(() => setColLoading(false))
     }, [colOpen, snippet.id])
-
-
 
     const handleToggleCollection = async (colId: number) => {
         const isAssigned = assignedIds.includes(colId)
-
-        // Optimistic update
         setAssignedIds(prev =>
             isAssigned ? prev.filter(id => id !== colId) : [...prev, colId]
         )
-
         try {
             await fetch(`/api/collections/${colId}/snippets`, {
                 method: isAssigned ? "DELETE" : "POST",
@@ -117,7 +116,6 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
                 body: JSON.stringify({ snippetId: snippet.id })
             })
         } catch (error) {
-            // Revert jika gagal
             setAssignedIds(prev =>
                 isAssigned ? [...prev, colId] : prev.filter(id => id !== colId)
             )
@@ -150,7 +148,6 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
         if (next) incrementFav()
         else decrementFav()
         toggleFavoriteId(snippet.id)
-
         try {
             const res = await fetch(`/api/snippets/${snippet.id}/favorite`, { method: "POST" })
             if (!res.ok) throw new Error()
@@ -168,7 +165,6 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
         if (next) incrementPublicCount()
         else decrementPublicCount()
         togglePublicId(snippet.id)
-
         try {
             const res = await fetch(`/api/snippets/${snippet.id}/publish`, { method: "POST" })
             if (!res.ok) throw new Error()
@@ -179,6 +175,51 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
             togglePublicId(snippet.id)
         }
     }
+
+
+    // Kalau shareId sudah ada di state → langsung buka modal, skip fetch
+    // Kalau belum → hit API untuk generate, simpan di state
+    const handleOpenShare = async () => {
+        if (shareId) {
+            setShareOpen(true)
+            return
+        }
+
+        setShareLoading(true)
+        try {
+            const res = await fetch(`/api/snippets/${snippet.id}/share`, { method: "POST" })
+            const data = await res.json()
+            setShareId(data.shareId)
+            setShareOpen(true)
+        } catch {
+            console.error("Gagal membuat share link")
+        } finally {
+            setShareLoading(false)
+        }
+    }
+
+    // Copy URL ke clipboard
+    const handleCopyUrl = async () => {
+        const url = `${window.location.origin}/share/${shareId}`
+        await navigator.clipboard.writeText(url)
+        setUrlCopied(true)
+        setTimeout(() => setUrlCopied(false), 2000)
+    }
+
+    const handleUnshare = async () => {
+        try {
+            await fetch(`/api/snippets/${snippet.id}/share`, { method: "POST" })
+            // Clear shareId di state → klik share berikutnya akan generate baru
+            setShareId(null)
+            setShareOpen(false)
+            setUnshareConfirm(false)
+        } catch {
+            console.error("Gagal unshare")
+        }
+    }
+
+    const shareUrl = shareId ? `${typeof window !== "undefined" ? window.location.origin : ""}/share/${shareId}` : ""
+
     return (
         <div className="flex-1 flex flex-col h-full min-h-0 overflow-hidden">
             <div className="px-6 py-5 border-b border-[var(--border)] shrink-0">
@@ -227,7 +268,7 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
                         <button
                             onClick={handlePublic}
                             className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-[12px] font-medium transition-all
-        ${isPublic
+                            ${isPublic
                                     ? 'bg-blue-500/10 border-blue-500/50 text-blue-300'
                                     : 'border-[var(--border2)] text-[var(--text3)] hover:border-blue-500/50 hover:text-blue-300'
                                 }`}
@@ -243,12 +284,9 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
                                     </svg>
                                 )}
                             </span>
-
                             {isPublic ? "Public" : "Private"}
                         </button>
                     </div>
-
-
                 </div>
 
                 {snippet.description && (
@@ -275,7 +313,6 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
                         onCopy={() => setCopyCount(c => c + 1)}
                     />
 
-                    {/* === COLLECTION DROPDOWN (SUDAH DIPERBAIKI) === */}
                     <div className="relative" ref={colRef}>
                         <button
                             onClick={toggleCollectionDropdown}
@@ -345,16 +382,117 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
                 <CodeBlock code={snippet.code} language={snippet.language} />
             </div>
 
+            {/* Footer */}
             <div className="flex items-center justify-between px-6 py-2.5 border-t border-[var(--border)] bg-[var(--surface)] shrink-0">
                 <div className="flex items-center gap-4 font-mono text-[10px] text-[var(--text4)]">
                     <span>{snippet.code.split('\n').length} baris</span>
                     <span>UTF-8</span>
                     <span>{snippet.language}</span>
                 </div>
-                <button className="font-mono text-[10px] text-[var(--em-dim)] border border-[var(--em-border)] px-3 py-1.5 rounded-full hover:text-[var(--em)] transition-all">
-                    Bagikan Link →
+
+                {/* Tombol share — loading state saat fetch API */}
+                <button
+                    onClick={handleOpenShare}
+                    disabled={shareLoading}
+                    className="flex items-center gap-1.5 font-mono text-[10px] text-[var(--em-dim)] border border-[var(--em-border)] px-3 py-1.5 rounded-full hover:text-[var(--em)] transition-all disabled:opacity-50"
+                >
+                    {shareLoading ? (
+                        // Spinner sederhana saat loading
+                        <span className="w-[10px] h-[10px] border border-[var(--em-dim)] border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                        <FontAwesomeIcon icon={faLink} className="w-[9px] h-[9px]" />
+                    )}
+                    {shareLoading ? "Memproses..." : "Bagikan Link →"}
                 </button>
             </div>
+
+            {/* ── SHARE MODAL ── */}
+            {shareOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+                    <div className="flex flex-col gap-5 rounded-xl p-6 w-full max-w-md bg-[var(--surface)] border border-[var(--border)] shadow-2xl">
+
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <h3 className="text-[15px] font-semibold text-[var(--text)]">
+                                    Bagikan Snippet
+                                </h3>
+                                <p className="text-[12px] text-[var(--text4)] mt-0.5">
+                                    Siapapun dengan link ini bisa melihat snippet kamu
+                                </p>
+                            </div>
+                            <span className={`font-mono text-[10px] px-2.5 py-1 rounded-full border
+                                ${isPublic
+                                    ? 'text-blue-300 border-blue-500/30 bg-blue-500/10'
+                                    : 'text-[var(--text4)] border-[var(--border2)] bg-[var(--surface2)]'
+                                }`}>
+                                {isPublic ? "Public" : "Private"}
+                            </span>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                            <div className="flex-1 flex items-center gap-2 bg-[var(--bg)] border border-[var(--border2)] rounded-lg px-3 py-2.5 overflow-hidden">
+                                <FontAwesomeIcon icon={faLink} className="w-[10px] h-[10px] text-[var(--text4)] shrink-0" />
+                                <input
+                                    readOnly
+                                    value={shareUrl}
+                                    className="flex-1 bg-transparent text-[12px] font-mono text-white outline-none truncate"
+                                />
+                            </div>
+                            <button
+                                onClick={handleCopyUrl}
+                                className={`flex items-center gap-1.5 px-3 py-2.5 rounded-lg text-[12px] font-semibold transition-all shrink-0
+        ${urlCopied
+                                        ? 'bg-emerald-500 text-white'
+                                        : 'bg-emerald-500 text-[#0a0a0a] hover:bg-emerald-400'
+                                    }`}
+                            >
+                                <FontAwesomeIcon
+                                    icon={urlCopied ? faCheck : faCopy}
+                                    className="w-[11px] h-[11px]"
+                                />
+                                {urlCopied ? "Tersalin!" : "Salin"}
+                            </button>
+                        </div>
+
+                        
+                        <div className="flex items-center justify-between pt-1">
+                            
+                            {unshareConfirm ? (
+                                <div className="flex items-center gap-2">
+                                    <span className="text-[12px] text-[var(--text3)]">Yakin nonaktifkan link?</span>
+                                    <button
+                                        onClick={handleUnshare}
+                                        className="text-[12px] font-medium text-red-400 hover:text-red-300 transition-colors"
+                                    >
+                                        Ya
+                                    </button>
+                                    <button
+                                        onClick={() => setUnshareConfirm(false)}
+                                        className="text-[12px] text-[var(--text4)] hover:text-[var(--text3)] transition-colors"
+                                    >
+                                        Batal
+                                    </button>
+                                </div>
+                            ) : (
+                                <button
+                                    onClick={() => setUnshareConfirm(true)}
+                                    className="flex items-center gap-1.5 text-[12px] text-[var(--text4)] hover:text-red-400 transition-colors"
+                                >
+                                    <FontAwesomeIcon icon={faLinkSlash} className="w-[10px] h-[10px]" />
+                                    Nonaktifkan link
+                                </button>
+                            )}
+
+                            <button
+                                onClick={() => { setShareOpen(false); setUnshareConfirm(false) }}
+                                className="text-[13px] font-medium px-4 py-2 rounded-lg border border-[var(--border)] text-[var(--text3)] hover:bg-[var(--surface2)] transition-all"
+                            >
+                                Tutup
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Confirm Delete Modal */}
             {confirmOpen && (

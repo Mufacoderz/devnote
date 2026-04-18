@@ -524,6 +524,7 @@ export default function SidebarClient({
                     <span className="text-[11px] text-[var(--em)] group-hover:text-[#0a0a0a] group-hover:translate-x-1 transition-all">→</span>
                 </div>
             </div>
+            
 
             {/* stat */}
             <div className="mt-auto px-3 py-3 border-t border-[var(--border)]">

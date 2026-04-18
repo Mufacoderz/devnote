@@ -15,7 +15,7 @@ export default function SnippetCard({ snippet, active, onClick }: {
     return (
         <div
             onClick={onClick}
-            className={`relative pl-3 pr-3 py-3 rounded-[6px] cursor-pointer transition-all border
+            className={`relative p-3 rounded-[6px] cursor-pointer transition-all border mb-1
         ${active
                     ? 'bg-[var(--surface)] border-[var(--em-border)] shadow-[0_0_0_1px_var(--em-border)]'
                     : 'border-transparent hover:bg-[var(--surface2)] hover:border-[var(--border)]'
