@@ -1,11 +1,14 @@
+// app/api/snippets/[id]/share/shareId/route.ts
+
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 
 export async function GET(
     req: NextRequest,
-    { params }: { params: Promise<{ shareId: string }> }
+    { params }: { params: Promise<{ id: string }> }   // ← Harus "id", bukan "shareId"
 ) {
-    const { shareId } = await params
+    const { id } = await params
+    const shareId = id
 
     if (!shareId) {
         return NextResponse.json({ error: "Invalid share ID" }, { status: 400 })
@@ -42,7 +45,6 @@ export async function GET(
         return NextResponse.json({ error: "Snippet not found" }, { status: 404 })
     }
 
-    // Flatten tags
     const tags = snippet.tags.map(t => t.tag.name)
 
     return NextResponse.json({
