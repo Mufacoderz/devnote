@@ -36,7 +36,15 @@ export async function POST(
     // Toggle shareId (share / unshare)
     const newShareId = snippet.shareId 
         ? null 
-        : crypto.randomUUID().replace(/-/g, "").slice(0, 12)
+        : (()=>{
+            const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ"
+            let result = ""
+
+            for(let i = 0; i<9; i++){
+                result+= chars[Math.floor(Math.random()*chars.length)]
+            }
+            return result
+        })()
 
     const updated = await prisma.snippet.update({
         where: { id: snippetId },

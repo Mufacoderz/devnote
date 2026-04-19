@@ -6,7 +6,7 @@ import CodeBlock from "./CodeBlock"
 import { getLang } from "@/lib/languages"
 import { useAppStore } from "@/lib/store"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faFolderPlus, faCheck, faCopy, faLink, faLinkSlash, faEllipsisVertical } from "@fortawesome/free-solid-svg-icons"
+import { faFolderPlus, faCheck, faCopy, faLink, faLinkSlash, faEllipsisVertical, faCode } from "@fortawesome/free-solid-svg-icons"
 
 interface SnippetDetailProps {
     snippet: Snippet
@@ -24,6 +24,7 @@ export interface Snippet {
     isFavorite?: boolean
     isPublic?: boolean
     createdAt: string
+    shareId?: string | null
 }
 
 interface Collection {
@@ -58,10 +59,10 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
 
     // Share state
     const [shareOpen, setShareOpen] = useState(false)
-    const [shareId, setShareId] = useState<string | null>(null)
+    const [shareId, setShareId] = useState<string | null>(snippet.shareId ?? null)
     const [shareLoading, setShareLoading] = useState(false)
     const [urlCopied, setUrlCopied] = useState(false)
-    const [unshareConfirm, setUnshareConfirm] = useState(false)
+    const [codeCopied, setCodeCopied] = useState(false)
 
     const colRef = useRef<HTMLDivElement>(null)
 
@@ -87,12 +88,12 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
         setIsPublic(publicIds.has(snippet.id))
     }, [snippet.id, publicIds])
 
-    // Reset share state tiap ganti snippet
     useEffect(() => {
         setShareOpen(false)
-        setShareId(null)
-        setUnshareConfirm(false)
-    }, [snippet.id])
+        setShareId(snippet.shareId ?? null)
+        setCodeCopied(false)
+        setUrlCopied(false)
+    }, [snippet.id, snippet.shareId])
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -218,19 +219,30 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
         setTimeout(() => setUrlCopied(false), 2000)
     }
 
+    // Copy formatted code ke clipboard
+    const handleCopyCode = async () => {
+        if (!shareId) return
+        const formatted = formatDisplayCode(shareId)
+        await navigator.clipboard.writeText(formatted)
+        setCodeCopied(true)
+        setTimeout(() => setCodeCopied(false), 2000)
+    }
+
     const handleUnshare = async () => {
         try {
             await fetch(`/api/snippets/${snippet.id}/share`, { method: "POST" })
             // Clear shareId di state → klik share berikutnya akan generate baru
             setShareId(null)
             setShareOpen(false)
-            setUnshareConfirm(false)
         } catch {
             console.error("Gagal unshare")
         }
     }
 
     const shareUrl = shareId ? `${typeof window !== "undefined" ? window.location.origin : ""}/share/${shareId}` : ""
+    const formatDisplayCode = (code: string) => {
+        return code.match(/.{1,3}/g)?.join("-") || code
+    }
 
     return (
         <div className="flex-1 flex flex-col h-full min-h-0 overflow-hidden">
@@ -445,14 +457,14 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
                 <button
                     onClick={handleOpenShare}
                     disabled={shareLoading}
-                    className="flex items-center gap-1.5 font-mono text-[10px] text-[var(--em-dim)] border border-[var(--em-border)] px-3 py-1.5 rounded-full hover:text-[var(--em)] transition-all disabled:opacity-50"
+                    className="flex items-center gap-1.5 font-mono text-[9px] sm:text-[12px] text-[var(--em-dim)] border border-[var(--em-border)] px-3 py-1.5 rounded-full hover:text-[var(--em)] transition-all disabled:opacity-50"
                 >
                     {shareLoading ? (
                         <span className="w-[10px] h-[10px] border border-[var(--em-dim)] border-t-transparent rounded-full animate-spin" />
                     ) : (
                         <FontAwesomeIcon icon={faLink} className="w-[9px] h-[9px]" />
                     )}
-                    {shareLoading ? "Memproses..." : "Bagikan Link →"}
+                    {shareLoading ? "Memproses..." : "Bagikan Snippet →"}
                 </button>
             </div>
 
@@ -461,6 +473,7 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
                     <div className="flex flex-col gap-5 rounded-xl p-6 w-full max-w-md bg-[var(--surface)] border border-[var(--border)] shadow-2xl">
 
+                        {/* Header */}
                         <div className="flex items-center justify-between">
                             <div>
                                 <h3 className="text-[15px] font-semibold text-[var(--text)]">
@@ -479,7 +492,9 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
                             </span>
                         </div>
 
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-col gap-1.5">
+                            <span className="font-mono text-[10px] text-[var(--text4)]">Link bagikan</span>
+                            <div className="flex items-center gap-2">
                             <div className="flex-1 flex items-center gap-2 bg-[var(--bg)] border border-[var(--border2)] rounded-lg px-3 py-2.5 overflow-hidden">
                                 <FontAwesomeIcon icon={faLink} className="w-[10px] h-[10px] text-[var(--text4)] shrink-0" />
                                 <input
@@ -491,7 +506,7 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
                             <button
                                 onClick={handleCopyUrl}
                                 className={`flex items-center gap-1.5 px-3 py-2.5 rounded-lg text-[12px] font-semibold transition-all shrink-0
-        ${urlCopied
+                                    ${urlCopied
                                         ? 'bg-emerald-500 text-white'
                                         : 'bg-emerald-500 text-[#0a0a0a] hover:bg-emerald-400'
                                     }`}
@@ -502,39 +517,55 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
                                 />
                                 {urlCopied ? "Tersalin!" : "Salin"}
                             </button>
+                            </div>
+                        </div>
+                        
+
+                        {/* Divider */}
+                        <div className="border-t border-[var(--border)]" />
+
+                        <div className="flex flex-col gap-1.5">
+                            <span className="font-mono text-[10px] text-[var(--text4)]">Atau gunakan kode</span>
+                            <div className="flex items-center gap-2">
+                                <div className="flex-1 flex items-center gap-2 bg-[var(--bg)] border border-[var(--border2)] rounded-lg px-3 py-2.5 overflow-hidden">
+                                    <FontAwesomeIcon icon={faCode} className="w-[10px] h-[10px] text-[var(--text4)] shrink-0" />
+                                    <span className="flex-1 bg-transparent text-[12px] font-mono text-white truncate select-all">
+                                        {shareId ? formatDisplayCode(shareId) : ""}
+                                    </span>
+                                </div>
+                                <button
+                                    onClick={handleCopyCode}
+                                    className={`flex items-center gap-1.5 px-3 py-2.5 rounded-lg text-[12px] font-semibold transition-all shrink-0
+                                        ${codeCopied
+                                            ? 'bg-emerald-500 text-white'
+                                            : 'bg-emerald-500 text-[#0a0a0a] hover:bg-emerald-400'
+                                        }`}
+                                >
+                                    <FontAwesomeIcon
+                                        icon={codeCopied ? faCheck : faCopy}
+                                        className="w-[11px] h-[11px]"
+                                    />
+                                    {codeCopied ? "Tersalin!" : "Salin"}
+                                </button>
+                            </div>
                         </div>
 
+                        
 
+                        {/* Footer */}
                         <div className="flex items-center justify-between pt-1">
 
-                            {unshareConfirm ? (
-                                <div className="flex items-center gap-2">
-                                    <span className="text-[12px] text-[var(--text3)]">Yakin nonaktifkan link?</span>
-                                    <button
-                                        onClick={handleUnshare}
-                                        className="text-[12px] font-medium text-red-400 hover:text-red-300 transition-colors"
-                                    >
-                                        Ya
-                                    </button>
-                                    <button
-                                        onClick={() => setUnshareConfirm(false)}
-                                        className="text-[12px] text-[var(--text4)] hover:text-[var(--text3)] transition-colors"
-                                    >
-                                        Batal
-                                    </button>
-                                </div>
-                            ) : (
+                            
                                 <button
-                                    onClick={() => setUnshareConfirm(true)}
+                                    onClick={handleUnshare}
                                     className="flex items-center gap-1.5 text-[12px] text-[var(--text4)] hover:text-red-400 transition-colors"
                                 >
                                     <FontAwesomeIcon icon={faLinkSlash} className="w-[10px] h-[10px]" />
                                     Nonaktifkan link
                                 </button>
-                            )}
 
                             <button
-                                onClick={() => { setShareOpen(false); setUnshareConfirm(false) }}
+                                onClick={() => { setShareOpen(false) }}
                                 className="text-[13px] font-medium px-4 py-2 rounded-lg border border-[var(--border)] text-[var(--text3)] hover:bg-[var(--surface2)] transition-all"
                             >
                                 Tutup

@@ -46,7 +46,6 @@ export default async function HomePage() {
 function WelcomePage() {
     return (
         <div className="min-h-screen relative overflow-hidden bg-[#0a0a0a] flex items-center justify-center">
-            {/* Grid bg sama kayak login page */}
             <div
                 className="absolute inset-0"
                 style={{
@@ -55,6 +54,7 @@ function WelcomePage() {
                     opacity: 0.4,
                 }}
             />
+
             <div
                 className="absolute inset-y-0 bg-[var(--em)]"
                 style={{
@@ -88,21 +88,30 @@ function WelcomePage() {
                     Semua snippet kodemu di satu tempat —
                     terorganisir, mudah dicari, siap dipakai kapan saja.
                 </p>
-                <div className="flex items-center gap-3">
+                <div className="flex flex-col sm:flex-row items-center gap-3 w-full max-w-[400px]">
                     <Link
                         href="/login"
-                        className="px-7 py-3 rounded-lg bg-[#0a0a0a] text-white font-semibold text-[14px] hover:bg-[#1c1c1c] transition-all shadow-[0_4px_20px_rgba(0,0,0,0.2)]"
+                        className="px-8 py-3.5 rounded-2xl bg-[#0a0a0a] text-white font-semibold text-[14.5px] hover:bg-zinc-900 transition-all shadow-[0_4px_20px_rgba(0,0,0,0.25)] flex-1"
                     >
                         Masuk
                     </Link>
+
                     <Link
                         href="/explore"
-                        className="px-7 py-3 rounded-lg border border-black/20 text-black/55 font-medium text-[14px] hover:border-black/35 hover:text-black/75 transition-all group flex items-center gap-2"
+                        className="px-8 py-3.5 rounded-2xl border border-black/25 hover:border-black/40 text-black/70 hover:text-black font-medium text-[14.5px] transition-all flex items-center justify-center gap-2 flex-1 group"
                     >
                         Jelajahi
-                        <span className="group-hover:translate-x-1 transition-transform text-[12px]" aria-hidden="true">→</span>
+                        <span className="group-hover:translate-x-1 transition-transform text-[13px]" aria-hidden="true">→</span>
                     </Link>
                 </div>
+
+                <Link
+                    href="/join"
+                    className="mt-8 text-black/60 hover:text-black text-[14px] flex items-center gap-2 transition-all hover:underline group"
+                >
+                    
+                    Punya kode share? Klik disini
+                </Link>
             </div>
         </div>
     )
