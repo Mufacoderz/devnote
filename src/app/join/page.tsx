@@ -45,7 +45,6 @@ export default function JoinPage() {
         setError("")
 
         try {
-            // Cek apakah kode valid dengan GET ke endpoint kamu
             const res = await fetch(`/api/snippets/${rawCode}/share/shareId`)
 
             if (!res.ok) {
@@ -53,9 +52,7 @@ export default function JoinPage() {
                 return
             }
 
-            // Jika berhasil, langsung redirect ke halaman share dengan format yang kamu inginkan
             router.push(`/share/${rawCode}`)
-            
         } catch (err) {
             console.error(err)
             setError("Terjadi kesalahan, coba lagi")
@@ -70,7 +67,6 @@ export default function JoinPage() {
     return (
         <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#0a0a0a]">
 
-            {/* Dark Grid Background */}
             <div
                 className="absolute inset-0 opacity-50"
                 style={{
@@ -80,20 +76,20 @@ export default function JoinPage() {
                 }}
             />
 
-            {/* Soft Emerald Glow */}
             <div
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[680px] h-[680px] rounded-full opacity-10 pointer-events-none"
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-10 pointer-events-none
+                           w-[520px] h-[520px] sm:w-[620px] sm:h-[620px] lg:w-[680px] lg:h-[680px]"
                 style={{
                     background: "radial-gradient(circle, #10b981 0%, transparent 65%)",
                     filter: "blur(85px)",
                 }}
             />
 
-            <div className="relative z-10 w-full max-w-[440px] mx-4">
-                
-                <div className="bg-[#10b981] text-[#0a0a0a] rounded-3xl p-9 shadow-[0_20px_60px_rgba(16,185,129,0.35)]">
+            <div className="relative z-10 w-full max-w-[440px] mx-4 px-4 sm:px-0">
 
-                    <Link href="/" className="flex flex-col gap-1 mb-8 w-fit group">
+                <div className="bg-[#10b981] text-[#0a0a0a] rounded-3xl p-6 sm:p-8 lg:p-9 shadow-[0_20px_60px_rgba(16,185,129,0.35)]">
+
+                    <Link href="/" className="flex flex-col gap-1 mb-6 sm:mb-8 w-fit group">
                         <div className="flex items-center gap-2">
                             <Image
                                 src="/black-trans.png"
@@ -110,11 +106,11 @@ export default function JoinPage() {
                         </span>
                     </Link>
 
-                    <div className="mb-8">
-                        <h1 className="text-[32px] font-bold tracking-[-1px] leading-tight mb-1">
+                    <div className="mb-6 sm:mb-8">
+                        <h1 className="text-[28px] sm:text-[32px] font-bold tracking-[-1px] leading-tight mb-1">
                             Punya kode share?
                         </h1>
-                        <p className="text-black/75 text-[14.5px]">
+                        <p className="text-black/75 text-[14px] sm:text-[14.5px]">
                             Masukkan kode 9 digit yang dibagikan temanmu
                         </p>
                     </div>
@@ -122,9 +118,9 @@ export default function JoinPage() {
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div>
                             <div className={`relative flex items-center bg-white border-2 rounded-2xl transition-all duration-200
-                                ${error ? "border-red-600" : filled === 9 ? "border-black" : "border-white/80 "}`}
+                                ${error ? "border-red-600" : filled === 9 ? "border-black" : "border-white/80"}`}
                             >
-                                <div className="pl-5 pr-3">
+                                <div className="pl-4 sm:pl-5 pr-3">
                                     <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.25" className="text-black/80">
                                         <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                                         <path d="M7 11V7a5 5 0 0 1 10 0v4" />
@@ -139,10 +135,8 @@ export default function JoinPage() {
                                     placeholder="XXX-XXX-XXX"
                                     autoComplete="off"
                                     spellCheck={false}
-                                    className="flex-1 bg-transparent py-5 pr-4 text-[27px] font-mono font-bold tracking-[4px] text-black placeholder:text-black/40 outline-none"
+                                    className="flex-1 bg-transparent py-4 sm:py-5 pr-4 text-[24px] sm:text-[27px] font-mono font-bold tracking-[3px] sm:tracking-[4px] text-black placeholder:text-black/40 outline-none"
                                 />
-
-                                
                             </div>
 
                             <div className="h-[3px] bg-black/10 rounded-full mt-3 overflow-hidden">
@@ -162,7 +156,9 @@ export default function JoinPage() {
                         <button
                             type="submit"
                             disabled={isDisabled}
-                            className="w-full bg-black hover:bg-zinc-900 disabled:bg-black/70 disabled:cursor-not-allowed text-white font-semibold text-[15px] py-[17px] rounded-2xl transition-all duration-200 shadow-md"
+                            className="w-full bg-black hover:bg-zinc-900 disabled:bg-black/70 disabled:cursor-not-allowed 
+                                       text-white font-semibold text-[15px] py-[16px] sm:py-[17px] rounded-2xl 
+                                       transition-all duration-200 shadow-md"
                         >
                             {loading ? (
                                 <span className="flex items-center justify-center gap-2">

@@ -70,7 +70,7 @@ async function DashboardContent({
     tags: s.tags.map(t => t.tag.name)
   }))
 
-  return <SnippetList snippets={snippets} />
+  return <SnippetList snippets={snippets}  />
 }
 
 export default function DashboardPage({
