@@ -19,14 +19,14 @@ export default async function Sidebar() {
         }
     })
 
-    // hitung jumlah per language, urutkan dari terbanyak
-    const langMap = snippets.reduce<Record<string, number>>((acc, s) => {
-        acc[s.language] = (acc[s.language] ?? 0) + 1
-        return acc
-    }, {})
-    const languages = Object.entries(langMap)
-        .map(([name, count]) => ({ name, count }))
-        .sort((a, b) => b.count - a.count)
+    // // hitung jumlah per language, urutkan dari terbanyak
+    // const langMap = snippets.reduce<Record<string, number>>((acc, s) => {
+    //     acc[s.language] = (acc[s.language] ?? 0) + 1
+    //     return acc
+    // }, {})
+    // const languages = Object.entries(langMap)
+    //     .map(([name, count]) => ({ name, count }))
+    //     .sort((a, b) => b.count - a.count)
 
     // kumpulkan semua tag unik + hitung kemunculannya
     const tagMap = snippets.reduce<Record<string, number>>((acc, s) => {
@@ -43,7 +43,7 @@ export default async function Sidebar() {
     const totalCopies = snippets.reduce((acc, s) => acc + s.copyCount, 0)
 
     //snippet yg dicpy
-    const totalSnippetCopied = snippets.filter(s => s.copyCount>0).length
+    // const totalSnippetCopied = snippets.filter(s => s.copyCount>0).length
 
 
     //total fav
@@ -59,8 +59,8 @@ export default async function Sidebar() {
             totalCopies={totalCopies}
             totalFavorites={totalFavorites}
             totalPublic={totalPublic}
-            totalSnippetCopied={totalSnippetCopied}
-            languages={languages}
+            // totalSnippetCopied={totalSnippetCopied}
+            // languages={languages}
             tags={tags}
             
         />
