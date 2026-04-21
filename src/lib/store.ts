@@ -24,7 +24,7 @@ interface AppStore {
     favoriteIds: Set<number>
     setFavoriteIds: (ids: number[]) => void
     toggleFavoriteId: (id: number) => void
-    
+
     publicIds: Set<number>
     setPublicIds: (ids: number[]) => void
     togglePublicId: (id: number) => void
@@ -34,6 +34,13 @@ interface AppStore {
 
     prefs: Prefs
     updatePref: <K extends keyof Prefs>(key: K, val: Prefs[K]) => void
+
+    sidebarCollapsed: {
+        library: boolean
+        collections: boolean
+        tags: boolean
+    }
+    setSidebarCollapsed: (key: "library" | "collections" | "tags", val: boolean) => void
 }
 
 const DEFAULT_PREFS: Prefs = {
@@ -91,6 +98,16 @@ export const useAppStore = create<AppStore>()(
                 set((s) => ({
                     prefs: { ...s.prefs, [key]: val },
                 })),
+
+            sidebarCollapsed: {
+                library: false,
+                collections: true,
+                tags: true,
+            },
+            setSidebarCollapsed: (key, val) =>
+                set((s) => ({
+                    sidebarCollapsed: { ...s.sidebarCollapsed, [key]: val },
+                })),
         }),
         {
             name: "devnote_store",
@@ -98,6 +115,7 @@ export const useAppStore = create<AppStore>()(
                 prefs: s.prefs,
                 favCount: s.favCount,
                 publicCount: s.publicCount,
+                
             }),
         }
     )

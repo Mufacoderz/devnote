@@ -1,45 +1,162 @@
-'use client'
-
+"use client"
 import { useState, useEffect } from "react"
 import { type Snippet } from "./SnippetDetail"
 import SnippetCard from "./SnippetCard"
 import SnippetDetail from "./SnippetDetail"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCode, faPlus, faArrowLeft } from '@fortawesome/free-solid-svg-icons'
+import { faCode, faPlus, faArrowLeft, faSlidersH } from '@fortawesome/free-solid-svg-icons'
 import SnippetModal from "./SnippetModal"
 import { AnimatePresence, motion } from "framer-motion"
 import { useAppStore } from "@/lib/store"
 import SnippetListSkeleton from "./SnippetListSkeleton"
+import { getLang } from "@/lib/languages"
 
+// ---- ListHeader di luar komponen utama ----
+interface ListHeaderProps {
+    visibleCount: number
+    totalCount: number
+    activeLang: string | null
+    filterOpen: boolean
+    availableLangs: [string, number][]
+    onToggleFilter: () => void
+    onToggleLang: (lang: string) => void
+}
+
+function ListHeader({
+    visibleCount,
+    totalCount,
+    activeLang,
+    filterOpen,
+    availableLangs,
+    onToggleFilter,
+    onToggleLang,
+}: ListHeaderProps) {
+    return (
+        <div className="shrink-0 border-b border-[var(--border)]">
+            <div className="flex items-center justify-between px-4 py-3">
+                <div className="flex items-center gap-2">
+                    <span className="text-[11px] font-semibold tracking-[1px] uppercase text-[var(--text3)]">
+                        Semua Snippet
+                    </span>
+                    <span className="font-mono text-[10px] text-[var(--text4)] bg-[var(--surface2)] px-2 py-[2px] rounded-full">
+                        {visibleCount}{activeLang ? ` / ${totalCount}` : ""}
+                    </span>
+                </div>
+
+                {availableLangs.length > 1 && (
+                    <button
+                        onClick={onToggleFilter}
+                        className={`flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-[5px] rounded-[6px] border transition-all
+                            ${filterOpen || activeLang
+                                ? 'border-[var(--em-border)] text-[var(--em)] bg-[var(--em-faint)]'
+                                : 'border-[var(--border2)] text-[var(--text3)] hover:border-[var(--em-border)] hover:text-[var(--em)]'
+                            }`}
+                    >
+                        <FontAwesomeIcon icon={faSlidersH} className="w-[10px] h-[10px]" />
+                        Language
+                        {activeLang && (
+                            <span className="w-[5px] h-[5px] rounded-full bg-[var(--em)] ml-0.5 shrink-0" />
+                        )}
+                    </button>
+                )}
+            </div>
+
+            <AnimatePresence>
+                {filterOpen && (
+                    <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.18, ease: "easeInOut" }}
+                        style={{ overflow: "hidden" }}
+                    >
+                        <div className="px-4 pb-3">
+                            <p className="text-[9px] font-semibold tracking-[1.2px] uppercase text-[var(--text4)] mb-2">
+                                Filter bahasa
+                            </p>
+                            <div className="flex flex-wrap gap-[5px]">
+                                {availableLangs.map(([name, count]) => {
+                                    const langConfig = getLang(name)
+                                    const isActive = activeLang === name
+                                    return (
+                                        <button
+                                            key={name}
+                                            onClick={() => onToggleLang(name)}
+                                            className={`flex items-center gap-1.5 font-mono text-[10px] px-2.5 py-[4px] rounded-full border transition-all
+                                                ${isActive
+                                                    ? 'border-[var(--em-border)] text-[var(--em)] bg-[var(--em-faint)]'
+                                                    : 'border-[var(--border2)] text-[var(--text3)] hover:border-[var(--em-border)] hover:text-[var(--em)]'
+                                                }`}
+                                        >
+                                            <span
+                                                className="w-[5px] h-[5px] rounded-full shrink-0"
+                                                style={{ background: langConfig.color }}
+                                            />
+                                            {name.charAt(0).toUpperCase() + name.slice(1)}
+                                            <span className="opacity-50">{count}</span>
+                                        </button>
+                                    )
+                                })}
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </div>
+    )
+}
+
+// ---- Komponen utama ----
 export default function SnippetList({ snippets }: { snippets: Snippet[] }) {
     const [selectedId, setSelectedId] = useState<number | null>(snippets[0]?.id ?? null)
     const [modalOpen, setModalOpen] = useState(false)
     const [editSnippet, setEditSnippet] = useState<Snippet | null>(null)
-
-
-    // state khusus mobile — apakah detail sedang ditampilkan
     const [showDetail, setShowDetail] = useState(false)
+    const [filterOpen, setFilterOpen] = useState(false)
+    const [activeLang, setActiveLang] = useState<string | null>(null)
 
-    const selected = snippets.find(s => s.id === selectedId) ?? snippets[0] ?? null
+    const isNavigating = useAppStore(s => s.isNavigating)
+    const setIsNavigating = useAppStore(s => s.setIsNavigating)
+
+
+    useEffect(() => {
+        setIsNavigating(false)
+    }, [snippets, setIsNavigating])
+
+
+
+    if (isNavigating) return <SnippetListSkeleton />
+
+    const langCounts = snippets.reduce<Record<string, number>>((acc, s) => {
+        if (s.language) acc[s.language] = (acc[s.language] ?? 0) + 1
+        return acc
+    }, {})
+    const availableLangs = Object.entries(langCounts).sort((a, b) => b[1] - a[1])
+
+    const visibleSnippets = activeLang
+        ? snippets.filter(s => s.language === activeLang)
+        : snippets
+
+    const selected = visibleSnippets.find(s => s.id === selectedId) ?? visibleSnippets[0] ?? null
 
     const handleModalClose = () => {
         setModalOpen(false)
         setEditSnippet(null)
     }
 
-    const isNavigating = useAppStore(s => s.isNavigating)
-    const setIsNavigating = useAppStore(s => s.setIsNavigating)
-
-    useEffect(() => {
-        setIsNavigating(false)
-    }, [snippets, setIsNavigating])
-
-    if (isNavigating) return <SnippetListSkeleton />
-
-    // klik snippet di mobile → set selected + tampilkan detail
     const handleSelectMobile = (id: number) => {
         setSelectedId(id)
         setShowDetail(true)
+    }
+
+    const headerProps: ListHeaderProps = {
+        visibleCount: visibleSnippets.length,
+        totalCount: snippets.length,
+        activeLang,
+        filterOpen,
+        availableLangs,
+        onToggleFilter: () => setFilterOpen(p => !p),
+        onToggleLang: (lang) => setActiveLang(prev => prev === lang ? null : lang),
     }
 
     if (snippets.length === 0) {
@@ -74,19 +191,12 @@ export default function SnippetList({ snippets }: { snippets: Snippet[] }) {
 
     return (
         <>
-            {/*  desktop */}
+            {/* desktop */}
             <div className="hidden lg:flex h-full overflow-hidden">
                 <div className="w-[300px] border-r border-[var(--border)] flex flex-col shrink-0">
-                    <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border)] shrink-0">
-                        <span className="text-[11px] font-semibold tracking-[1px] uppercase text-[var(--text3)]">
-                            Semua Snippet
-                        </span>
-                        <span className="font-mono text-[10px] text-[var(--text4)] bg-[var(--surface2)] px-2 py-[2px] rounded-full">
-                            {snippets.length}
-                        </span>
-                    </div>
+                    <ListHeader {...headerProps} />
                     <div className="flex-1 overflow-y-auto p-2">
-                        {snippets.map(snippet => (
+                        {visibleSnippets.map(snippet => (
                             <SnippetCard
                                 key={snippet.id}
                                 snippet={snippet}
@@ -94,6 +204,11 @@ export default function SnippetList({ snippets }: { snippets: Snippet[] }) {
                                 onClick={() => setSelectedId(snippet.id)}
                             />
                         ))}
+                        {visibleSnippets.length === 0 && (
+                            <p className="text-[12px] text-[var(--text4)] text-center py-8">
+                                Tidak ada snippet dengan bahasa ini
+                            </p>
+                        )}
                     </div>
                 </div>
                 {selected && (
@@ -105,11 +220,9 @@ export default function SnippetList({ snippets }: { snippets: Snippet[] }) {
                 )}
             </div>
 
-            {/* responsif */}
+            {/* mobile */}
             <div className="flex lg:hidden h-full overflow-hidden relative">
                 <AnimatePresence initial={false}>
-
-                    {/* Panel List — selalu ada, slide keluar saat detail muncul */}
                     {!showDetail && (
                         <motion.div
                             key="list"
@@ -119,16 +232,9 @@ export default function SnippetList({ snippets }: { snippets: Snippet[] }) {
                             transition={{ type: "tween", duration: 0.2, ease: "easeOut" }}
                             className="absolute inset-0 flex flex-col bg-[var(--bg2)]"
                         >
-                            <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border)] shrink-0">
-                                <span className="text-[11px] font-semibold tracking-[1px] uppercase text-[var(--text3)]">
-                                    Semua Snippet
-                                </span>
-                                <span className="font-mono text-[10px] text-[var(--text4)] bg-[var(--surface2)] px-2 py-[2px] rounded-full">
-                                    {snippets.length}
-                                </span>
-                            </div>
+                            <ListHeader {...headerProps} />
                             <div className="flex-1 overflow-y-auto p-2">
-                                {snippets.map(snippet => (
+                                {visibleSnippets.map(snippet => (
                                     <SnippetCard
                                         key={snippet.id}
                                         snippet={snippet}
@@ -136,11 +242,15 @@ export default function SnippetList({ snippets }: { snippets: Snippet[] }) {
                                         onClick={() => handleSelectMobile(snippet.id)}
                                     />
                                 ))}
+                                {visibleSnippets.length === 0 && (
+                                    <p className="text-[12px] text-[var(--text4)] text-center py-8">
+                                        Tidak ada snippet dengan bahasa ini
+                                    </p>
+                                )}
                             </div>
                         </motion.div>
                     )}
 
-                    {/* Panel Detail — slide masuk dari kanan */}
                     {showDetail && selected && (
                         <motion.div
                             key="detail"
@@ -150,7 +260,6 @@ export default function SnippetList({ snippets }: { snippets: Snippet[] }) {
                             transition={{ type: "tween", duration: 0.2, ease: "easeOut" }}
                             className="absolute inset-0 flex flex-col bg-[var(--bg2)]"
                         >
-                            {/* tombol back di mobile */}
                             <div className="flex items-center gap-3 px-4 py-3 border-b border-[var(--border)] shrink-0">
                                 <button
                                     onClick={() => setShowDetail(false)}
@@ -169,7 +278,6 @@ export default function SnippetList({ snippets }: { snippets: Snippet[] }) {
                             </div>
                         </motion.div>
                     )}
-
                 </AnimatePresence>
             </div>
 

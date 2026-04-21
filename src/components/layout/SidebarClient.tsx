@@ -7,7 +7,8 @@ import {
     faLayerGroup,
     faStar,
     faGlobe,
-    faCopy,
+    // faCopy,
+    faBookmark,
     faFolder,
     faPlus,
     faEllipsis,
@@ -19,7 +20,6 @@ import { IconDefinition } from "@fortawesome/fontawesome-svg-core"
 import { motion, AnimatePresence } from "framer-motion"
 
 import { useAppStore } from "@/lib/store"
-import { getLang } from "@/lib/languages"
 
 
 function CollapseSection({ open, children }: { open: boolean; children: React.ReactNode }) {
@@ -99,8 +99,7 @@ interface SidebarClientProps {
     totalCopies: number
     totalFavorites: number
     totalPublic: number
-    totalSnippetCopied: number
-    languages: { name: string; count: number }[]
+    // totalSnippetCopied: number
     tags: { name: string; count: number }[]
     onNavigate?: () => void
 }
@@ -110,8 +109,7 @@ export default function SidebarClient({
     totalCopies,
     totalFavorites,
     totalPublic,
-    totalSnippetCopied,
-    languages,
+    // totalSnippetCopied,
     tags,
     onNavigate
 }: SidebarClientProps) {
@@ -124,12 +122,12 @@ export default function SidebarClient({
     const isResizing = useRef(false)
     const [isPending, startTransition] = useTransition()
 
-    const [collapsed, setCollapsed] = useState({
-        library: false,
-        collections: true,
-        languages: true,
-        tags: true,
-    })
+    const { sidebarCollapsed: collapsed, setSidebarCollapsed } = useAppStore()
+
+    const toggle = (key: "library" | "collections" | "tags") => {
+        setSidebarCollapsed(key, !collapsed[key])
+    }
+
 
     const [collections, setCollections] = useState<Collection[]>([])
     const [newColName, setNewColName] = useState("")
@@ -151,9 +149,7 @@ export default function SidebarClient({
         const prefetchAllRoutes = () => {
             router.prefetch("/dashboard")
 
-            languages.forEach(({ name }) => {
-                if (name) router.prefetch(`/dashboard?lang=${encodeURIComponent(name)}`)
-            })
+
 
             collections.forEach((col) => {
                 router.prefetch(`/dashboard?collection=${col.id}`)
@@ -170,7 +166,7 @@ export default function SidebarClient({
 
         const timeout = setTimeout(prefetchAllRoutes, 250)
         return () => clearTimeout(timeout)
-    }, [router, languages, collections, tags])
+    }, [router, collections, tags])
 
     // fetch data
     useEffect(() => {
@@ -192,7 +188,7 @@ export default function SidebarClient({
             .then(d => setPublicIds((d.snippets ?? []).map((s: { id: number }) => s.id)))
             .catch(console.error)
     }, [setPublicIds])
-    
+
 
     useEffect(() => {
         fetch("/api/collections")
@@ -201,10 +197,6 @@ export default function SidebarClient({
             .catch(console.error)
     }, [])
 
-    // helper
-    const toggle = (key: keyof typeof collapsed) => {
-        setCollapsed(prev => ({ ...prev, [key]: !prev[key] }))
-    }
 
     const setFilter = (type: "lang" | "tag" | "filter" | "collection" | null, value?: string) => {
         setIsNavigating(true)
@@ -320,6 +312,7 @@ export default function SidebarClient({
                 <CollapseSection open={!collapsed.library}>
                     <NavItem label="All Snippets" count={totalSnippets} active={isAll} onClick={() => setFilter(null)} onPrefetch={() => prefetchRoute(null)} icon={faLayerGroup} />
                     <NavItem label="Favorites" count={favCount} active={activeFilter === "favorites"} onClick={() => setFilter("filter", "favorites")} onPrefetch={() => prefetchRoute("filter", "favorites")} icon={faStar} />
+                    <NavItem label="Saved" count={0} active={false} icon={faBookmark} />
                     <NavItem
                         label="Public"
                         count={publicCount}
@@ -328,7 +321,7 @@ export default function SidebarClient({
                         onPrefetch={() => prefetchRoute("filter", "public")}
                         icon={faGlobe}
                     />
-                    <NavItem label="Most Copied" count={totalSnippetCopied} active={activeFilter === "most-copied"} onClick={() => setFilter("filter", "most-copied")} onPrefetch={() => prefetchRoute("filter", "most-copied")} icon={faCopy} />
+                    {/* <NavItem label="Most Copied" count={totalSnippetCopied} active={activeFilter === "most-copied"} onClick={() => setFilter("filter", "most-copied")} onPrefetch={() => prefetchRoute("filter", "most-copied")} icon={faCopy} /> */}
                 </CollapseSection>
             </div>
 
@@ -444,36 +437,7 @@ export default function SidebarClient({
                 </CollapseSection>
             </div>
 
-            {/* lang  */}
-            <div className="px-3 py-2 border-t border-[var(--border)]">
-                <div onClick={() => toggle("languages")} className="flex items-center justify-between px-2 mb-1 cursor-pointer group">
-                    <p className="text-[10px] font-semibold tracking-[1.5px] uppercase text-[var(--text4)] group-hover:text-[var(--text3)] transition-colors">
-                        Language
-                    </p>
-                    <motion.div animate={{ rotate: collapsed.languages ? -90 : 0 }} transition={{ duration: 0.2 }}>
-                        <FontAwesomeIcon icon={faChevronDown} className="w-[8px] h-[8px] text-[var(--text4)]" />
-                    </motion.div>
-                </div>
 
-                <CollapseSection open={!collapsed.languages}>
-                    <div className="overflow-y-auto max-h-[125px]">
-                        {languages.map(({ name, count }) => {
-                            const langConfig = getLang(name)
-                            return (
-                                <NavItem
-                                    key={name}
-                                    label={name.charAt(0).toUpperCase() + name.slice(1)}
-                                    count={count}
-                                    active={activeLang === name}
-                                    dotColor={langConfig.color}
-                                    onClick={() => setFilter("lang", name)}
-                                    onPrefetch={() => prefetchRoute("lang", name)}
-                                />
-                            )
-                        })}
-                    </div>
-                </CollapseSection>
-            </div>
 
             {/* tag */}
             <div className="px-3 py-2 border-t border-[var(--border)]">
@@ -524,7 +488,7 @@ export default function SidebarClient({
                     <span className="text-[11px] text-[var(--em)] group-hover:text-[#0a0a0a] group-hover:translate-x-1 transition-all">→</span>
                 </div>
             </div>
-            
+
 
             {/* stat */}
             <div className="mt-auto px-3 py-3 border-t border-[var(--border)]">
@@ -532,7 +496,6 @@ export default function SidebarClient({
                     {[
                         { val: totalSnippets.toString(), label: 'Snippets' },
                         { val: totalCopies.toString(), label: 'Copies' },
-                        { val: languages.length.toString(), label: 'Languages' },
                         { val: tags.length.toString(), label: 'Tags' },
                     ].map(stat => (
                         <div key={stat.label} className="bg-[var(--surface2)] border border-[var(--border)] rounded-[6px] p-[10px]">

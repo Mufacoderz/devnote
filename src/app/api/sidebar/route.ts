@@ -37,14 +37,14 @@ export async function GET() {
         .map(([name, count]) => ({ name, count }))
         .sort((a, b) => b.count - a.count)
 
-        const totalSnippetCopied = snippets.filter(s => s.copyCount > 0).length
+        // const totalSnippetCopied = snippets.filter(s => s.copyCount > 0).length
 
     return NextResponse.json({
         totalSnippets: snippets.length,
         totalCopies: snippets.reduce((acc, s) => acc + s.copyCount, 0),
         totalFavorites: snippets.filter(s => s.isFavorite).length,
         totalPublic: snippets.filter(s => s.isPublic).length,
-        totalSnippetCopied,
+        // totalSnippetCopied,
         languages,
         tags,
     })
