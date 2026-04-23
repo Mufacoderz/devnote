@@ -57,7 +57,6 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
     const [menuOpen, setMenuOpen] = useState(false)
     const menuRef = useRef<HTMLDivElement>(null)
 
-    // Share state
     const [shareOpen, setShareOpen] = useState(false)
     const [shareId, setShareId] = useState<string | null>(snippet.shareId ?? null)
     const [shareLoading, setShareLoading] = useState(false)
@@ -189,9 +188,6 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
         }
     }
 
-
-    // Kalau shareId sudah ada di state → langsung buka modal, skip fetch
-    // Kalau belum → hit API untuk generate, simpan di state
     const handleOpenShare = async () => {
         if (shareId) {
             setShareOpen(true)
@@ -203,7 +199,8 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
             const res = await fetch(`/api/snippets/${snippet.id}/share`, { method: "POST" })
             const data = await res.json()
             setShareId(data.shareId)
-            setShareOpen(true)
+            // FIX: buka modal di render cycle berikutnya setelah shareId ke-commit
+            setTimeout(() => setShareOpen(true), 0)
         } catch {
             console.error("Gagal membuat share link")
         } finally {
@@ -211,7 +208,6 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
         }
     }
 
-    // Copy URL ke clipboard
     const handleCopyUrl = async () => {
         const url = `${window.location.origin}/share/${shareId}`
         await navigator.clipboard.writeText(url)
@@ -219,7 +215,6 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
         setTimeout(() => setUrlCopied(false), 2000)
     }
 
-    // Copy formatted code ke clipboard
     const handleCopyCode = async () => {
         if (!shareId) return
         const formatted = formatDisplayCode(shareId)
@@ -231,7 +226,6 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
     const handleUnshare = async () => {
         try {
             await fetch(`/api/snippets/${snippet.id}/share`, { method: "POST" })
-            // Clear shareId di state → klik share berikutnya akan generate baru
             setShareId(null)
             setShareOpen(false)
         } catch {
@@ -239,7 +233,10 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
         }
     }
 
-    const shareUrl = shareId ? `${typeof window !== "undefined" ? window.location.origin : ""}/share/${shareId}` : ""
+    const shareUrl = shareId
+        ? `${typeof window !== "undefined" ? window.location.origin : ""}/share/${shareId}`
+        : ""
+
     const formatDisplayCode = (code: string) => {
         return code.match(/.{1,3}/g)?.join("-") || code
     }
@@ -262,7 +259,7 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
                             </span>
                             <span className="text-[12px] text-[var(--text3)]">{snippet.language}</span>
                         </div>
-                        <h2 className=" text-[18px] sm:text-[22px] font-bold tracking-[-0.5px] leading-tight">
+                        <h2 className="text-[18px] sm:text-[22px] font-bold tracking-[-0.5px] leading-tight">
                             {snippet.title}
                         </h2>
                     </div>
@@ -421,7 +418,6 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
                                 >
                                     Edit
                                 </button>
-
                                 <button
                                     onClick={() => setConfirmOpen(true)}
                                     className="flex items-center gap-2 w-full px-3 py-2 text-[12px] text-red-400 rounded-lg hover:bg-[var(--surface2)]"
@@ -431,8 +427,6 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
                             </div>
                         )}
                     </div>
-
-
                 </div>
 
                 <div className="flex items-center gap-4 mt-2 sm:mt-4 font-mono text-[8px] sm:text-[11px] text-[var(--text4)]">
@@ -442,7 +436,7 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
                 </div>
             </div>
 
-            <div className="flex-1 min-h-0 overflow-hidden ">
+            <div className="flex-1 min-h-0 overflow-hidden">
                 <CodeBlock code={snippet.code} language={snippet.language} />
             </div>
 
@@ -453,7 +447,6 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
                     <span>{snippet.language}</span>
                 </div>
 
-                {/* Tombol share — loading state saat fetch API */}
                 <button
                     onClick={handleOpenShare}
                     disabled={shareLoading}
@@ -468,12 +461,11 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
                 </button>
             </div>
 
-            {/* ── SHARE MODAL ── */}
+            {/* SHARE MODAL */}
             {shareOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
                     <div className="flex flex-col gap-5 rounded-xl p-6 w-full max-w-md bg-[var(--surface)] border border-[var(--border)] shadow-2xl">
 
-                        {/* Header */}
                         <div className="flex items-center justify-between">
                             <div>
                                 <h3 className="text-[15px] font-semibold text-[var(--text)]">
@@ -495,33 +487,28 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
                         <div className="flex flex-col gap-1.5">
                             <span className="font-mono text-[10px] text-[var(--text4)]">Link bagikan</span>
                             <div className="flex items-center gap-2">
-                            <div className="flex-1 flex items-center gap-2 bg-[var(--bg)] border border-[var(--border2)] rounded-lg px-3 py-2.5 overflow-hidden">
-                                <FontAwesomeIcon icon={faLink} className="w-[10px] h-[10px] text-[var(--text4)] shrink-0" />
-                                <input
-                                    readOnly
-                                    value={shareUrl}
-                                    className="flex-1 bg-transparent text-[12px] font-mono text-white outline-none truncate"
-                                />
-                            </div>
-                            <button
-                                onClick={handleCopyUrl}
-                                className={`flex items-center gap-1.5 px-3 py-2.5 rounded-lg text-[12px] font-semibold transition-all shrink-0
-                                    ${urlCopied
-                                        ? 'bg-emerald-500 text-white'
-                                        : 'bg-emerald-500 text-[#0a0a0a] hover:bg-emerald-400'
-                                    }`}
-                            >
-                                <FontAwesomeIcon
-                                    icon={urlCopied ? faCheck : faCopy}
-                                    className="w-[11px] h-[11px]"
-                                />
-                                {urlCopied ? "Tersalin!" : "Salin"}
-                            </button>
+                                <div className="flex-1 flex items-center gap-2 bg-[var(--bg)] border border-[var(--border2)] rounded-lg px-3 py-2.5 overflow-hidden">
+                                    <FontAwesomeIcon icon={faLink} className="w-[10px] h-[10px] text-[var(--text4)] shrink-0" />
+                                    <input
+                                        readOnly
+                                        value={shareUrl}
+                                        className="flex-1 bg-transparent text-[12px] font-mono text-white outline-none truncate"
+                                    />
+                                </div>
+                                <button
+                                    onClick={handleCopyUrl}
+                                    className={`flex items-center gap-1.5 px-3 py-2.5 rounded-lg text-[12px] font-semibold transition-all shrink-0
+                                        ${urlCopied
+                                            ? 'bg-emerald-500 text-white'
+                                            : 'bg-emerald-500 text-[#0a0a0a] hover:bg-emerald-400'
+                                        }`}
+                                >
+                                    <FontAwesomeIcon icon={urlCopied ? faCheck : faCopy} className="w-[11px] h-[11px]" />
+                                    {urlCopied ? "Tersalin!" : "Salin"}
+                                </button>
                             </div>
                         </div>
-                        
 
-                        {/* Divider */}
                         <div className="border-t border-[var(--border)]" />
 
                         <div className="flex flex-col gap-1.5">
@@ -541,31 +528,22 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
                                             : 'bg-emerald-500 text-[#0a0a0a] hover:bg-emerald-400'
                                         }`}
                                 >
-                                    <FontAwesomeIcon
-                                        icon={codeCopied ? faCheck : faCopy}
-                                        className="w-[11px] h-[11px]"
-                                    />
+                                    <FontAwesomeIcon icon={codeCopied ? faCheck : faCopy} className="w-[11px] h-[11px]" />
                                     {codeCopied ? "Tersalin!" : "Salin"}
                                 </button>
                             </div>
                         </div>
 
-                        
-
-                        {/* Footer */}
                         <div className="flex items-center justify-between pt-1">
-
-                            
-                                <button
-                                    onClick={handleUnshare}
-                                    className="flex items-center gap-1.5 text-[12px] text-[var(--text4)] hover:text-red-400 transition-colors"
-                                >
-                                    <FontAwesomeIcon icon={faLinkSlash} className="w-[10px] h-[10px]" />
-                                    Nonaktifkan link
-                                </button>
-
                             <button
-                                onClick={() => { setShareOpen(false) }}
+                                onClick={handleUnshare}
+                                className="flex items-center gap-1.5 text-[12px] text-[var(--text4)] hover:text-red-400 transition-colors"
+                            >
+                                <FontAwesomeIcon icon={faLinkSlash} className="w-[10px] h-[10px]" />
+                                Nonaktifkan link
+                            </button>
+                            <button
+                                onClick={() => setShareOpen(false)}
                                 className="text-[13px] font-medium px-4 py-2 rounded-lg border border-[var(--border)] text-[var(--text3)] hover:bg-[var(--surface2)] transition-all"
                             >
                                 Tutup
@@ -575,7 +553,6 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
                 </div>
             )}
 
-            {/* Confirm Delete Modal */}
             {confirmOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
                     <div className="flex flex-col gap-4 rounded-xl p-6 w-full max-w-sm bg-[var(--surface)] border border-[var(--border)]">
