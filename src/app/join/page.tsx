@@ -85,7 +85,7 @@ export default function JoinPage() {
                 }}
             />
 
-            <div className="relative z-10 w-full max-w-[440px] mx-4 px-4 sm:px-0">
+            <div className="relative z-10 w-full max-w-[440px] mx-auto px-4 sm:px-0">
 
                 <div className="bg-[#10b981] text-[#0a0a0a] rounded-3xl p-6 sm:p-8 lg:p-9 shadow-[0_20px_60px_rgba(16,185,129,0.35)]">
 

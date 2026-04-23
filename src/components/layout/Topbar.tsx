@@ -284,7 +284,7 @@ export default function Topbar({ onNewSnippet, onToggleSidebar }: TopbarProps) {
                     onClick={() => setCodeModalOpen(false)}
                 >
                     <div
-                        className="relative w-full max-w-[420px] mx-4 rounded-3xl overflow-hidden shadow-[0_20px_60px_rgba(16,185,129,0.25)]"
+                        className="relative w-full max-w-[420px] mx-auto rounded-3xl overflow-hidden shadow-[0_20px_60px_rgba(16,185,129,0.25)]"
                         onClick={e => e.stopPropagation()}
                     >
                         <div className="bg-[#10b981] p-8">

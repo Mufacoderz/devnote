@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback, useTransition } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
-
 import ExploreSnippetCard, { PublicSnippet } from "@/components/explore/ExploreSnippetCard"
 import ExplorePagination from "@/components/explore/ExplorePagination"
 import ExploreTopbar from "@/components/explore/ExploreTopbar"
@@ -13,7 +12,6 @@ import { languages } from "@/lib/languages"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faSliders, faTimes } from "@fortawesome/free-solid-svg-icons"
 
-// ── Sort filter list
 const SORT_FILTERS = [
     { label: "Terbaru", value: "newest" },
     { label: "Terlama", value: "oldest" },
@@ -21,7 +19,6 @@ const SORT_FILTERS = [
     { label: "Paling Banyak Dicopy", value: "most-copied" },
 ]
 
-// ── Language filter
 const LANG_FILTERS = [
     { label: "Semua Bahasa", value: "" },
     ...Object.entries(languages)
@@ -37,7 +34,8 @@ export default function ExploreClient() {
     const searchParams = useSearchParams()
     const [, startTransition] = useTransition()
 
-    // State
+    
+
     const [sort, setSort] = useState(searchParams.get("sort") ?? "newest")
     const [lang, setLang] = useState(searchParams.get("lang") ?? "")
     const [search, setSearch] = useState(searchParams.get("search") ?? "")
@@ -48,10 +46,8 @@ export default function ExploreClient() {
     const [totalPages, setTotalPages] = useState(1)
     const [loading, setLoading] = useState(true)
 
-    // Mobile Filter Modal
     const [showMobileFilter, setShowMobileFilter] = useState(false)
 
-    // Sync URL
     const pushParams = useCallback((overrides: Record<string, string>) => {
         const params = new URLSearchParams()
         const merged = { sort, lang, search, page: String(page), ...overrides }
@@ -66,7 +62,6 @@ export default function ExploreClient() {
         })
     }, [sort, lang, search, page, router])
 
-    // Fetch data
     const fetchSnippets = useCallback(async (params: {
         sort: string; lang: string; search: string; page: number
     }) => {
@@ -133,13 +128,10 @@ export default function ExploreClient() {
 
             <ExploreHero total={total} loading={loading} />
 
-            {/* Filter + List */}
             <div className="max-w-5xl mx-auto w-full px-5 py-8 flex-1">
 
-                {/* Filter Bar - Responsif */}
                 <div className="flex items-center justify-between mb-6">
 
-                    {/* Desktop: Sort Buttons */}
                     <div className="hidden sm:flex items-center gap-1.5 bg-[var(--surface)] border border-[var(--border)] rounded-xl p-1">
                         {SORT_FILTERS.map(f => (
                             <button
@@ -155,7 +147,6 @@ export default function ExploreClient() {
                         ))}
                     </div>
 
-                    {/* MFilter Button responsif */}
                     <button
                         onClick={() => setShowMobileFilter(true)}
                         className="sm:hidden flex items-center gap-2 bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-2.5 text-sm font-medium text-[var(--text)] hover:bg-[var(--surface2)] transition-all"
@@ -185,7 +176,6 @@ export default function ExploreClient() {
                     </div>
                 </div>
 
-                {/* Total Count */}
                 {!loading && (
                     <div className="mb-4 text-right">
                         <span className="text-[12px] text-[var(--text3)] font-mono">
@@ -194,7 +184,6 @@ export default function ExploreClient() {
                     </div>
                 )}
 
-                {/* Snippet List */}
                 {loading ? (
                     <div className="flex flex-col gap-4">
                         {Array.from({ length: 5 }).map((_, i) => <SkeletonCard key={i} />)}
@@ -234,7 +223,6 @@ export default function ExploreClient() {
                 <ExplorePagination page={page} totalPages={totalPages} onChange={handlePage} />
             </div>
 
-            {/*modal filter responsif*/}
             <AnimatePresence>
                 {showMobileFilter && (
                     <motion.div className="fixed inset-0 sm:hidden z-[70] ">

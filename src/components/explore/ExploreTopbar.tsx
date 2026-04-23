@@ -48,7 +48,6 @@ export default function ExploreTopbar({ search, onSearch }: ExploreTopbarProps) 
 
             <div className="flex items-center justify-between w-full max-w-7xl mx-auto">
 
-                {/* Logo */}
                 <Link href="/" className="flex items-center gap-2 group">
                     <div className="relative w-7 h-7">
                         <Image
@@ -65,7 +64,6 @@ export default function ExploreTopbar({ search, onSearch }: ExploreTopbarProps) 
                     </span>
                 </Link>
 
-                {/* Desktop Search */}
                 <div className="hidden md:block flex-1 max-w-md mx-6">
                     <div className="relative">
                         <input
@@ -95,7 +93,6 @@ export default function ExploreTopbar({ search, onSearch }: ExploreTopbarProps) 
 
                 <div className="flex items-center gap-3">
 
-                    {/* Mobile Search Button */}
                     <button
                         onClick={() => setMobileSearchOpen(true)}
                         className="md:hidden w-[32px] h-[32px] flex items-center justify-center 
@@ -104,7 +101,6 @@ export default function ExploreTopbar({ search, onSearch }: ExploreTopbarProps) 
                         <FontAwesomeIcon icon={faMagnifyingGlass} className="w-5 h-5" />
                     </button>
 
-                    {/* Profile Button */}
                     {session?.user ? (
                         <button
                             onClick={handleProfileClick}

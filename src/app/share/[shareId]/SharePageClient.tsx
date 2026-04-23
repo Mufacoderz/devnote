@@ -7,6 +7,7 @@ import CodeBlock from "@/components/snippet/CodeBlock"
 import { getLang } from "@/lib/languages"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faUser, faCopy, faCheck, faArrowRight } from "@fortawesome/free-solid-svg-icons"
+import { useSession } from "next-auth/react"
 
 interface ShareSnippet {
     id: number
@@ -28,6 +29,9 @@ export default function SharePageSplit({ snippet }: { snippet: ShareSnippet }) {
     const [copied, setCopied] = useState(false)
     const [copyCount, setCopyCount] = useState(snippet.copyCount)
     const lang = getLang(snippet.language)
+
+    const { data: session } = useSession()
+
 
     const handleCopy = async () => {
         try {
@@ -72,13 +76,10 @@ export default function SharePageSplit({ snippet }: { snippet: ShareSnippet }) {
                 <div className="absolute -top-40 -left-40 w-[420px] h-[420px] md:w-[600px] md:h-[600px] rounded-full bg-emerald-500/10 blur-[110px]" />
             </div>
 
-            {/* Wrapper */}
             <div className="relative w-full h-screen lg:max-w-6xl lg:mx-auto lg:h-[680px]">
                 
-                {/* CARD / FULLSCREEN */}
                 <div className="bg-[#111a16] border-0 sm:border border-emerald-500/20 rounded-none sm:rounded-3xl overflow-hidden shadow-2xl flex flex-col lg:flex-row h-full">
 
-                    {/* LEFT PANEL */}
                     <div className="w-full lg:w-[310px] bg-[#0c1210] border-b lg:border-b-0 lg:border-r border-emerald-500/10 
                                     p-4 lg:p-7 flex flex-col">
 
@@ -97,11 +98,11 @@ export default function SharePageSplit({ snippet }: { snippet: ShareSnippet }) {
                             </Link>
 
                             <Link
-                                href="/"
+                                href={session ? "/dashboard" : "/"}
                                 className="lg:hidden group flex items-center gap-1.5 bg-emerald-500 hover:bg-emerald-400 transition-all 
                                         text-black font-medium px-4 py-1.5 rounded-2xl text-xs whitespace-nowrap"
                             >
-                                Gabung
+                                {session? "Dashboard" : "Gabung"}
                                 <FontAwesomeIcon 
                                     icon={faArrowRight} 
                                     className="group-hover:translate-x-0.5 transition-transform text-[10px]" 
@@ -173,11 +174,11 @@ export default function SharePageSplit({ snippet }: { snippet: ShareSnippet }) {
 
                         <div className="hidden lg:block mt-auto pt-8">
                             <Link
-                                href="/"
+                                href={session ? "/dashboard" : "/"}
                                 className="group flex items-center justify-between bg-emerald-500 hover:bg-emerald-400 transition-all 
                                         text-black font-semibold px-5 py-3 rounded-2xl text-sm w-full"
                             >
-                                <span>Gabung ke Devnote</span>
+                                <span>{session ? "Masuk ke Dashboard" : "Gabung ke Devnote"}</span>
                                 <FontAwesomeIcon 
                                     icon={faArrowRight} 
                                     className="group-hover:translate-x-1 transition-transform" 
