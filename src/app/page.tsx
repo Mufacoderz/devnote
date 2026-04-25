@@ -69,10 +69,10 @@ function WelcomePage() {
 
             <div className="relative z-10 flex flex-col items-center text-center px-6 max-w-[500px]">
                 <Image
-                    src="/black-trans.png"
+                    src="/logo-bg.png"
                     alt="Logo Devnote"
-                    width={52}
-                    height={52}
+                    width={64}
+                    height={64}
                     className="mb-6"
                     priority
                 />

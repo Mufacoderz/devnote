@@ -159,8 +159,8 @@ export default function Topbar({ onNewSnippet, onToggleSidebar }: TopbarProps) {
                         <FontAwesomeIcon icon={faBars} className="w-[14px] h-[14px]" />
                     </button>
 
-                    <div className="flex items-center gap-2">
-                        <Image src="/emerald-trans.png" alt="devnote" width={30} height={30} />
+                    <div className="flex items-center ">
+                        <Image src="/emerald-trans-bg.png" alt="devnote" width={50} height={50} />
                         <span className="text-[15px] font-semibold tracking-tight">
                             dev<span className="text-[var(--em)]">note</span>
                         </span>
@@ -201,7 +201,6 @@ export default function Topbar({ onNewSnippet, onToggleSidebar }: TopbarProps) {
                         />
                     </div>
 
-                    {/* search icon — mobile */}
                     <button
                         onClick={() => setSearchOpen(true)}
                         className="lg:hidden w-[32px] h-[32px] flex items-center justify-center rounded-lg text-[var(--text3)] hover:bg-[var(--surface2)] hover:text-[var(--text)] transition-all"
@@ -209,7 +208,6 @@ export default function Topbar({ onNewSnippet, onToggleSidebar }: TopbarProps) {
                         <FontAwesomeIcon icon={faMagnifyingGlass} className="w-[13px] h-[13px]" />
                     </button>
 
-                    {/* enter code icon — mobile */}
                     <button
                         onClick={() => setCodeModalOpen(true)}
                         className="lg:hidden w-[32px] h-[32px] flex items-center justify-center rounded-lg text-[var(--text3)] hover:bg-[var(--surface2)] hover:text-[var(--text)] transition-all"
@@ -290,7 +288,7 @@ export default function Topbar({ onNewSnippet, onToggleSidebar }: TopbarProps) {
                         <div className="bg-[#10b981] p-8">
                             <div className="flex items-center justify-between mb-7">
                                 <div className="flex items-center gap-2">
-                                    <Image src="/black-trans.png" alt="devnote" width={22} height={22} />
+                                    <Image src="/logo-bg2.png" alt="devnote" width={22} height={22} />
                                     <span className="text-[14px] font-semibold tracking-tight text-black">devnote</span>
                                 </div>
                                 <button

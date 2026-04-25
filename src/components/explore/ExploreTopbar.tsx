@@ -51,10 +51,10 @@ export default function ExploreTopbar({ search, onSearch }: ExploreTopbarProps) 
                 <Link href="/" className="flex items-center gap-2 group">
                     <div className="relative w-7 h-7">
                         <Image
-                            src="/emerald-trans.png"
+                            src="/emerald-trans-bg.png"
                             alt="devnote"
-                            width={36}
-                            height={36}
+                            width={55}
+                            height={55}
                             className="transition-transform duration-300 group-hover:scale-110"
                             priority
                         />

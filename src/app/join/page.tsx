@@ -92,10 +92,10 @@ export default function JoinPage() {
                     <Link href="/" className="flex flex-col gap-1 mb-6 sm:mb-8 w-fit group">
                         <div className="flex items-center gap-2">
                             <Image
-                                src="/black-trans.png"
+                                src="/logo-bg2.png"
                                 alt="devnote"
-                                width={26}
-                                height={26}
+                                width={50}
+                                height={50}
                             />
                             <span className="text-[15px] font-semibold tracking-tight">
                                 dev<span className="text-black">note</span>

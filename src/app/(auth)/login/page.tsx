@@ -53,10 +53,10 @@ export default function LoginPage() {
                     <Link href="/" className="flex flex-col gap-1 mb-5 w-fit group">
                         <div className="flex items-center gap-2">
                             <Image
-                                src="/emerald-trans.png"
+                                src="/emerald-trans-bg.png"
                                 alt="devnote"
-                                width={26}
-                                height={26}
+                                width={45}
+                                height={45}
                             />
                             <span className="text-[15px] font-semibold tracking-tight">
                                 dev<span className="text-[var(--em)]">note</span>

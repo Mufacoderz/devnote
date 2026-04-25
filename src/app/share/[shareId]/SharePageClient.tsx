@@ -86,10 +86,10 @@ export default function SharePageSplit({ snippet }: { snippet: ShareSnippet }) {
                         <div className="flex items-center justify-between mb-2 lg:mb-6">
                             <Link href="/" className="flex items-center gap-2 group">
                                 <Image
-                                    src="/emerald-trans.png"
+                                    src="/emerald-trans-bg.png"
                                     alt="devnote"
-                                    width={26}
-                                    height={26}
+                                    width={50}
+                                    height={50}
                                     className="transition-transform group-hover:scale-110"
                                 />
                                 <span className="text-md sm:text-lg font-semibold tracking-tighter text-white">
