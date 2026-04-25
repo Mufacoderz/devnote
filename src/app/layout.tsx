@@ -39,10 +39,11 @@ export const metadata: Metadata = {
   authors: [{ name: "Fadil" }],
   creator: "Fadil",
 
-  manifest: "/manifest.json",
+  // manifest: "/manifest.ts",
 
   icons: {
     icon: "/emerald-trans.png",
+    apple: "/icon-192.png",
   },
 
   // OG default — di-override per page kalau perlu
