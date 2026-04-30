@@ -65,18 +65,21 @@ export default function JoinPage() {
     const isDisabled = loading || filled !== 9
 
     return (
-            <div className="relative min-h-screen w-full flex items-center justify-center overflow-x-hidden bg-[#0a0a0a]">
+        <div className="min-h-screen w-screen flex items-center justify-center bg-[#0a0a0a]">
 
+            {/* Grid background - fixed biar selalu full viewport */}
             <div
                 className="fixed inset-0 opacity-50 pointer-events-none"
                 style={{
                     backgroundImage: `linear-gradient(var(--border) 1px, transparent 1px), 
-                         linear-gradient(90deg, var(--border) 1px, transparent 1px)`,
+                                     linear-gradient(90deg, var(--border) 1px, transparent 1px)`,
                     backgroundSize: "40px 40px",
                 }}
             />
+
+            {/* Radial glow - fixed juga */}
             <div
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-10 pointer-events-none
+                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-10 pointer-events-none
                            w-[520px] h-[520px] sm:w-[620px] sm:h-[620px] lg:w-[680px] lg:h-[680px]"
                 style={{
                     background: "radial-gradient(circle, #10b981 0%, transparent 65%)",
@@ -84,7 +87,8 @@ export default function JoinPage() {
                 }}
             />
 
-            <div className="relative z-10 w-full max-w-[440px] mx-auto px-4 sm:px-0">
+            {/* Card wrapper */}
+            <div className="relative z-10 w-full max-w-[440px] mx-auto px-4">
 
                 <div className="bg-[#10b981] text-[#0a0a0a] rounded-3xl p-6 sm:p-8 lg:p-9 shadow-[0_20px_60px_rgba(16,185,129,0.35)]">
 
@@ -134,7 +138,10 @@ export default function JoinPage() {
                                     placeholder="XXX-XXX-XXX"
                                     autoComplete="off"
                                     spellCheck={false}
-                                    className="flex-1 bg-transparent py-4 sm:py-5 pr-4 text-[24px] sm:text-[27px] font-mono font-bold tracking-[3px] sm:tracking-[4px] text-black placeholder:text-black/40 outline-none"
+                                    className="flex-1 min-w-0 bg-transparent py-4 sm:py-5 pr-4 
+                                               text-[18px] sm:text-[22px] 
+                                               font-mono font-bold tracking-[2px] sm:tracking-[3px] 
+                                               text-black placeholder:text-black/40 outline-none"
                                 />
                             </div>
 
@@ -171,6 +178,6 @@ export default function JoinPage() {
                     </form>
                 </div>
             </div>
-        </div >
+        </div>
     )
 }
