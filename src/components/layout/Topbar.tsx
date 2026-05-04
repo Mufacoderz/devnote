@@ -112,6 +112,8 @@ export default function Topbar({ onNewSnippet, onToggleSidebar }: TopbarProps) {
         }
     }
 
+    // const filled = shareCode.replace(/-/g, "").length
+    // const isDisabled = codeLoading || filled !== 9
     const filled = shareCode.replace(/-/g, "").length
     const isDisabled = codeLoading || filled !== 9
 
@@ -160,7 +162,7 @@ export default function Topbar({ onNewSnippet, onToggleSidebar }: TopbarProps) {
                     </button>
 
                     <div className="flex items-center ">
-                        <Image src="/emerald-trans-bg.png" alt="devnote" width={50} height={50} />
+                        <Image src="/emerald-trans-bg.png" alt="devnote" width={45} height={45}className="hidden lg:flex" />
                         <span className="text-[15px] font-semibold tracking-tight">
                             dev<span className="text-[var(--em)]">note</span>
                         </span>
@@ -275,50 +277,57 @@ export default function Topbar({ onNewSnippet, onToggleSidebar }: TopbarProps) {
                 </div>
             </header>
 
-            {/* Code Modal */}
+            {/* Code Modal - Versi Responsif */}
             {codeModalOpen && (
                 <div
-                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
                     onClick={() => setCodeModalOpen(false)}
                 >
                     <div
-                        className="relative w-full max-w-[420px] mx-auto rounded-3xl overflow-hidden shadow-[0_20px_60px_rgba(16,185,129,0.25)]"
+                        className="relative w-full max-w-[440px] mx-auto"
                         onClick={e => e.stopPropagation()}
                     >
-                        <div className="bg-[#10b981] p-8">
-                            <div className="flex items-center justify-between mb-7">
+                        <div className="bg-[#10b981] text-[#0a0a0a] rounded-3xl p-6 sm:p-8 lg:p-9 shadow-[0_20px_60px_rgba(16,185,129,0.35)]">
+
+                            {/* Header Logo + Close */}
+                            <div className="flex items-center justify-between mb-6 sm:mb-8">
                                 <div className="flex items-center gap-2">
-                                    <Image src="/logo-bg2.png" alt="devnote" width={22} height={22} />
-                                    <span className="text-[14px] font-semibold tracking-tight text-black">devnote</span>
+                                    <Image src="/logo-bg2.png" alt="devnote" width={42} height={42} />
+                                    <span className="text-[15px] font-semibold tracking-tight">
+                                        dev<span className="text-black">note</span>
+                                    </span>
                                 </div>
                                 <button
                                     onClick={() => setCodeModalOpen(false)}
-                                    className="w-[28px] h-[28px] flex items-center justify-center rounded-full bg-black/10 hover:bg-black/20 text-black transition-all"
+                                    className="w-9 h-9 flex items-center justify-center rounded-full bg-black/10 hover:bg-black/20 text-black transition-all"
                                 >
-                                    <FontAwesomeIcon icon={faTimes} className="w-[11px] h-[11px]" />
+                                    <FontAwesomeIcon icon={faTimes} className="w-4 h-4" />
                                 </button>
                             </div>
 
-                            <div className="mb-7">
-                                <h2 className="text-[26px] font-bold tracking-[-0.5px] leading-tight mb-1 text-black">
+                            {/* Title */}
+                            <div className="mb-6 sm:mb-8">
+                                <h2 className="text-[28px] sm:text-[32px] font-bold tracking-[-1px] leading-tight mb-1">
                                     Punya kode share?
                                 </h2>
-                                <p className="text-black/70 text-[13.5px]">
+                                <p className="text-black/75 text-[14px] sm:text-[14.5px]">
                                     Masukkan kode 9 digit yang dibagikan temanmu
                                 </p>
                             </div>
 
-                            <div className="space-y-4">
+                            {/* Form */}
+                            <div className="space-y-6">
                                 <div>
                                     <div className={`relative flex items-center bg-white border-2 rounded-2xl transition-all duration-200
-                                        ${codeError ? "border-red-500" : filled === 9 ? "border-black" : "border-white/80"}`}
+                            ${codeError ? "border-red-600" : filled === 9 ? "border-black" : "border-white/80"}`}
                                     >
-                                        <div className="pl-4 pr-3">
-                                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.25" className="text-black/70">
+                                        <div className="pl-4 sm:pl-5 pr-3">
+                                            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.25" className="text-black/80">
                                                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                                                 <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                                             </svg>
                                         </div>
+
                                         <input
                                             ref={codeInputRef}
                                             type="text"
@@ -331,10 +340,14 @@ export default function Topbar({ onNewSnippet, onToggleSidebar }: TopbarProps) {
                                             placeholder="XXX-XXX-XXX"
                                             autoComplete="off"
                                             spellCheck={false}
-                                            className="flex-1 bg-transparent py-4 pr-4 text-[24px] font-mono font-bold tracking-[4px] text-black placeholder:text-black/30 outline-none"
+                                            className="flex-1 min-w-0 bg-transparent py-4 sm:py-5 pr-4 
+                                           text-[18px] sm:text-[22px] 
+                                           font-mono font-bold tracking-[2px] sm:tracking-[3px] 
+                                           text-black placeholder:text-black/40 outline-none"
                                         />
                                     </div>
 
+                                    {/* Progress Bar */}
                                     <div className="h-[3px] bg-black/10 rounded-full mt-3 overflow-hidden">
                                         <div
                                             className="h-full bg-black transition-all duration-300"
@@ -344,7 +357,7 @@ export default function Topbar({ onNewSnippet, onToggleSidebar }: TopbarProps) {
                                 </div>
 
                                 {codeError && (
-                                    <p className="text-red-700 bg-red-100/80 border border-red-200 rounded-2xl px-4 py-3 text-[13px]">
+                                    <p className="text-red-700 bg-red-100/80 border border-red-200 rounded-2xl px-4 py-3 text-sm">
                                         {codeError}
                                     </p>
                                 )}
@@ -352,7 +365,9 @@ export default function Topbar({ onNewSnippet, onToggleSidebar }: TopbarProps) {
                                 <button
                                     disabled={isDisabled}
                                     onClick={handleCodeSubmit}
-                                    className="w-full bg-black hover:bg-zinc-900 disabled:bg-black/60 disabled:cursor-not-allowed text-white font-semibold text-[14px] py-[15px] rounded-2xl transition-all duration-200 shadow-md"
+                                    className="w-full bg-black hover:bg-zinc-900 disabled:bg-black/70 disabled:cursor-not-allowed 
+                                   text-white font-semibold text-[15px] py-[16px] sm:py-[17px] rounded-2xl 
+                                   transition-all duration-200 shadow-md"
                                 >
                                     {codeLoading ? (
                                         <span className="flex items-center justify-center gap-2">

@@ -18,6 +18,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons"
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core"
 import { motion, AnimatePresence } from "framer-motion"
+import Image from "next/image"
 
 import { useAppStore } from "@/lib/store"
 
@@ -294,6 +295,22 @@ export default function SidebarClient({
                     <div className="h-full bg-[var(--em)] animate-pulse" />
                 </div>
             )}
+
+            <div className="lg:hidden p-2 border-b border-[var(--border)]">
+                <div className="flex flex-col justify-center items-center">
+                    <Image 
+                        src="/logo-bg.png" 
+                        alt="devnote" 
+                        width={46} 
+                        height={46} 
+                        priority
+                        className="rounded-full"
+                    />
+                    <span className="text-[17px] font-semibold tracking-tight">
+                        dev<span className="text-[var(--em)]">note</span>
+                    </span>
+                </div>
+            </div>
 
             {/* library */}
             <div className="px-3 py-2">
