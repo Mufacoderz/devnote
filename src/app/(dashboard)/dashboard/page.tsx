@@ -62,6 +62,7 @@ async function DashboardContent({
     copyCount: s.copyCount,
     isFavorite: s.isFavorite,
     isPublic: s.isPublic,
+    shareId: s.shareId ?? null,
     createdAt: s.createdAt.toLocaleDateString("id-ID", {
       day: "numeric",
       month: "long",

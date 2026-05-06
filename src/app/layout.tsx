@@ -42,7 +42,7 @@ export const metadata: Metadata = {
   // manifest: "/manifest.ts",
 
   icons: {
-    icon: "/emerald-trans.png",
+    icon: "/emerald-trans-bg.png",
     apple: "/icon-192.png",
   },
 

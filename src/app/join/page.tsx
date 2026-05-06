@@ -45,13 +45,7 @@ export default function JoinPage() {
         setError("")
 
         try {
-            const res = await fetch(`/api/snippets/${rawCode}/share/shareId`)
-
-            if (!res.ok) {
-                setError("Kode tidak ditemukan atau sudah tidak aktif")
-                return
-            }
-
+    
             router.push(`/share/${rawCode}`)
         } catch (err) {
             console.error(err)

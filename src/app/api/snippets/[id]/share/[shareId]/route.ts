@@ -5,10 +5,9 @@ import { prisma } from "@/lib/prisma"
 
 export async function GET(
     req: NextRequest,
-    { params }: { params: Promise<{ id: string }> }   // ← Harus "id", bukan "shareId"
+    { params }: { params: Promise<{ shareId: string }> }   // ← Harus "id", bukan "shareId"
 ) {
-    const { id } = await params
-    const shareId = id
+    const { shareId } = await params
 
     if (!shareId) {
         return NextResponse.json({ error: "Invalid share ID" }, { status: 400 })
