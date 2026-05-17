@@ -28,7 +28,6 @@ export default function Topbar({ onNewSnippet, onToggleSidebar }: TopbarProps) {
     const [codeModalOpen, setCodeModalOpen] = useState(false)
     const [shareCode, setShareCode] = useState("")
     const [codeError, setCodeError] = useState("")
-    const [codeLoading, setCodeLoading] = useState(false)
     const dropdownRef = useRef<HTMLDivElement>(null)
     const codeInputRef = useRef<HTMLInputElement>(null)
     const router = useRouter()
@@ -63,14 +62,18 @@ export default function Topbar({ onNewSnippet, onToggleSidebar }: TopbarProps) {
         return () => document.removeEventListener("mousedown", handleClickOutside)
     }, [])
 
+    // Hanya focus input saat modal buka — reset dipindah ke closeCodeModal
     useEffect(() => {
         if (codeModalOpen) {
             setTimeout(() => codeInputRef.current?.focus(), 50)
-        } else {
-            setShareCode("")
-            setCodeError("")
         }
     }, [codeModalOpen])
+
+    const closeCodeModal = () => {
+        setCodeModalOpen(false)
+        setShareCode("")
+        setCodeError("")
+    }
 
     const handleCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         let val = e.target.value
@@ -88,34 +91,18 @@ export default function Topbar({ onNewSnippet, onToggleSidebar }: TopbarProps) {
         if (codeError) setCodeError("")
     }
 
-    const handleCodeSubmit = async () => {
+    const handleCodeSubmit = () => {
         const rawCode = shareCode.replace(/-/g, "")
         if (rawCode.length !== 9) {
             setCodeError("Kode harus 9 karakter")
             return
         }
-        setCodeLoading(true)
-        setCodeError("")
-        try {
-            const res = await fetch(`/api/snippets/${rawCode}/share/shareId`)
-            if (!res.ok) {
-                setCodeError("Kode tidak ditemukan atau sudah tidak aktif")
-                return
-            }
-            router.push(`/share/${rawCode}`)
-            setCodeModalOpen(false)
-        } catch (err) {
-            console.error(err)
-            setCodeError("Terjadi kesalahan, coba lagi")
-        } finally {
-            setCodeLoading(false)
-        }
+        router.push(`/share/${rawCode}`)
+        closeCodeModal()
     }
 
-    // const filled = shareCode.replace(/-/g, "").length
-    // const isDisabled = codeLoading || filled !== 9
     const filled = shareCode.replace(/-/g, "").length
-    const isDisabled = codeLoading || filled !== 9
+    const isDisabled = filled !== 9
 
     if (!session?.user) return null
 
@@ -162,7 +149,7 @@ export default function Topbar({ onNewSnippet, onToggleSidebar }: TopbarProps) {
                     </button>
 
                     <div className="flex items-center ">
-                        <Image src="/emerald-trans-bg.png" alt="devnote" width={45} height={45}className="hidden lg:flex" />
+                        <Image src="/emerald-trans-bg.png" alt="devnote" width={45} height={45} className="hidden lg:flex" />
                         <span className="text-[15px] font-semibold tracking-tight">
                             dev<span className="text-[var(--em)]">note</span>
                         </span>
@@ -277,11 +264,11 @@ export default function Topbar({ onNewSnippet, onToggleSidebar }: TopbarProps) {
                 </div>
             </header>
 
-            {/* Code Modal - Versi Responsif */}
+            {/* Code Modal */}
             {codeModalOpen && (
                 <div
                     className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
-                    onClick={() => setCodeModalOpen(false)}
+                    onClick={closeCodeModal}
                 >
                     <div
                         className="relative w-full max-w-[440px] mx-auto"
@@ -298,7 +285,7 @@ export default function Topbar({ onNewSnippet, onToggleSidebar }: TopbarProps) {
                                     </span>
                                 </div>
                                 <button
-                                    onClick={() => setCodeModalOpen(false)}
+                                    onClick={closeCodeModal}
                                     className="w-9 h-9 flex items-center justify-center rounded-full bg-black/10 hover:bg-black/20 text-black transition-all"
                                 >
                                     <FontAwesomeIcon icon={faTimes} className="w-4 h-4" />
@@ -335,7 +322,7 @@ export default function Topbar({ onNewSnippet, onToggleSidebar }: TopbarProps) {
                                             onChange={handleCodeChange}
                                             onKeyDown={e => {
                                                 if (e.key === "Enter") handleCodeSubmit()
-                                                if (e.key === "Escape") setCodeModalOpen(false)
+                                                if (e.key === "Escape") closeCodeModal()
                                             }}
                                             placeholder="XXX-XXX-XXX"
                                             autoComplete="off"
@@ -369,14 +356,7 @@ export default function Topbar({ onNewSnippet, onToggleSidebar }: TopbarProps) {
                                    text-white font-semibold text-[15px] py-[16px] sm:py-[17px] rounded-2xl 
                                    transition-all duration-200 shadow-md"
                                 >
-                                    {codeLoading ? (
-                                        <span className="flex items-center justify-center gap-2">
-                                            <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                            Memeriksa kode...
-                                        </span>
-                                    ) : (
-                                        "Buka Snippet"
-                                    )}
+                                    Buka Snippet
                                 </button>
                             </div>
                         </div>
