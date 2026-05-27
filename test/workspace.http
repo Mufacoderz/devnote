@@ -1,0 +1,24 @@
+### GET WORKSPACES
+GET http://localhost:3000/api/workspaces
+Content-Type: application/json
+
+###
+
+### CREATE WORKSPACE
+POST http://localhost:3000/api/workspaces
+Content-Type: application/json
+
+{
+  "name": "Project Hackathon",
+  "description": "Workspace test awal"
+}
+
+###
+
+### JOIN WORKSPACE
+POST http://localhost:3000/api/workspaces/join
+Content-Type: application/json
+
+{
+  "inviteCode": "DVNT-XXXXXX"
+}

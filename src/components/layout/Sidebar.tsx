@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
-import SidebarClient from "./SidebarClient"
+import SidebarClient from "./sidebar/SidebarClient"
 
 
 export default async function Sidebar() {
@@ -17,6 +17,37 @@ export default async function Sidebar() {
             isFavorite: true,
             isPublic: true,
         }
+    })
+
+    const workspaces = await prisma.workspaceMember.findMany({
+        where: { userId },
+        include: {
+            workspace: {
+                include: {
+                    _count: {
+                        select: {
+                            snippets: true,
+                            members: true,
+                        },
+                    },
+                },
+            },
+        },
+        orderBy: { createdAt: "desc" },
+    })
+
+    const workspaceSnippetsCount = await prisma.snippet.count({
+        where: {
+            workspaces: {
+                some: {
+                    workspace: {
+                        members: {
+                            some: { userId },
+                        },
+                    },
+                },
+            },
+        },
     })
 
     // // hitung jumlah per language, urutkan dari terbanyak
@@ -62,7 +93,14 @@ export default async function Sidebar() {
             // totalSnippetCopied={totalSnippetCopied}
             // languages={languages}
             tags={tags}
-            
+            workspaceSnippetsCount={workspaceSnippetsCount}
+            workspaces={workspaces.map((member) => ({
+                id: member.workspace.id,
+                name: member.workspace.name,
+                role: member.role,
+                snippetsCount: member.workspace._count.snippets,
+            }))}
+
         />
     )
 }

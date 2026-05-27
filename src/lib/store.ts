@@ -39,8 +39,10 @@ interface AppStore {
         library: boolean
         collections: boolean
         tags: boolean
+        workspaces: boolean
     }
-    setSidebarCollapsed: (key: "library" | "collections" | "tags", val: boolean) => void
+    setSidebarCollapsed: (key: "library" | "collections" | "tags" | "workspaces",
+         val: boolean) => void
 }
 
 const DEFAULT_PREFS: Prefs = {
@@ -103,6 +105,7 @@ export const useAppStore = create<AppStore>()(
                 library: false,
                 collections: true,
                 tags: true,
+                workspaces: false,
             },
             setSidebarCollapsed: (key, val) =>
                 set((s) => ({

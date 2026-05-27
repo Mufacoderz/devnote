@@ -9,12 +9,12 @@ import { Snippet } from "@/components/snippet/SnippetDetail"
 async function DashboardContent({
   searchParams,
 }: {
-  searchParams: Promise<{ 
-    lang?: string; 
-    tag?: string; 
-    filter?: string; 
-    collection?: string; 
-    search?: string 
+  searchParams: Promise<{
+    lang?: string;
+    tag?: string;
+    filter?: string;
+    collection?: string;
+    search?: string
   }>
 }) {
   const session = await auth()
@@ -40,16 +40,29 @@ async function DashboardContent({
         ]
       }),
       ...(filter === "most-copied" && {
-        copyCount : {
+        copyCount: {
           gt: 0
         }
-      })
+      }),
+      ...(filter === "workspace" && {
+        workspaces: {
+          some: {
+            workspace: {
+              members: {
+                some: {
+                  userId: Number(session.user.id),
+                },
+              },
+            },
+          },
+        },
+      }),
     },
     orderBy: filter === "most-copied"
       ? { copyCount: "desc" }
       : { createdAt: "desc" },
-    include: { 
-      tags: { include: { tag: true } } 
+    include: {
+      tags: { include: { tag: true } }
     }
   })
 
@@ -73,21 +86,21 @@ async function DashboardContent({
 
   return (
     <SnippetList
-        key={`${filter ?? ""}-${lang ?? ""}-${tag ?? ""}-${collection ?? ""}`}
-        snippets={snippets}
+      key={`${filter ?? ""}-${lang ?? ""}-${tag ?? ""}-${collection ?? ""}`}
+      snippets={snippets}
     />
-)
+  )
 }
 
 export default function DashboardPage({
   searchParams,
 }: {
-  searchParams: Promise<{ 
-    lang?: string; 
-    tag?: string; 
-    filter?: string; 
-    collection?: string; 
-    search?: string 
+  searchParams: Promise<{
+    lang?: string;
+    tag?: string;
+    filter?: string;
+    collection?: string;
+    search?: string
   }>
 }) {
   return (

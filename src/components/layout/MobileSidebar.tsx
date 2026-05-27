@@ -3,38 +3,53 @@
 import { useEffect, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { useSidebar } from "./DashboardLayout"
-import SidebarClient from "./SidebarClient"
+import SidebarClient from "./sidebar/SidebarClient"
+
+interface WorkspaceNavItem {
+    id: number
+    name: string
+    role: "OWNER" | "EDITOR" | "VIEWER"
+    snippetsCount: number
+}
 
 interface SidebarData {
     totalSnippets: number
     totalCopies: number
     totalFavorites: number
     totalPublic: number
-    // totalSnippetCopied: number
+    workspaceSnippetsCount: number
+    workspaces: WorkspaceNavItem[]
     tags: { name: string; count: number }[]
 }
-
-
 
 export default function MobileSidebar() {
     const { sidebarOpen, setSidebarOpen } = useSidebar()
     const [data, setData] = useState<SidebarData | null>(null)
 
-    
-
     useEffect(() => {
-        if (sidebarOpen) {
-            fetch("/api/sidebar")
-                .then(res => res.json())
-                .then(setData)
-                .catch(console.error)
-        }
+        if (!sidebarOpen) return
+
+        fetch("/api/sidebar")
+            .then((res) => res.json())
+            .then((result) => {
+                setData({
+                    totalSnippets: result.totalSnippets ?? 0,
+                    totalCopies: result.totalCopies ?? 0,
+                    totalFavorites: result.totalFavorites ?? 0,
+                    totalPublic: result.totalPublic ?? 0,
+                    workspaceSnippetsCount: result.workspaceSnippetsCount ?? 0,
+                    workspaces: result.workspaces ?? [],
+                    tags: result.tags ?? [],
+                })
+            })
+            .catch(console.error)
     }, [sidebarOpen])
 
     useEffect(() => {
         const handleKey = (e: KeyboardEvent) => {
             if (e.key === "Escape") setSidebarOpen(false)
         }
+
         document.addEventListener("keydown", handleKey)
         return () => document.removeEventListener("keydown", handleKey)
     }, [setSidebarOpen])
@@ -52,6 +67,7 @@ export default function MobileSidebar() {
                         className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
                         onClick={() => setSidebarOpen(false)}
                     />
+
                     <motion.div
                         key="drawer"
                         initial={{ x: "-100%" }}
@@ -60,7 +76,7 @@ export default function MobileSidebar() {
                         transition={{ type: "spring", stiffness: 300, damping: 30 }}
                         className="fixed left-0 top-0 h-full z-50 lg:hidden"
                         style={{ width: "280px" }}
-                        onClick={e => e.stopPropagation()}
+                        onClick={(e) => e.stopPropagation()}
                     >
                         {data ? (
                             <SidebarClient
@@ -68,7 +84,8 @@ export default function MobileSidebar() {
                                 totalCopies={data.totalCopies}
                                 totalFavorites={data.totalFavorites}
                                 totalPublic={data.totalPublic}
-                                // totalSnippetCopied={data.totalSnippetCopied}
+                                workspaceSnippetsCount={data.workspaceSnippetsCount}
+                                workspaces={data.workspaces}
                                 tags={data.tags}
                                 onNavigate={() => setSidebarOpen(false)}
                             />
