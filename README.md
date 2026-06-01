@@ -1,108 +1,180 @@
-# DevNote — Personal Code Snippet Library
+# DevNote
 
-**DevNote** adalah web aplikasi modern untuk developer yang membantu menyimpan, mengelola, dan menggunakan kembali potongan kode (code snippets) dengan cepat dan efisien.
+> A developer knowledge hub for reusable code, files, and resources.
 
-Dirancang dengan fokus pada **kecepatan**, **keindahan UI**, **kerapihan**, dan **kemudahan akses**, DevNote membantu developer menghindari copy-paste berulang dan menjaga kode tetap terorganisir.
+DevNote helps developers save, organize, share, and reuse development resources in one place.
+
+Whether it's a reusable component, authentication setup, Prisma schema, utility function, configuration file, or even a complete source file, DevNote keeps everything searchable, structured, and easy to access whenever you need it.
+
+---
+
+## Why DevNote?
+
+Developers constantly reuse the same resources:
+
+- Authentication setups
+- API integrations
+- UI components
+- Database schemas
+- Utility functions
+- Configuration files
+- Boilerplate code
+
+Instead of searching old projects, chat history, browser bookmarks, or random folders, DevNote provides a centralized place to manage and reuse development knowledge.
+
+---
+
+## Features
+
+### 📁 Personal Library
+
+Store snippets, files, configurations, and reusable resources.
+
+### 🗂️ Collections
+
+Organize resources by topic, technology, or project.
+
+### 🌍 Public Resources
+
+Explore and discover resources shared by other developers.
+
+### 🔗 Sharing
+
+Share resources instantly using public links.
+
+Perfect for:
+
+- Team collaboration
+- Learning groups
+- Classmates
+- Open source projects
+
+### 🚧 Workspaces *(In Progress)*
+
+Collaborate with multiple developers in shared workspaces.
+
+Build a shared knowledge base with your team.
+
+### 📅 VS Code Extension *(Planned)*
+
+Access DevNote resources directly inside VS Code.
 
 ---
 
 ## Tech Stack
 
-- **Next.js 16** (App Router) + **TypeScript**
-- **TailwindCSS v3**
-- **Prisma** + **MySQL**
-- **NextAuth.js v5** (Authentication)
-- **Shiki** (Syntax Highlighting)
-- **Zustand** (State Management)
-- **Framer Motion** (Animasi)
-- **@uiw/react-codemirror** (Code Editor di form)
+- Next.js
+- TypeScript
+- TailwindCSS
+- Prisma
+- MySQL
+- NextAuth.js
+- Shiki
+- Zustand
+- Framer Motion
+- CodeMirror
 
 ---
 
-## Fitur Aplikasi
+## Roadmap
 
-- Sistem Login & Registrasi
-- CRUD Snippet (Create, Read, Update, Delete)
-- Collection / Folder untuk mengelompokkan snippet
-- Filter snippet berdasarkan: Language, Tag, Collection, Favorite
-- Syntax Highlighting yang indah (mirip VS Code)
-- Tombol Salin Kode + tracking jumlah copy
-- Favorite snippet
-- Responsive design (Desktop split-view & Mobile friendly)
-- Dark theme modern dengan desain yang bersih
+### ✅ Available
 
-### Fitur yang akan datang:
-- Halaman Snippet Publik
-- Fitur Share Snippet
+- Personal Resource Library
+- Collections
+- Public Resources
+- Resource Sharing
+
+### 🚧 In Progress
+
+- Workspaces
+
+### 📅 Planned
+
+- VS Code Extension
+- Resource Templates
+- Setup Guides
+- Team Knowledge Base
+- Workspace Permissions
+- API Access
 
 ---
 
-## Preview Aplikasi
+## Preview
 
-## Welcome Page
+### Welcome Page
+
 <img src="PreviewIMG/welcome.png" width="100%"/>
 
-## Login & Register
+### Login
+
 <img src="PreviewIMG/login.png" width="100%"/>
+
+### Register
+
 <img src="PreviewIMG/registrasi.png" width="100%"/>
 
-## Home Page (Dashboard)
-### Sidebar close
+### Dashboard
+
+#### Sidebar Closed
+
 <img src="PreviewIMG/dashboard.png" width="100%"/>
-### Sidebar open
+
+#### Sidebar Open
+
 <img src="PreviewIMG/dashboard2.png" width="100%"/>
 
-## Form Create Snippet
+### Create Resource
+
 <img src="PreviewIMG/tambah-snippet.png" width="100%"/>
 
-## 404 Not-found Page
+### 404 Not Found
+
 <img src="PreviewIMG/404.png" width="100%"/>
 
-## Error Page
+### Error Page
+
 <img src="PreviewIMG/error.png" width="100%"/>
 
 ---
 
 ## Getting Started
 
-### 1. Clone repository
-```bash
-git clone <url-repository-anda>
-cd devnote-main
-
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
-
-## Getting Started
-
-First, run the development server:
+### Clone Repository
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <repository-url>
+cd devnote
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Install Dependencies
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+pnpm install
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Configure Environment Variables
 
-## Learn More
+Create a `.env` file:
 
-To learn more about Next.js, take a look at the following resources:
+```env
+DATABASE_URL=
+AUTH_SECRET=
+AUTH_GOOGLE_ID=
+AUTH_GOOGLE_SECRET=
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Run Development Server
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+pnpm dev
+```
 
-## Deploy on Vercel
+Open:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```txt
+http://localhost:3000
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
