@@ -4,6 +4,8 @@
   "scripts": {
     "dev": "pnpm --filter web dev",
     "build": "pnpm --filter web build",
-    "lint": "pnpm --filter web lint"
+    "lint": "pnpm --filter web lint",
+    "dev:extension": "pnpm --filter devnote-extension watch",
+    "build:extension": "pnpm --filter devnote-extension package"
   }
 }
