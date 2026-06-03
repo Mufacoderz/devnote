@@ -1,37 +1,86 @@
-import { redirect } from "next/navigation"
+import Link from "next/link"
+import { notFound, redirect } from "next/navigation"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
-import WorkspaceCard from "@/components/workspace/WorkspaceCard"
-import CreateWorkspaceModal from "@/components/workspace/CreateWorkspaceModal"
-import JoinWorkspaceModal from "@/components/workspace/JoinWorkspaceModal"
+import AddExistingSnippetModal from "@/components/workspace/AddExistingSnippetModal"
+import WorkspaceSnippetPanel from "@/components/workspace/WorkspaceSnippetPanel"
+import WorkspaceHeader from "@/components/workspace/WorkspaceHeader"
+import type { Snippet } from "@/components/snippet/SnippetDetail"
 
 interface PageProps {
+  params: Promise<{
+    id: string
+  }>
   searchParams: Promise<{
     action?: string
   }>
 }
 
-export default async function WorkspacesPage({ searchParams }: PageProps) {
+export default async function WorkspaceDetailPage({
+  params,
+  searchParams,
+}: PageProps) {
   const session = await auth()
 
   if (!session?.user?.id) {
     redirect("/login")
   }
 
-  const params = await searchParams
-  const action = params.action
-
   const userId = Number(session.user.id)
+  const { id } = await params
+  const { action } = await searchParams
 
-  const memberships = await prisma.workspaceMember.findMany({
-    where: { userId },
+  const workspaceId = Number(id)
+
+  if (Number.isNaN(workspaceId)) {
+    notFound()
+  }
+
+  const member = await prisma.workspaceMember.findUnique({
+    where: {
+      workspaceId_userId: {
+        workspaceId,
+        userId,
+      },
+    },
+  })
+
+  if (!member) {
+    notFound()
+  }
+
+  const workspace = await prisma.workspace.findUnique({
+    where: { id: workspaceId },
     include: {
-      workspace: {
+      _count: {
+        select: {
+          snippets: true,
+          members: true,
+        },
+      },
+    },
+  })
+
+  if (!workspace) {
+    notFound()
+  }
+
+  const workspaceSnippets = await prisma.workspaceSnippet.findMany({
+    where: { workspaceId },
+    include: {
+      snippet: {
         include: {
-          _count: {
+          user: {
             select: {
-              snippets: true,
-              members: true,
+              id: true,
+              name: true,
+              email: true,
+              avatar: true,
+            },
+          },
+          tags: {
+            include: {
+              tag: true,
             },
           },
         },
@@ -42,93 +91,115 @@ export default async function WorkspacesPage({ searchParams }: PageProps) {
     },
   })
 
-  const workspaces = memberships.map((member) => ({
-    id: member.workspace.id,
-    name: member.workspace.name,
-    description: member.workspace.description,
-    inviteCode: member.workspace.inviteCode,
-    role: member.role,
-    snippetsCount: member.workspace._count.snippets,
-    membersCount: member.workspace._count.members,
-    createdAt: member.workspace.createdAt.toISOString(),
-  }))
+  const canEdit = member.role === "OWNER" || member.role === "EDITOR"
+  const isOwner = member.role === "OWNER"
+
+  const availableSnippets = canEdit
+    ? await prisma.snippet.findMany({
+        where: {
+          userId,
+          workspaces: {
+            none: {
+              workspaceId,
+            },
+          },
+        },
+        select: {
+          id: true,
+          title: true,
+          language: true,
+          description: true,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      })
+    : []
+
+  const snippets = workspaceSnippets.map((item) => {
+    const snippet: Snippet = {
+      id: item.snippet.id,
+      title: item.snippet.title,
+      description: item.snippet.description,
+      code: item.snippet.code,
+      language: item.snippet.language,
+      isPublic: item.snippet.isPublic,
+      isFavorite: item.snippet.isFavorite,
+      copyCount: item.snippet.copyCount,
+      createdAt: item.snippet.createdAt.toISOString(),
+      shareId: item.snippet.shareId,
+      tags: item.snippet.tags.map(({ tag }) => tag.name),
+    }
+
+    return {
+      workspaceId: item.workspaceId,
+      snippetId: item.snippetId,
+      snippet,
+      authorName:
+        item.snippet.user?.name ||
+        item.snippet.user?.email ||
+        "Unknown",
+    }
+  })
 
   return (
-    <main className="min-h-full bg-[var(--bg)] text-[var(--text)]">
-      <div className="max-w-6xl mx-auto px-5 py-6">
-        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between mb-6">
-          <div>
-            <p className="text-[11px] uppercase tracking-[2px] text-[var(--em)] font-semibold mb-2">
-              Collaborative Snippets
-            </p>
-            <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
-              Workspaces
-            </h1>
-            <p className="text-sm text-[var(--text3)] mt-2 max-w-xl">
-              Kelola snippet bareng tim, project, kelas, atau hackathon tanpa
-              share link satu-satu kayak kurir paket nyasar.
-            </p>
-          </div>
+    <main className="h-[calc(100vh-64px)] bg-[var(--bg2)] text-[var(--text)] flex flex-col overflow-hidden">
+      <WorkspaceHeader
+        workspaceId={workspaceId}
+        name={workspace.name}
+        description={workspace.description}
+        inviteCode={workspace.inviteCode}
+        snippetsCount={workspace._count.snippets}
+        membersCount={workspace._count.members}
+        role={member.role}
+        canEdit={canEdit}
+        isOwner={isOwner}
+      />
 
-          <div className="flex gap-2">
-            <a
-              href="/workspaces?action=join"
-              className="px-4 py-2 rounded-lg border border-[var(--border)] text-sm text-[var(--text2)] hover:text-[var(--text)] hover:bg-[var(--surface2)] transition-all"
-            >
-              Gabung Workspace
-            </a>
+      {snippets.length > 0 ? (
+        <WorkspaceSnippetPanel
+          workspaceId={workspaceId}
+          snippets={snippets}
+          canEdit={canEdit}
+        />
+      ) : (
+        <div className="flex-1 min-h-0 flex items-center justify-center p-6">
+          <div className="max-w-md w-full rounded-2xl border border-dashed border-[var(--border)] bg-[var(--surface)] p-8 text-center">
+            <h3 className="text-lg font-semibold mb-2">
+              Belum ada snippet di workspace ini
+            </h3>
 
-            <a
-              href="/workspaces?action=create"
-              className="px-4 py-2 rounded-lg bg-[var(--em)] text-[#0a0a0a] text-sm font-semibold hover:opacity-90 transition-all"
-            >
-              Buat Workspace
-            </a>
+            <p className="text-sm text-[var(--text3)] mb-5">
+              Tambahkan snippet baru atau ambil dari library pribadi kamu.
+            </p>
+
+            {canEdit && (
+              <div className="flex justify-center gap-2">
+                <Link
+                  href={`/workspaces/${workspaceId}?action=add-existing`}
+                  className="px-4 py-2 rounded-lg border border-[var(--border)] text-sm text-[var(--text2)] hover:bg-[var(--surface2)] transition-all"
+                >
+                  Add Existing
+                </Link>
+
+                <Link
+                  href={`/snippets/new?workspaceId=${workspaceId}`}
+                  className="px-4 py-2 rounded-lg bg-[var(--em)] text-[#0a0a0a] text-sm font-semibold hover:opacity-90 transition-all"
+                >
+                  New Snippet
+                </Link>
+              </div>
+            )}
           </div>
         </div>
+      )}
 
-        {workspaces.length > 0 ? (
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-            {workspaces.map((workspace) => (
-              <WorkspaceCard key={workspace.id} workspace={workspace} />
-            ))}
-          </div>
-        ) : (
-          <div className="border border-dashed border-[var(--border)] rounded-2xl bg-[var(--surface)] p-8 text-center">
-            <div className="w-12 h-12 rounded-2xl bg-[var(--em-faint)] border border-[var(--em-border)] mx-auto mb-4 flex items-center justify-center text-[var(--em)]">
-              #
-            </div>
-
-            <h2 className="text-lg font-semibold mb-2">
-              Belum ada workspace
-            </h2>
-
-            <p className="text-sm text-[var(--text3)] max-w-md mx-auto mb-5">
-              Mulai bikin workspace buat project kamu, atau gabung pakai invite
-              code dari teman.
-            </p>
-
-            <div className="flex justify-center gap-2">
-              <a
-                href="/workspaces?action=join"
-                className="px-4 py-2 rounded-lg border border-[var(--border)] text-sm text-[var(--text2)] hover:text-[var(--text)] hover:bg-[var(--surface2)] transition-all"
-              >
-                Gabung Workspace
-              </a>
-
-              <a
-                href="/workspaces?action=create"
-                className="px-4 py-2 rounded-lg bg-[var(--em)] text-[#0a0a0a] text-sm font-semibold hover:opacity-90 transition-all"
-              >
-                Buat Workspace
-              </a>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {action === "create" && <CreateWorkspaceModal />}
-      {action === "join" && <JoinWorkspaceModal />}
+      {action === "add-existing" && canEdit && (
+        <AddExistingSnippetModal
+          workspaceId={workspaceId}
+          snippets={availableSnippets}
+        />
+      )}
     </main>
   )
 }

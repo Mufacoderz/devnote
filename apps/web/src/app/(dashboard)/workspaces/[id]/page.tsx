@@ -152,8 +152,8 @@ export default async function WorkspaceDetailPage({
   })
 
   return (
-    <main className="min-h-full bg-[var(--bg)] text-[var(--text)]">
-      <div className="max-w-[1500px] mx-auto px-5 py-5">
+    <main className="min-h-full ">
+      <div className="max-w-full">
         <WorkspaceHeader
           workspaceId={workspaceId}
           name={workspace.name}
