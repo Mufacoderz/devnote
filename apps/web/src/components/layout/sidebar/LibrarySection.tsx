@@ -51,7 +51,6 @@ export default function LibrarySection({
   const activeFilter = searchParams.get("filter")
   const activeCollection = searchParams.get("collection")
 
-  const isWorkspacePage = pathname.startsWith("/workspaces")
   const isAll =
     pathname === "/dashboard" &&
     !activeLang &&
@@ -146,7 +145,7 @@ export default function LibrarySection({
       <NavItem
         label="Workspace Snippets"
         count={workspaceSnippetsCount}
-        active={activeFilter === "workspace" || isWorkspacePage}
+        active={activeFilter === "workspace"}
         onClick={() => setFilter("filter", "workspace")}
         onPrefetch={() => prefetchRoute("filter", "workspace")}
         icon={faUsers}

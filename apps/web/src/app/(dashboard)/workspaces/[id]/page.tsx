@@ -1,15 +1,24 @@
+import Link from "next/link"
 import { notFound, redirect } from "next/navigation"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import WorkspaceRoleBadge from "@/components/workspace/WorkspaceRoleBadge"
+import AddExistingSnippetModal from "@/components/workspace/AddExistingSnippetModal"
+import RemoveWorkspaceSnippetButton from "@/components/workspace/RemoveWorkspaceSnippetButton"
 
 interface PageProps {
   params: Promise<{
     id: string
   }>
+  searchParams: Promise<{
+    action?: string
+  }>
 }
 
-export default async function WorkspaceDetailPage({ params }: PageProps) {
+export default async function WorkspaceDetailPage({
+  params,
+  searchParams,
+}: PageProps) {
   const session = await auth()
 
   if (!session?.user?.id) {
@@ -18,6 +27,8 @@ export default async function WorkspaceDetailPage({ params }: PageProps) {
 
   const userId = Number(session.user.id)
   const { id } = await params
+  const { action } = await searchParams
+
   const workspaceId = Number(id)
 
   if (Number.isNaN(workspaceId)) {
@@ -98,6 +109,28 @@ export default async function WorkspaceDetailPage({ params }: PageProps) {
   const canEdit = member.role === "OWNER" || member.role === "EDITOR"
   const isOwner = member.role === "OWNER"
 
+  const availableSnippets = canEdit
+    ? await prisma.snippet.findMany({
+        where: {
+          userId,
+          workspaces: {
+            none: {
+              workspaceId,
+            },
+          },
+        },
+        select: {
+          id: true,
+          title: true,
+          language: true,
+          description: true,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      })
+    : []
+
   return (
     <main className="min-h-full bg-[var(--bg)] text-[var(--text)]">
       <div className="max-w-6xl mx-auto px-5 py-6">
@@ -137,9 +170,12 @@ export default async function WorkspaceDetailPage({ params }: PageProps) {
             <div className="flex flex-wrap gap-2">
               {canEdit && (
                 <>
-                  <button className="px-4 py-2 rounded-lg border border-[var(--border)] text-sm text-[var(--text2)] hover:bg-[var(--surface2)] transition-all">
+                  <Link
+                    href={`/workspaces/${workspaceId}?action=add-existing`}
+                    className="px-4 py-2 rounded-lg border border-[var(--border)] text-sm text-[var(--text2)] hover:bg-[var(--surface2)] transition-all"
+                  >
                     Add Existing
-                  </button>
+                  </Link>
 
                   <button className="px-4 py-2 rounded-lg bg-[var(--em)] text-[#0a0a0a] text-sm font-semibold hover:opacity-90 transition-all">
                     New Snippet
@@ -178,7 +214,10 @@ export default async function WorkspaceDetailPage({ params }: PageProps) {
                       {item.snippet.title}
                     </h3>
                     <p className="text-xs text-[var(--text4)] mt-1">
-                      by {item.snippet.user?.name || item.snippet.user?.email || "Unknown"}
+                      by{" "}
+                      {item.snippet.user?.name ||
+                        item.snippet.user?.email ||
+                        "Unknown"}
                     </p>
                   </div>
 
@@ -206,9 +245,10 @@ export default async function WorkspaceDetailPage({ params }: PageProps) {
 
                 {canEdit && (
                   <div className="flex justify-end mt-3">
-                    <button className="text-xs text-red-400 hover:text-red-300">
-                      Remove from workspace
-                    </button>
+                    <RemoveWorkspaceSnippetButton
+                      workspaceId={workspaceId}
+                      snippetId={item.snippetId}
+                    />
                   </div>
                 )}
               </div>
@@ -226,9 +266,12 @@ export default async function WorkspaceDetailPage({ params }: PageProps) {
 
             {canEdit && (
               <div className="flex justify-center gap-2">
-                <button className="px-4 py-2 rounded-lg border border-[var(--border)] text-sm text-[var(--text2)] hover:bg-[var(--surface2)] transition-all">
+                <Link
+                  href={`/workspaces/${workspaceId}?action=add-existing`}
+                  className="px-4 py-2 rounded-lg border border-[var(--border)] text-sm text-[var(--text2)] hover:bg-[var(--surface2)] transition-all"
+                >
                   Add Existing
-                </button>
+                </Link>
 
                 <button className="px-4 py-2 rounded-lg bg-[var(--em)] text-[#0a0a0a] text-sm font-semibold hover:opacity-90 transition-all">
                   New Snippet
@@ -238,6 +281,13 @@ export default async function WorkspaceDetailPage({ params }: PageProps) {
           </div>
         )}
       </div>
+
+      {action === "add-existing" && canEdit && (
+        <AddExistingSnippetModal
+          workspaceId={workspaceId}
+          snippets={availableSnippets}
+        />
+      )}
     </main>
   )
 }
