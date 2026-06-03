@@ -2,9 +2,11 @@ import Link from "next/link"
 import { notFound, redirect } from "next/navigation"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
-import WorkspaceRoleBadge from "@/components/workspace/WorkspaceRoleBadge"
+// import WorkspaceRoleBadge from "@/components/workspace/WorkspaceRoleBadge"
 import AddExistingSnippetModal from "@/components/workspace/AddExistingSnippetModal"
-import RemoveWorkspaceSnippetButton from "@/components/workspace/RemoveWorkspaceSnippetButton"
+import WorkspaceSnippetPanel from "@/components/workspace/WorkspaceSnippetPanel"
+import type { Snippet } from "@/components/snippet/SnippetDetail"
+import WorkspaceHeader from "@/components/workspace/WorkspaceHeader"
 
 interface PageProps {
   params: Promise<{
@@ -92,14 +94,6 @@ export default async function WorkspaceDetailPage({
           },
         },
       },
-      addedBy: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          avatar: true,
-        },
-      },
     },
     orderBy: {
       createdAt: "desc",
@@ -111,151 +105,75 @@ export default async function WorkspaceDetailPage({
 
   const availableSnippets = canEdit
     ? await prisma.snippet.findMany({
-        where: {
-          userId,
-          workspaces: {
-            none: {
-              workspaceId,
-            },
+      where: {
+        userId,
+        workspaces: {
+          none: {
+            workspaceId,
           },
         },
-        select: {
-          id: true,
-          title: true,
-          language: true,
-          description: true,
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-      })
+      },
+      select: {
+        id: true,
+        title: true,
+        language: true,
+        description: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    })
     : []
+
+  const snippets = workspaceSnippets.map((item) => {
+    const snippet: Snippet = {
+      id: item.snippet.id,
+      title: item.snippet.title,
+      description: item.snippet.description,
+      code: item.snippet.code,
+      language: item.snippet.language,
+      isPublic: item.snippet.isPublic,
+      isFavorite: item.snippet.isFavorite,
+      copyCount: item.snippet.copyCount,
+      createdAt: item.snippet.createdAt.toISOString(),
+      shareId: item.snippet.shareId,
+      tags: item.snippet.tags.map(({ tag }) => tag.name),
+    }
+
+    return {
+      workspaceId: item.workspaceId,
+      snippetId: item.snippetId,
+      snippet,
+      authorName:
+        item.snippet.user?.name ||
+        item.snippet.user?.email ||
+        "Unknown",
+    }
+  })
 
   return (
     <main className="min-h-full bg-[var(--bg)] text-[var(--text)]">
-      <div className="max-w-6xl mx-auto px-5 py-6">
-        <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 mb-5">
-          <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <p className="text-[11px] uppercase tracking-[2px] text-[var(--em)] font-semibold">
-                  Workspace
-                </p>
-                <WorkspaceRoleBadge role={member.role} />
-              </div>
+      <div className="max-w-[1500px] mx-auto px-5 py-5">
+        <WorkspaceHeader
+          workspaceId={workspaceId}
+          name={workspace.name}
+          description={workspace.description}
+          inviteCode={workspace.inviteCode}
+          snippetsCount={workspace._count.snippets}
+          membersCount={workspace._count.members}
+          role={member.role}
+          canEdit={canEdit}
+          isOwner={isOwner}
+        />
 
-              <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
-                {workspace.name}
-              </h1>
-
-              <p className="text-sm text-[var(--text3)] mt-2 max-w-2xl">
-                {workspace.description || "Tidak ada deskripsi workspace."}
-              </p>
-
-              <div className="flex flex-wrap gap-2 mt-4 text-xs text-[var(--text4)]">
-                <span className="px-3 py-1 rounded-full bg-[var(--bg)] border border-[var(--border)]">
-                  {workspace._count.snippets} snippets
-                </span>
-
-                <span className="px-3 py-1 rounded-full bg-[var(--bg)] border border-[var(--border)]">
-                  {workspace._count.members} members
-                </span>
-
-                <span className="px-3 py-1 rounded-full bg-[var(--bg)] border border-[var(--border)] font-mono">
-                  {workspace.inviteCode}
-                </span>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap gap-2">
-              {canEdit && (
-                <>
-                  <Link
-                    href={`/workspaces/${workspaceId}?action=add-existing`}
-                    className="px-4 py-2 rounded-lg border border-[var(--border)] text-sm text-[var(--text2)] hover:bg-[var(--surface2)] transition-all"
-                  >
-                    Add Existing
-                  </Link>
-
-                  <button className="px-4 py-2 rounded-lg bg-[var(--em)] text-[#0a0a0a] text-sm font-semibold hover:opacity-90 transition-all">
-                    New Snippet
-                  </button>
-                </>
-              )}
-
-              {isOwner && (
-                <button className="px-4 py-2 rounded-lg border border-[var(--border)] text-sm text-[var(--text2)] hover:bg-[var(--surface2)] transition-all">
-                  Settings
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between mb-3">
-          <div>
-            <h2 className="text-lg font-semibold">Workspace Snippets</h2>
-            <p className="text-sm text-[var(--text4)]">
-              Snippet yang dibagikan di workspace ini.
-            </p>
-          </div>
-        </div>
-
-        {workspaceSnippets.length > 0 ? (
-          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-            {workspaceSnippets.map((item) => (
-              <div
-                key={`${item.workspaceId}-${item.snippetId}`}
-                className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 hover:border-[var(--em-border)] transition-all"
-              >
-                <div className="flex items-start justify-between gap-3 mb-3">
-                  <div className="min-w-0">
-                    <h3 className="font-semibold truncate">
-                      {item.snippet.title}
-                    </h3>
-                    <p className="text-xs text-[var(--text4)] mt-1">
-                      by{" "}
-                      {item.snippet.user?.name ||
-                        item.snippet.user?.email ||
-                        "Unknown"}
-                    </p>
-                  </div>
-
-                  <span className="text-[10px] uppercase tracking-[1px] px-2 py-1 rounded-full border border-[var(--border)] bg-[var(--bg)] text-[var(--text3)] shrink-0">
-                    {item.snippet.language}
-                  </span>
-                </div>
-
-                <pre className="max-h-32 overflow-hidden rounded-xl bg-[var(--bg)] border border-[var(--border)] p-3 text-xs text-[var(--text3)]">
-                  <code>{item.snippet.code}</code>
-                </pre>
-
-                {item.snippet.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mt-3">
-                    {item.snippet.tags.map(({ tag }) => (
-                      <span
-                        key={tag.id}
-                        className="text-[10px] font-mono px-2 py-[3px] rounded-full border border-[var(--border)] text-[var(--text4)]"
-                      >
-                        #{tag.name}
-                      </span>
-                    ))}
-                  </div>
-                )}
-
-                {canEdit && (
-                  <div className="flex justify-end mt-3">
-                    <RemoveWorkspaceSnippetButton
-                      workspaceId={workspaceId}
-                      snippetId={item.snippetId}
-                    />
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
+        {snippets.length > 0 ? (
+          <WorkspaceSnippetPanel
+            workspaceId={workspaceId}
+            snippets={snippets}
+            canEdit={canEdit}
+          />
         ) : (
-          <div className="rounded-2xl border border-dashed border-[var(--border)] bg-[var(--surface)] p-8 text-center">
+          <div className="rounded-2xl border border-dashed border-[var(--border)] bg-[var(--surface)] p-10 text-center">
             <h3 className="text-lg font-semibold mb-2">
               Belum ada snippet di workspace ini
             </h3>
@@ -273,9 +191,12 @@ export default async function WorkspaceDetailPage({
                   Add Existing
                 </Link>
 
-                <button className="px-4 py-2 rounded-lg bg-[var(--em)] text-[#0a0a0a] text-sm font-semibold hover:opacity-90 transition-all">
+                <Link
+                  href={`/snippets/new?workspaceId=${workspaceId}`}
+                  className="px-4 py-2 rounded-lg bg-[var(--em)] text-[#0a0a0a] text-sm font-semibold hover:opacity-90 transition-all"
+                >
                   New Snippet
-                </button>
+                </Link>
               </div>
             )}
           </div>
