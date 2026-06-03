@@ -55,4 +55,3 @@ src/generated/prisma/
 logs/
 *.log
 
-AGENTS.md
