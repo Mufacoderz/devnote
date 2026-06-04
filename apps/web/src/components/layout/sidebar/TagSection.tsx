@@ -4,6 +4,7 @@ import { useEffect, useTransition } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 
 import { useAppStore } from "@/lib/store"
+import { useSidebarStore } from "@/lib/sidebarStore"
 import SidebarSection from "./SidebarSection"
 
 interface TagSectionProps {
@@ -16,11 +17,8 @@ export default function TagSection({ tags, onNavigate }: TagSectionProps) {
   const searchParams = useSearchParams()
   const [, startTransition] = useTransition()
 
-  const {
-    sidebarCollapsed: collapsed,
-    setSidebarCollapsed,
-    setIsNavigating,
-  } = useAppStore()
+  const { setIsNavigating } = useAppStore()
+  const { collapsed, toggle } = useSidebarStore()
 
   const activeTag = searchParams.get("tag")
 
@@ -44,7 +42,7 @@ export default function TagSection({ tags, onNavigate }: TagSectionProps) {
     <SidebarSection
       title="Tags"
       open={!collapsed.tags}
-      onToggle={() => setSidebarCollapsed("tags", !collapsed.tags)}
+      onToggle={() => toggle("tags")}
     >
       <div className="overflow-y-auto max-h-[100px]">
         <div className="flex flex-wrap gap-[5px] px-2 pt-1">

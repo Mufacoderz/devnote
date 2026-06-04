@@ -6,6 +6,7 @@ type CollapsedState = {
     collections: boolean
     languages: boolean
     tags: boolean
+    workspaces: boolean
 }
 
 interface SidebarStore {
@@ -21,6 +22,7 @@ export const useSidebarStore = create<SidebarStore>((set) => ({
         collections: true,  // tertutup
         languages: true,    // tertutup
         tags: true,         // tertutup
+        workspaces: false,  // terbuka
     },
 
     toggle: (key) =>
@@ -43,6 +45,7 @@ export const useSidebarStore = create<SidebarStore>((set) => ({
                 collections: true,
                 languages: true,
                 tags: true,
+                workspaces: false,
             },
         }),
 }))

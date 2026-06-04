@@ -12,6 +12,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons"
 
 import { useAppStore } from "@/lib/store"
+import { useSidebarStore } from "@/lib/sidebarStore"
 import SidebarSection from "./SidebarSection"
 
 interface Collection {
@@ -29,11 +30,8 @@ export default function CollectionSection({ onNavigate }: CollectionSectionProps
   const searchParams = useSearchParams()
   const [, startTransition] = useTransition()
 
-  const {
-    sidebarCollapsed: collapsed,
-    setSidebarCollapsed,
-    setIsNavigating,
-  } = useAppStore()
+  const { setIsNavigating } = useAppStore()
+  const { collapsed, toggle } = useSidebarStore()
 
   const activeCollection = searchParams.get("collection")
 
@@ -114,7 +112,7 @@ export default function CollectionSection({ onNavigate }: CollectionSectionProps
       <SidebarSection
         title="Collections"
         open={!collapsed.collections}
-        onToggle={() => setSidebarCollapsed("collections", !collapsed.collections)}
+        onToggle={() => toggle("collections")}
       >
         {addingCol ? (
           <div className="flex flex-col gap-1.5 px-2 py-1 mb-1">

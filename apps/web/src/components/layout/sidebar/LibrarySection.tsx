@@ -11,6 +11,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons"
 
 import { useAppStore } from "@/lib/store"
+import { useSidebarStore } from "@/lib/sidebarStore"
 import SidebarSection from "./SidebarSection"
 import NavItem from "./NavItem"
 
@@ -42,9 +43,8 @@ export default function LibrarySection({
     setPublicCount,
     setPublicIds,
     setIsNavigating,
-    sidebarCollapsed: collapsed,
-    setSidebarCollapsed,
   } = useAppStore()
+  const { collapsed, toggle } = useSidebarStore()
 
   const activeLang = searchParams.get("lang")
   const activeTag = searchParams.get("tag")
@@ -110,7 +110,7 @@ export default function LibrarySection({
     <SidebarSection
       title="Library"
       open={!collapsed.library}
-      onToggle={() => setSidebarCollapsed("library", !collapsed.library)}
+      onToggle={() => toggle("library")}
       withBorder={false}
     >
       <NavItem
