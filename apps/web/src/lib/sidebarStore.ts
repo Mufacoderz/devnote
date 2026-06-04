@@ -22,7 +22,7 @@ export const useSidebarStore = create<SidebarStore>((set) => ({
         collections: true,  // tertutup
         languages: true,    // tertutup
         tags: true,         // tertutup
-        workspaces: false,  // terbuka
+        workspaces: true,  // terttp
     },
 
     toggle: (key) =>
