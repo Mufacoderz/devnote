@@ -34,15 +34,6 @@ interface AppStore {
 
     prefs: Prefs
     updatePref: <K extends keyof Prefs>(key: K, val: Prefs[K]) => void
-
-    sidebarCollapsed: {
-        library: boolean
-        collections: boolean
-        tags: boolean
-        workspaces: boolean
-    }
-    setSidebarCollapsed: (key: "library" | "collections" | "tags" | "workspaces",
-         val: boolean) => void
 }
 
 const DEFAULT_PREFS: Prefs = {
@@ -99,17 +90,6 @@ export const useAppStore = create<AppStore>()(
             updatePref: (key, val) =>
                 set((s) => ({
                     prefs: { ...s.prefs, [key]: val },
-                })),
-
-            sidebarCollapsed: {
-                library: false,
-                collections: true,
-                tags: true,
-                workspaces: false,
-            },
-            setSidebarCollapsed: (key, val) =>
-                set((s) => ({
-                    sidebarCollapsed: { ...s.sidebarCollapsed, [key]: val },
                 })),
         }),
         {

@@ -10,7 +10,7 @@ import {
   faUsers,
 } from "@fortawesome/free-solid-svg-icons"
 
-import { useAppStore } from "@/lib/store"
+import { useSidebarStore } from "@/lib/sidebarStore"
 import SidebarSection from "./SidebarSection"
 
 interface WorkspaceNavItem {
@@ -32,7 +32,7 @@ export default function WorkspaceSection({
   const router = useRouter()
   const pathname = usePathname()
 
-  const { sidebarCollapsed: collapsed, setSidebarCollapsed } = useAppStore()
+  const { collapsed, toggle } = useSidebarStore()
 
   useEffect(() => {
     router.prefetch("/workspaces")
@@ -50,7 +50,7 @@ export default function WorkspaceSection({
     <SidebarSection
       title="Workspaces"
       open={!collapsed.workspaces}
-      onToggle={() => setSidebarCollapsed("workspaces", !collapsed.workspaces)}
+      onToggle={() => toggle("workspaces")}
     >
       <div
         onClick={() => {
