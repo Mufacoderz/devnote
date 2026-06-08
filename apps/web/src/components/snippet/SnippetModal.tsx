@@ -10,10 +10,16 @@ import { type Snippet } from "@/components/snippet/shared/types"
 interface SnippetModalProps {
     isOpen: boolean;
     onClose: () => void;
+    workspaceId?: number;
     snippetToEdit?: Snippet | null; // kalau ada → mode edit, kalau null → mode tambah
 }
 
-export default function SnippetModal({ isOpen, onClose, snippetToEdit }: SnippetModalProps) {
+export default function SnippetModal({
+    isOpen,
+    onClose,
+    snippetToEdit,
+    workspaceId,
+}: SnippetModalProps) {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -74,7 +80,7 @@ export default function SnippetModal({ isOpen, onClose, snippetToEdit }: Snippet
                 {
                     method: isEditMode ? "PUT" : "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ ...form, tags }),
+                    body: JSON.stringify({ ...form, tags, workspaceId }),
                 }
             );
 
