@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { requireWorkspaceRole } from "@/lib/workspace"
 
 // ── GET — ambil semua snippet milik user yang login
 export async function GET(req: NextRequest) {
@@ -43,7 +44,7 @@ export async function POST(req: NextRequest) {
     }
 
     // ambil data dari request body
-    const { title, language, description, code, tags } = await req.json()
+    const { title, language, description, code, tags, workspaceId } = await req.json()
 
     // validasi — return 400 kalau title, language, atau code kosong
     if (!title || !language || !code) {
@@ -52,6 +53,20 @@ export async function POST(req: NextRequest) {
 
     // simpan snippet baru ke database
     // hint: prisma.snippet.create, userId dari session.user.id
+    const targetWorkspaceId = workspaceId ? Number(workspaceId) : null
+
+    if (targetWorkspaceId) {
+        const member = await requireWorkspaceRole(
+            targetWorkspaceId,
+            Number(session.user.id),
+            ["OWNER", "EDITOR"]
+        )
+
+        if (!member) {
+            return NextResponse.json({ message: "Forbidden" }, { status: 403 })
+        }
+    }
+
     const snippet = await prisma.snippet.create({
         data: {
             title,
@@ -71,6 +86,16 @@ export async function POST(req: NextRequest) {
             }
         }
     })
+
+    if (targetWorkspaceId) {
+        await prisma.workspaceSnippet.create({
+            data: {
+                workspaceId: targetWorkspaceId,
+                snippetId: snippet.id,
+                addedById: Number(session.user.id),
+            },
+        })
+    }
 
     return NextResponse.json({ snippet }, { status: 201 })
 }

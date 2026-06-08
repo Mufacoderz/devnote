@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import AddExistingSnippetModal from "@/components/workspace/AddExistingSnippetModal"
+import WorkspaceSnippetModal from "@/components/workspace/WorkspaceSnippetModal"
 import WorkspaceSnippetPanel from "@/components/workspace/WorkspaceSnippetPanel"
 import type { Snippet } from "@/components/snippet/shared/types"
 import WorkspaceHeader from "@/components/workspace/WorkspaceHeader"
@@ -161,8 +162,8 @@ export default async function WorkspaceDetailPage({
   })
 
   return (
-    <main className="min-h-full ">
-      <div className="max-w-full">
+    <main className="flex h-full min-h-0 flex-col">
+      <div className="flex min-h-0 flex-1 flex-col">
         <WorkspaceHeader
           workspaceId={workspaceId}
           name={workspace.name}
@@ -182,7 +183,7 @@ export default async function WorkspaceDetailPage({
             canEdit={canEdit}
           />
         ) : (
-          <div className="rounded-2xl border border-dashed border-[var(--border)] bg-[var(--surface)] p-10 text-center">
+          <div className="m-4 flex flex-1 items-center justify-center rounded-2xl border border-dashed border-[var(--border)] bg-[var(--surface)] p-6 text-center sm:m-6 sm:p-10">
             <h3 className="text-lg font-semibold mb-2">
               Belum ada snippet di workspace ini
             </h3>
@@ -192,7 +193,7 @@ export default async function WorkspaceDetailPage({
             </p>
 
             {canEdit && (
-              <div className="flex justify-center gap-2">
+              <div className="flex flex-col justify-center gap-2 sm:flex-row">
                 <Link
                   href={`/workspaces/${workspaceId}?action=add-existing`}
                   className="px-4 py-2 rounded-lg border border-[var(--border)] text-sm text-[var(--text2)] hover:bg-[var(--surface2)] transition-all"
@@ -201,7 +202,7 @@ export default async function WorkspaceDetailPage({
                 </Link>
 
                 <Link
-                  href={`/snippets/new?workspaceId=${workspaceId}`}
+                  href={`/workspaces/${workspaceId}?action=new-snippet`}
                   className="px-4 py-2 rounded-lg bg-[var(--em)] text-[#0a0a0a] text-sm font-semibold hover:opacity-90 transition-all"
                 >
                   New Snippet
@@ -217,6 +218,10 @@ export default async function WorkspaceDetailPage({
           workspaceId={workspaceId}
           snippets={availableSnippets}
         />
+      )}
+
+      {action === "new-snippet" && canEdit && (
+        <WorkspaceSnippetModal workspaceId={workspaceId} />
       )}
     </main>
   )

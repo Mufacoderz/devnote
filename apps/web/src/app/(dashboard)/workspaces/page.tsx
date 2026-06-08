@@ -59,7 +59,7 @@ export default async function WorkspacesPage({ searchParams }: PageProps) {
   }))
 
   return (
-    <main className="min-h-full p-6 text-[var(--text)]">
+    <main className="min-h-full p-4 text-[var(--text)] sm:p-6">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -73,16 +73,16 @@ export default async function WorkspacesPage({ searchParams }: PageProps) {
             </p>
           </div>
 
-          <div className="flex gap-2">
+          <div className="grid grid-cols-2 gap-2 sm:flex">
             <Link
               href="/workspaces?action=join"
-              className="rounded-lg border border-[var(--border)] px-4 py-2 text-sm text-[var(--text2)] transition-all hover:bg-[var(--surface2)]"
+              className="rounded-lg border border-[var(--border)] px-4 py-2 text-center text-sm text-[var(--text2)] transition-all hover:bg-[var(--surface2)]"
             >
               Gabung
             </Link>
             <Link
               href="/workspaces?action=create"
-              className="rounded-lg bg-[var(--em)] px-4 py-2 text-sm font-semibold text-[#0a0a0a] transition-all hover:opacity-90"
+              className="rounded-lg bg-[var(--em)] px-4 py-2 text-center text-sm font-semibold text-[#0a0a0a] transition-all hover:opacity-90"
             >
               Buat Workspace
             </Link>
@@ -102,16 +102,16 @@ export default async function WorkspacesPage({ searchParams }: PageProps) {
               <p className="mt-2 text-sm text-[var(--text3)]">
                 Buat workspace baru atau gabung memakai invite code dari owner.
               </p>
-              <div className="mt-5 flex justify-center gap-2">
+              <div className="mt-5 grid grid-cols-2 gap-2 sm:flex sm:justify-center">
                 <Link
                   href="/workspaces?action=join"
-                  className="rounded-lg border border-[var(--border)] px-4 py-2 text-sm text-[var(--text2)] transition-all hover:bg-[var(--surface2)]"
+                  className="rounded-lg border border-[var(--border)] px-4 py-2 text-center text-sm text-[var(--text2)] transition-all hover:bg-[var(--surface2)]"
                 >
                   Gabung
                 </Link>
                 <Link
                   href="/workspaces?action=create"
-                  className="rounded-lg bg-[var(--em)] px-4 py-2 text-sm font-semibold text-[#0a0a0a] transition-all hover:opacity-90"
+                  className="rounded-lg bg-[var(--em)] px-4 py-2 text-center text-sm font-semibold text-[#0a0a0a] transition-all hover:opacity-90"
                 >
                   Buat Workspace
                 </Link>
