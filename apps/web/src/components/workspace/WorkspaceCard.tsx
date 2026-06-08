@@ -57,9 +57,9 @@ export default function WorkspaceCard({ workspace }: WorkspaceCardProps) {
         </div>
       </div>
 
-      <div className="flex items-center justify-between text-[11px] text-[var(--text4)]">
-        <span className="font-mono">{workspace.inviteCode}</span>
-        <span className="group-hover:text-[var(--em)] transition-colors">
+      <div className="flex items-center justify-between gap-3 text-[11px] text-[var(--text4)]">
+        <span className="min-w-0 truncate font-mono">{workspace.inviteCode}</span>
+        <span className="shrink-0 group-hover:text-[var(--em)] transition-colors">
           Buka →
         </span>
       </div>
