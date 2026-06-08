@@ -162,8 +162,8 @@ export default async function WorkspaceDetailPage({
   })
 
   return (
-    <main className="min-h-full ">
-      <div className="max-w-full">
+    <main className="flex h-full min-h-0 flex-col">
+      <div className="flex min-h-0 flex-1 flex-col">
         <WorkspaceHeader
           workspaceId={workspaceId}
           name={workspace.name}
@@ -183,7 +183,7 @@ export default async function WorkspaceDetailPage({
             canEdit={canEdit}
           />
         ) : (
-          <div className="rounded-2xl border border-dashed border-[var(--border)] bg-[var(--surface)] p-10 text-center">
+          <div className="m-4 flex flex-1 items-center justify-center rounded-2xl border border-dashed border-[var(--border)] bg-[var(--surface)] p-6 text-center sm:m-6 sm:p-10">
             <h3 className="text-lg font-semibold mb-2">
               Belum ada snippet di workspace ini
             </h3>
@@ -193,7 +193,7 @@ export default async function WorkspaceDetailPage({
             </p>
 
             {canEdit && (
-              <div className="flex justify-center gap-2">
+              <div className="flex flex-col justify-center gap-2 sm:flex-row">
                 <Link
                   href={`/workspaces/${workspaceId}?action=add-existing`}
                   className="px-4 py-2 rounded-lg border border-[var(--border)] text-sm text-[var(--text2)] hover:bg-[var(--surface2)] transition-all"

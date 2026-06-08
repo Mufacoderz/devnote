@@ -38,8 +38,8 @@ export default function WorkspaceHeader({
 
   return (
     <section className="shrink-0 border-b border-[var(--border)] bg-[var(--bg)]">
-      <div className="flex items-center justify-between gap-3 px-5 py-3">
-        <div className="flex items-center gap-3 min-w-0">
+      <div className="flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+        <div className="flex w-full min-w-0 items-center gap-3 sm:w-auto">
           <button
             onClick={() => setOpen((prev) => !prev)}
             className="w-8 h-8 rounded-lg border border-[var(--border)] text-[var(--text3)] hover:text-[var(--em)] hover:bg-[var(--surface2)] transition-all shrink-0"
@@ -66,7 +66,7 @@ export default function WorkspaceHeader({
           </div>
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex w-full items-center justify-end gap-2 shrink-0 sm:w-auto">
           {canEdit && (
             <>
               <Link
@@ -78,7 +78,7 @@ export default function WorkspaceHeader({
 
               <Link
                 href={`/workspaces/${workspaceId}?action=new-snippet`}
-                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--em)] text-[#0a0a0a] text-[12px] font-semibold hover:opacity-90 transition-all"
+                className="flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-[var(--em)] text-[#0a0a0a] text-[12px] font-semibold hover:opacity-90 transition-all"
               >
                 <FontAwesomeIcon icon={faPlus} className="w-3 h-3" />
                 <span className="hidden sm:inline">New Snippet</span>
@@ -103,7 +103,7 @@ export default function WorkspaceHeader({
             transition={{ duration: 0.18, ease: "easeInOut" }}
             className="overflow-hidden"
           >
-            <div className="px-5 pb-4">
+            <div className="px-4 pb-4 sm:px-5">
               <div className="flex items-center gap-2 mb-2">
                 <WorkspaceRoleBadge role={role} />
 
