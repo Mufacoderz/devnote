@@ -77,7 +77,7 @@ export default function WorkspaceHeader({
               </Link>
 
               <Link
-                href={`/snippets/new?workspaceId=${workspaceId}`}
+                href={`/workspaces/${workspaceId}?action=new-snippet`}
                 className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--em)] text-[#0a0a0a] text-[12px] font-semibold hover:opacity-90 transition-all"
               >
                 <FontAwesomeIcon icon={faPlus} className="w-3 h-3" />

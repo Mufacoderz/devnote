@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { canEditSnippetInAnyWorkspace } from "@/lib/workspace"
 
 export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     const session = await auth()
@@ -27,13 +28,32 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
     const { id } = await params
     const { title, language, description, code, tags } = await req.json()
+    const snippetId = Number(id)
+    const userId = Number(session.user.id)
+
+    const existingSnippet = await prisma.snippet.findUnique({
+        where: { id: snippetId },
+        select: { userId: true },
+    })
+
+    if (!existingSnippet) {
+        return NextResponse.json({ message: "Tidak ditemukan" }, { status: 404 })
+    }
+
+    const canEdit =
+        existingSnippet.userId === userId ||
+        (await canEditSnippetInAnyWorkspace(snippetId, userId))
+
+    if (!canEdit) {
+        return NextResponse.json({ message: "Forbidden" }, { status: 403 })
+    }
 
     await prisma.snippetTag.deleteMany({
-        where: { snippetId: Number(id) }
+        where: { snippetId }
     })
 
     const snippet = await prisma.snippet.update({
-        where: { id: Number(id) },
+        where: { id: snippetId },
         data: {
             title,
             language,
@@ -60,12 +80,23 @@ export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id:
     if (!session?.user) return NextResponse.json({ message: "Unauthorized" }, { status: 401 })
 
     const { id } = await params
+    const snippetId = Number(id)
+    const userId = Number(session.user.id)
+
+    const snippet = await prisma.snippet.findFirst({
+        where: {
+            id: snippetId,
+            userId,
+        },
+        select: { id: true },
+    })
+
+    if (!snippet) {
+        return NextResponse.json({ message: "Tidak ditemukan" }, { status: 404 })
+    }
 
     await prisma.snippet.delete({
-        where: {
-            id: Number(id),
-            userId: Number(session.user.id)
-        }
+        where: { id: snippetId }
     })
 
     return NextResponse.json({ message: "Snippet berhasil dihapus" })

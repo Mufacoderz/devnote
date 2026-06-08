@@ -12,6 +12,9 @@ import { faFolderPlus, faCheck, faCopy, faLink, faLinkSlash, faEllipsisVertical,
 interface SnippetDetailProps {
     snippet: Snippet
     onEdit: () => void
+    canEdit?: boolean
+    canDelete?: boolean
+    canManageCollections?: boolean
 }
 
 interface Collection {
@@ -19,7 +22,13 @@ interface Collection {
     name: string
 }
 
-export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
+export default function SnippetDetail({
+    snippet,
+    onEdit,
+    canEdit = true,
+    canDelete = true,
+    canManageCollections = true,
+}: SnippetDetailProps) {
     const router = useRouter()
     const {
         incrementFav,
@@ -325,6 +334,9 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
                         onCopy={() => setCopyCount(c => c + 1)}
                     />
 
+                    {(canEdit || canDelete || canManageCollections) && (
+                        <>
+                    {canManageCollections && (
                     <div className="relative" ref={colRef}>
                         <button
                             onClick={toggleCollectionDropdown}
@@ -367,15 +379,20 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
                         )}
                     </div>
 
+                    )}
+
                     {/* Desktop */}
                     <div className="hidden sm:flex items-center gap-2">
+                        {canEdit && (
                         <button
                             onClick={onEdit}
                             className="text-[13px] font-medium px-4 py-2 rounded-lg border border-[var(--border2)] text-yellow-700 hover:border-yellow-500/60 hover:text-yellow-300 transition-all"
                         >
                             Edit
                         </button>
+                        )}
 
+                        {canDelete && (
                         <button
                             onClick={() => setConfirmOpen(true)}
                             disabled={deleting}
@@ -383,6 +400,7 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
                         >
                             {deleting ? "Menghapus..." : "Hapus"}
                         </button>
+                        )}
                     </div>
 
                     {/* Mobile */}
@@ -399,21 +417,27 @@ export default function SnippetDetail({ snippet, onEdit }: SnippetDetailProps) {
 
                         {menuOpen && (
                             <div className="absolute right-0 top-10 w-[150px] rounded-xl border border-[var(--border)] bg-[var(--surface)] shadow-xl p-2 z-50">
+                                {canEdit && (
                                 <button
                                     onClick={onEdit}
                                     className="flex items-center gap-2 w-full px-3 py-2 text-[12px] rounded-lg hover:bg-[var(--surface2)]"
                                 >
                                     Edit
                                 </button>
+                                )}
+                                {canDelete && (
                                 <button
                                     onClick={() => setConfirmOpen(true)}
                                     className="flex items-center gap-2 w-full px-3 py-2 text-[12px] text-red-400 rounded-lg hover:bg-[var(--surface2)]"
                                 >
                                     Hapus
                                 </button>
+                                )}
                             </div>
                         )}
                     </div>
+                        </>
+                    )}
                 </div>
 
                 <div className="flex items-center gap-4 mt-2 sm:mt-4 font-mono text-[8px] sm:text-[11px] text-[var(--text4)]">

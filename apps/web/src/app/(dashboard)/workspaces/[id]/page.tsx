@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import AddExistingSnippetModal from "@/components/workspace/AddExistingSnippetModal"
+import WorkspaceSnippetModal from "@/components/workspace/WorkspaceSnippetModal"
 import WorkspaceSnippetPanel from "@/components/workspace/WorkspaceSnippetPanel"
 import type { Snippet } from "@/components/snippet/shared/types"
 import WorkspaceHeader from "@/components/workspace/WorkspaceHeader"
@@ -201,7 +202,7 @@ export default async function WorkspaceDetailPage({
                 </Link>
 
                 <Link
-                  href={`/snippets/new?workspaceId=${workspaceId}`}
+                  href={`/workspaces/${workspaceId}?action=new-snippet`}
                   className="px-4 py-2 rounded-lg bg-[var(--em)] text-[#0a0a0a] text-sm font-semibold hover:opacity-90 transition-all"
                 >
                   New Snippet
@@ -217,6 +218,10 @@ export default async function WorkspaceDetailPage({
           workspaceId={workspaceId}
           snippets={availableSnippets}
         />
+      )}
+
+      {action === "new-snippet" && canEdit && (
+        <WorkspaceSnippetModal workspaceId={workspaceId} />
       )}
     </main>
   )
