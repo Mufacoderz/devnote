@@ -48,8 +48,8 @@ export default function RemoveWorkspaceSnippetButton({
       disabled={loading}
       className={
         variant === "mobile"
-          ? "flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-[12px] text-red-400 hover:bg-[var(--surface2)] disabled:opacity-60"
-          : "rounded-lg border border-red-500/30 px-4 py-2 text-[13px] font-medium text-red-400 transition-all hover:border-red-500/60 hover:bg-red-500/10 disabled:opacity-60"
+          ? "flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-[12px] text-red-700 transition-all hover:bg-red-500/10 hover:text-red-400 disabled:opacity-60"
+          : "rounded-lg border border-[var(--border2)] px-4 py-2 text-[13px] font-medium text-red-700 transition-all hover:border-red-500/60 hover:text-red-400 disabled:opacity-60"
       }
     >
       {loading ? "Removing..." : "Remove from workspace"}

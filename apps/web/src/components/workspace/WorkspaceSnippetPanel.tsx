@@ -45,6 +45,7 @@ export default function WorkspaceSnippetPanel({
             canEdit={canEdit}
             canDelete={false}
             canManageCollections={false}
+            showPersonalControls={false}
             onEdit={() => setEditingSnippet(selected)}
             renderAdditionalActions={
               canEdit
