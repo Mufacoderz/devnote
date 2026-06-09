@@ -6,8 +6,8 @@ import { AnimatePresence, motion } from "framer-motion"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import {
   faChevronDown,
-  faPlus,
   faGear,
+  faPlus,
 } from "@fortawesome/free-solid-svg-icons"
 import WorkspaceRoleBadge from "./WorkspaceRoleBadge"
 
@@ -38,60 +38,21 @@ export default function WorkspaceHeader({
 
   return (
     <section className="shrink-0 border-b border-[var(--border)] bg-[var(--bg)]">
-      <div className="flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
-        <div className="flex w-full min-w-0 items-center gap-3 sm:w-auto">
-          <button
-            onClick={() => setOpen((prev) => !prev)}
-            className="w-8 h-8 rounded-lg border border-[var(--border)] text-[var(--text3)] hover:text-[var(--em)] hover:bg-[var(--surface2)] transition-all shrink-0"
-            aria-label={open ? "Tutup detail workspace" : "Buka detail workspace"}
-          >
-            <FontAwesomeIcon
-              icon={faChevronDown}
-              className={`w-3 h-3 transition-transform ${
-                open ? "rotate-180" : ""
-              }`}
-            />
-          </button>
+      <div className="flex items-center gap-2 px-3 py-2 sm:px-4">
+        <button
+          onClick={() => setOpen((prev) => !prev)}
+          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-[var(--text3)] transition-all hover:bg-[var(--surface2)] hover:text-[var(--em)]"
+          aria-label={open ? "Tutup detail workspace" : "Buka detail workspace"}
+        >
+          <FontAwesomeIcon
+            icon={faChevronDown}
+            className={`h-3 w-3 transition-transform ${open ? "rotate-180" : ""}`}
+          />
+        </button>
 
-          <div className="min-w-0">
-            <h1 className="text-[17px] font-bold tracking-[-0.3px] truncate">
-              {name}
-            </h1>
-
-            {!open && (
-              <p className="text-[11px] text-[var(--text4)] truncate">
-                {role} • {snippetsCount} snippets • {membersCount} members
-              </p>
-            )}
-          </div>
-        </div>
-
-        <div className="flex w-full items-center justify-end gap-2 shrink-0 sm:w-auto">
-          {canEdit && (
-            <>
-              <Link
-                href={`/workspaces/${workspaceId}?action=add-existing`}
-                className="hidden sm:flex px-3 py-2 rounded-lg border border-[var(--border)] text-[12px] text-[var(--text2)] hover:bg-[var(--surface2)] transition-all"
-              >
-                Add Existing
-              </Link>
-
-              <Link
-                href={`/workspaces/${workspaceId}?action=new-snippet`}
-                className="flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-[var(--em)] text-[#0a0a0a] text-[12px] font-semibold hover:opacity-90 transition-all"
-              >
-                <FontAwesomeIcon icon={faPlus} className="w-3 h-3" />
-                <span className="hidden sm:inline">New Snippet</span>
-              </Link>
-            </>
-          )}
-
-          {isOwner && (
-            <button className="w-9 h-9 rounded-lg border border-[var(--border)] text-[var(--text3)] hover:text-[var(--em)] hover:bg-[var(--surface2)] transition-all">
-              <FontAwesomeIcon icon={faGear} className="w-3.5 h-3.5" />
-            </button>
-          )}
-        </div>
+        <h1 className="min-w-0 truncate text-[14px] font-semibold sm:text-[15px]">
+          {name}
+        </h1>
       </div>
 
       <AnimatePresence initial={false}>
@@ -103,43 +64,61 @@ export default function WorkspaceHeader({
             transition={{ duration: 0.18, ease: "easeInOut" }}
             className="overflow-hidden"
           >
-            <div className="px-4 pb-4 sm:px-5">
-              <div className="flex items-center gap-2 mb-2">
-                <WorkspaceRoleBadge role={role} />
+            <div className="px-3 pb-3 sm:px-4 sm:pb-4">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center gap-2">
+                  <WorkspaceRoleBadge role={role} />
+                  <span className="text-[10px] font-semibold uppercase tracking-[1.6px] text-[var(--text4)]">
+                    Private Workspace
+                  </span>
+                </div>
 
-                <span className="text-[10px] uppercase tracking-[1.6px] text-[var(--text4)] font-semibold">
-                  Private Workspace
-                </span>
+                <div className="flex flex-wrap items-center gap-2">
+                  {canEdit && (
+                    <>
+                      <Link
+                        href={`/workspaces/${workspaceId}?action=add-existing`}
+                        className="rounded-lg border border-[var(--border)] px-3 py-2 text-[12px] text-[var(--text2)] transition-all hover:bg-[var(--surface2)]"
+                      >
+                        Add Existing
+                      </Link>
+
+                      <Link
+                        href={`/workspaces/${workspaceId}?action=new-snippet`}
+                        className="flex items-center justify-center gap-2 rounded-lg bg-[var(--em)] px-3 py-2 text-[12px] font-semibold text-[#0a0a0a] transition-all hover:opacity-90"
+                      >
+                        <FontAwesomeIcon icon={faPlus} className="h-3 w-3" />
+                        New Snippet
+                      </Link>
+                    </>
+                  )}
+
+                  {isOwner && (
+                    <button
+                      className="flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--border)] text-[var(--text3)] transition-all hover:bg-[var(--surface2)] hover:text-[var(--em)]"
+                      aria-label="Pengaturan workspace"
+                    >
+                      <FontAwesomeIcon icon={faGear} className="h-3.5 w-3.5" />
+                    </button>
+                  )}
+                </div>
               </div>
 
-              <p className="text-[13px] text-[var(--text3)] max-w-3xl">
+              <p className="mt-3 max-w-3xl text-[13px] text-[var(--text3)]">
                 {description || "Tidak ada deskripsi workspace."}
               </p>
 
-              <div className="flex flex-wrap gap-2 mt-3">
-                <span className="px-3 py-1 rounded-full bg-[var(--surface)] border border-[var(--border)] text-xs text-[var(--text3)]">
+              <div className="mt-3 flex flex-wrap gap-2">
+                <span className="rounded-full border border-[var(--border)] bg-[var(--surface)] px-3 py-1 text-xs text-[var(--text3)]">
                   {snippetsCount} snippets
                 </span>
-
-                <span className="px-3 py-1 rounded-full bg-[var(--surface)] border border-[var(--border)] text-xs text-[var(--text3)]">
+                <span className="rounded-full border border-[var(--border)] bg-[var(--surface)] px-3 py-1 text-xs text-[var(--text3)]">
                   {membersCount} members
                 </span>
-
-                <span className="px-3 py-1 rounded-full bg-[var(--surface)] border border-[var(--border)] text-xs text-[var(--em-dim)] font-mono">
+                <span className="max-w-full truncate rounded-full border border-[var(--border)] bg-[var(--surface)] px-3 py-1 font-mono text-xs text-[var(--em-dim)]">
                   {inviteCode}
                 </span>
               </div>
-
-              {canEdit && (
-                <div className="flex sm:hidden flex-wrap gap-2 mt-3">
-                  <Link
-                    href={`/workspaces/${workspaceId}?action=add-existing`}
-                    className="px-3 py-2 rounded-lg border border-[var(--border)] text-[12px] text-[var(--text2)] hover:bg-[var(--surface2)] transition-all"
-                  >
-                    Add Existing
-                  </Link>
-                </div>
-              )}
             </div>
           </motion.div>
         )}

@@ -39,37 +39,25 @@ export default function WorkspaceSnippetPanel({
         getAuthorName={(item) => item.authorName}
         listWidthClassName="w-[320px]"
         renderDetail={(selected) => (
-          <>
-            <div className="px-5 py-3 border-b border-[var(--border)] bg-[var(--bg)] flex items-center justify-between gap-3 shrink-0">
-              <div>
-                <p className="text-[10px] uppercase tracking-[1.4px] text-[var(--text4)] font-semibold">
-                  Workspace Snippet
-                </p>
-
-                <p className="text-[12px] text-[var(--text3)] mt-0.5">
-                  Bisa diedit oleh Owner dan Editor workspace.
-                </p>
-              </div>
-
-              {canEdit && (
-                <RemoveWorkspaceSnippetButton
-                  workspaceId={workspaceId}
-                  snippetId={selected.id}
-                />
-              )}
-            </div>
-
-            <div className="flex-1 min-h-0">
-              <SnippetDetail
-                key={selected.id}
-                snippet={selected}
-                canEdit={canEdit}
-                canDelete={false}
-                canManageCollections={false}
-                onEdit={() => setEditingSnippet(selected)}
-              />
-            </div>
-          </>
+          <SnippetDetail
+            key={selected.id}
+            snippet={selected}
+            canEdit={canEdit}
+            canDelete={false}
+            canManageCollections={false}
+            onEdit={() => setEditingSnippet(selected)}
+            renderAdditionalActions={
+              canEdit
+                ? (variant) => (
+                    <RemoveWorkspaceSnippetButton
+                      workspaceId={workspaceId}
+                      snippetId={selected.id}
+                      variant={variant}
+                    />
+                  )
+                : undefined
+            }
+          />
         )}
       />
 

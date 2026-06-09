@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, type ReactNode } from "react"
 import { useRouter } from "next/navigation"
 import CopyButton from "./CopyButton"
 import CodeBlock from "./CodeBlock"
@@ -15,6 +15,7 @@ interface SnippetDetailProps {
     canEdit?: boolean
     canDelete?: boolean
     canManageCollections?: boolean
+    renderAdditionalActions?: (variant: "desktop" | "mobile") => ReactNode
 }
 
 interface Collection {
@@ -28,6 +29,7 @@ export default function SnippetDetail({
     canEdit = true,
     canDelete = true,
     canManageCollections = true,
+    renderAdditionalActions,
 }: SnippetDetailProps) {
     const router = useRouter()
     const {
@@ -238,7 +240,7 @@ export default function SnippetDetail({
     }
 
     return (
-        <div className="flex-1 flex flex-col h-full min-h-0 overflow-hidden">
+        <div className="flex-1 flex flex-col h-full min-h-0 overflow-y-auto lg:overflow-hidden">
             <div className="px-6 py-2 sm:py-5 border-b border-[var(--border)] shrink-0">
                 <div className="flex items-start justify-between gap-4 mb-1 sm:mb-3">
                     <div>
@@ -334,7 +336,7 @@ export default function SnippetDetail({
                         onCopy={() => setCopyCount(c => c + 1)}
                     />
 
-                    {(canEdit || canDelete || canManageCollections) && (
+                    {(canEdit || canDelete || canManageCollections || renderAdditionalActions) && (
                         <>
                     {canManageCollections && (
                     <div className="relative" ref={colRef}>
@@ -401,6 +403,7 @@ export default function SnippetDetail({
                             {deleting ? "Menghapus..." : "Hapus"}
                         </button>
                         )}
+                        {renderAdditionalActions?.("desktop")}
                     </div>
 
                     {/* Mobile */}
@@ -433,6 +436,7 @@ export default function SnippetDetail({
                                     Hapus
                                 </button>
                                 )}
+                                {renderAdditionalActions?.("mobile")}
                             </div>
                         )}
                     </div>
@@ -447,7 +451,7 @@ export default function SnippetDetail({
                 </div>
             </div>
 
-            <div className="flex-1 min-h-0 overflow-hidden">
+            <div className="h-[420px] shrink-0 overflow-hidden sm:h-[520px] lg:h-auto lg:flex-1 lg:min-h-0">
                 <CodeBlock code={snippet.code} language={snippet.language} />
             </div>
 
