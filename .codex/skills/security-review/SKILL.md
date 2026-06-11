@@ -1,0 +1,1 @@
+Review permissions, auth, secrets, and unsafe access patterns

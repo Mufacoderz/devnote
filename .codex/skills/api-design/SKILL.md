@@ -1,0 +1,1 @@
+Thin routes, service layer, typed responses, consistent naming

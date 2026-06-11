@@ -1,0 +1,1 @@
+Service-oriented structure and separation of concerns

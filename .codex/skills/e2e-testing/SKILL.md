@@ -1,0 +1,1 @@
+Validate complete user workflows end-to-end

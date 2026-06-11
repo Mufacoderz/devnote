@@ -1,0 +1,1 @@
+Reusable components, small focused UI, shared patterns

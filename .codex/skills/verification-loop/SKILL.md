@@ -1,0 +1,1 @@
+Implement -> Build -> Test -> Verify -> Edge Cases -> Done
