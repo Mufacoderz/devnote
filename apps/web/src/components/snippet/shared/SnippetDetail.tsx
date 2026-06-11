@@ -15,6 +15,7 @@ interface SnippetDetailProps {
     canEdit?: boolean
     canDelete?: boolean
     canManageCollections?: boolean
+    showPersonalControls?: boolean
     renderAdditionalActions?: (variant: "desktop" | "mobile") => ReactNode
 }
 
@@ -29,6 +30,7 @@ export default function SnippetDetail({
     canEdit = true,
     canDelete = true,
     canManageCollections = true,
+    showPersonalControls = true,
     renderAdditionalActions,
 }: SnippetDetailProps) {
     const router = useRouter()
@@ -262,6 +264,7 @@ export default function SnippetDetail({
                         </h2>
                     </div>
 
+                    {showPersonalControls && (
                     <div className="flex items-center gap-2">
                         <button
                             onClick={handleFavorite}
@@ -310,6 +313,7 @@ export default function SnippetDetail({
                             </span>
                         </button>
                     </div>
+                    )}
                 </div>
 
                 {snippet.description && (
@@ -447,7 +451,9 @@ export default function SnippetDetail({
                 <div className="flex items-center gap-4 mt-2 sm:mt-4 font-mono text-[8px] sm:text-[11px] text-[var(--text4)]">
                     <span>Disimpan {snippet.createdAt}</span>
                     <span>{copyCount} kali disalin</span>
-                    <span>{isPublic ? "Public" : "Private"}</span>
+                    {showPersonalControls && (
+                        <span>{isPublic ? "Public" : "Private"}</span>
+                    )}
                 </div>
             </div>
 
@@ -490,13 +496,15 @@ export default function SnippetDetail({
                                     Siapapun dengan link ini bisa melihat snippet kamu
                                 </p>
                             </div>
-                            <span className={`font-mono text-[10px] px-2.5 py-1 rounded-full border
-                                ${isPublic
-                                    ? 'text-blue-300 border-blue-500/30 bg-blue-500/10'
-                                    : 'text-[var(--text4)] border-[var(--border2)] bg-[var(--surface2)]'
-                                }`}>
-                                {isPublic ? "Public" : "Private"}
-                            </span>
+                            {showPersonalControls && (
+                                <span className={`font-mono text-[10px] px-2.5 py-1 rounded-full border
+                                    ${isPublic
+                                        ? 'text-blue-300 border-blue-500/30 bg-blue-500/10'
+                                        : 'text-[var(--text4)] border-[var(--border2)] bg-[var(--surface2)]'
+                                    }`}>
+                                    {isPublic ? "Public" : "Private"}
+                                </span>
+                            )}
                         </div>
 
                         <div className="flex flex-col gap-1.5">
