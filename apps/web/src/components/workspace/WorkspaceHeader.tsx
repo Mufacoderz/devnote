@@ -88,7 +88,7 @@ export default function WorkspaceHeader({
                         className="flex items-center justify-center gap-2 rounded-lg bg-[var(--em)] px-3 py-2 text-[12px] font-semibold text-[#0a0a0a] transition-all hover:opacity-90"
                       >
                         <FontAwesomeIcon icon={faPlus} className="h-3 w-3" />
-                        New Snippet
+                        New Note
                       </Link>
                     </>
                   )}
@@ -110,7 +110,7 @@ export default function WorkspaceHeader({
 
               <div className="mt-3 flex flex-wrap gap-2">
                 <span className="rounded-full border border-[var(--border)] bg-[var(--surface)] px-3 py-1 text-xs text-[var(--text3)]">
-                  {snippetsCount} snippets
+                  {snippetsCount} notes
                 </span>
                 <span className="rounded-full border border-[var(--border)] bg-[var(--surface)] px-3 py-1 text-xs text-[var(--text3)]">
                   {membersCount} members
