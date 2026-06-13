@@ -54,10 +54,10 @@ export default function SnippetExplorer<TItem>({
   const selectedSnippet = selectedItem ? getSnippet(selectedItem) : null
 
   return (
-    <div className="flex-1 min-h-0 overflow-hidden bg-[var(--surface)]">
+    <div className="flex-1 min-h-0 overflow-hidden bg-[var(--bg)]">
       <div className="hidden lg:flex h-full min-h-0">
       <aside
-        className={`${listWidthClassName} shrink-0 border-r border-[var(--border)] flex flex-col min-h-0`}
+        className={`${listWidthClassName} shrink-0 border-r border-[var(--border)] bg-[#0d0f0e] flex flex-col min-h-0`}
       >
         <SnippetListHeader
           title={title}
@@ -72,7 +72,7 @@ export default function SnippetExplorer<TItem>({
           }
         />
 
-        <div className="flex-1 overflow-y-auto p-2">
+        <div className="flex-1 overflow-y-auto">
           {visibleItems.map((item) => {
             const snippet = getSnippet(item)
 

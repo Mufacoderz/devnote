@@ -27,14 +27,14 @@ export default function SnippetListHeader({
   onToggleLang,
 }: SnippetListHeaderProps) {
   return (
-    <div className="shrink-0 border-b border-[var(--border)]">
-      <div className="flex items-center justify-between px-4 py-3">
+    <div className="shrink-0 border-b border-[var(--border)] bg-[#111312]">
+      <div className="flex items-center justify-between px-5 py-[17px]">
         <div className="flex items-center gap-2">
-          <span className="text-[11px] font-semibold tracking-[1px] uppercase text-[var(--text3)]">
+          <span className="text-[12px] font-semibold tracking-[1.5px] uppercase text-[var(--text2)]">
             {title}
           </span>
 
-          <span className="font-mono text-[10px] text-[var(--text4)] bg-[var(--surface2)] px-2 py-[2px] rounded-full">
+          <span className="font-mono text-[9px] text-[var(--text4)] bg-[var(--surface2)] px-2 py-[2px] rounded-full">
             {visibleCount}
             {activeLang ? ` / ${totalCount}` : ""}
           </span>

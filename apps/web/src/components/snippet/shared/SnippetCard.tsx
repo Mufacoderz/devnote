@@ -24,15 +24,15 @@ export default function SnippetCard({
     return (
         <div
             onClick={onClick}
-            className={`relative p-3 rounded-[6px] cursor-pointer transition-all border mb-1
+            className={`relative px-5 py-4 cursor-pointer transition-all border-b border-l-0 border-r-0 border-t-0
             ${active
-                ? 'bg-[var(--surface)] border-[var(--em-border)] shadow-[0_0_0_1px_var(--em-border)]'
-                : 'border-transparent hover:bg-[var(--surface2)] hover:border-[var(--border)]'
+                ? 'bg-[#171a18] border-b-[var(--border)]'
+                : 'border-b-[var(--border)] hover:bg-[#141715]'
             }`}
         >
             <div
-                className="absolute left-0 top-0 h-full w-[2px] rounded-l-[6px]"
-                style={{ background: lang.color }}
+                className="absolute left-0 top-0 h-full"
+                style={{ background: active ? "var(--em)" : lang.color, width: active ? 2 : 1 }}
             />
 
             <div className="flex items-center justify-between mb-[5px] gap-2">
@@ -67,8 +67,7 @@ export default function SnippetCard({
                 </div>
             </div>
 
-            <div className={`text-[13px] font-medium mb-[4px] truncate tracking-[-0.2px]
-            ${active ? 'text-[var(--em)]' : 'text-[var(--text)]'}`}>
+            <div className="text-[14px] font-medium mb-[4px] truncate text-[var(--text)]">
                 {snippet.title}
             </div>
 
@@ -78,15 +77,15 @@ export default function SnippetCard({
                 </div>
             )}
 
-            <div className="font-mono text-[10px] text-[var(--text3)] truncate mb-[6px]">
-                {snippet.code.split('\n')[0]}
+            <div className="text-[11px] text-[var(--text4)] truncate mb-[6px]">
+                {snippet.description || snippet.code.split('\n')[0]}
             </div>
 
             <div className="flex gap-1.5 flex-wrap">
                 {snippet.tags.map(tag => (
                     <span
                         key={tag}
-                        className={`font-mono text-[9px] px-[7px] py-[1px] rounded-full
+                        className={`font-mono text-[9px] px-[7px] py-[1px] rounded-[3px]
                         ${active
                             ? 'text-[var(--em-dim)] bg-[var(--em-faint)]'
                             : 'text-[var(--text4)] bg-[var(--surface3)]'

@@ -22,13 +22,15 @@ export default function SidebarSection({
   withBorder = true,
 }: SidebarSectionProps) {
   return (
-    <div className={`px-3 py-2 ${withBorder ? "border-t border-[var(--border)]" : ""}`}>
+    <div className={`relative z-10 px-3 py-3 ${withBorder ? "border-t border-[var(--border)]" : ""}`}>
       <div
         onClick={onToggle}
-        className="flex items-center justify-between px-2 mb-1 cursor-pointer group"
+        className={`flex min-h-[32px] items-center justify-between px-2 cursor-pointer group ${
+          open ? "mb-1.5" : ""
+        }`}
       >
         <div className="flex items-center gap-2">
-          <p className="text-[10px] font-semibold tracking-[1.5px] uppercase text-[var(--text4)] group-hover:text-[var(--text3)] transition-colors">
+          <p className="text-[9px] font-semibold tracking-[1.7px] uppercase text-[var(--text4)] group-hover:text-[var(--text3)] transition-colors">
             {title}
           </p>
           {right}

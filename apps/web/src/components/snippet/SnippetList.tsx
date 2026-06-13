@@ -82,7 +82,7 @@ export default function SnippetList({ snippets }: { snippets: Snippet[] }) {
           items={snippets}
           getSnippet={(snippet) => snippet}
           getKey={(snippet) => snippet.id}
-          listWidthClassName="w-[300px]"
+          listWidthClassName="w-[330px]"
           renderDetail={(selected) => (
             <SnippetDetail
               key={selected.id}

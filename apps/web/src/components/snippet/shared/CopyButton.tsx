@@ -34,10 +34,10 @@ export default function CopyButton({
     return (
         <button
             onClick={handleCopy}
-            className={`flex items-center gap-2 text-[13px] font-semibold px-4 py-2 rounded-lg transition-all
+            className={`flex h-[36px] items-center gap-2 text-[12px] font-semibold px-4 rounded-md border transition-all
         ${copied
-                    ? 'bg-[var(--em-dim)] text-white'
-                    : 'bg-[var(--em)] text-[#0a0a0a] hover:text-[var(--em)] hover:bg-transparent border-[1px] border-transparent hover:border-[1px] hover:border-[var(--em)] hover:shadow-[0_4px_16px_var(--em-glow)]'
+                    ? 'bg-[var(--em-dim)] border-[var(--em-dim)] text-[#07100c]'
+                    : 'bg-[var(--em)] border-[var(--em)] text-[#07100c] hover:bg-[#55e4ad] hover:border-[#55e4ad]'
                 }`}
         >
             {copied ? 'Tersalin!' : 'Salin Kode'}

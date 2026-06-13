@@ -18,17 +18,17 @@ export default function StatsSection({
   ]
 
   return (
-    <div className="mt-auto px-3 py-3 border-t border-[var(--border)]">
-      <div className="grid grid-cols-2 gap-[6px]">
+    <div className="relative z-10 mt-auto px-4 py-4 border-t border-[var(--border)]">
+      <div className="grid grid-cols-3 gap-3">
         {stats.map((stat) => (
           <div
             key={stat.label}
-            className="bg-[var(--surface2)] border border-[var(--border)] rounded-[6px] p-[10px]"
+            className="border-l border-[var(--border)] pl-3 first:border-l-0 first:pl-0"
           >
-            <div className="font-mono text-[18px] font-semibold text-[var(--em)] leading-none mb-[3px]">
+            <div className="font-mono text-[17px] font-semibold text-[var(--text)] leading-none mb-1">
               {stat.val}
             </div>
-            <div className="text-[10px] text-[var(--text3)]">{stat.label}</div>
+            <div className="text-[9px] text-[var(--text4)] truncate">{stat.label}</div>
           </div>
         ))}
       </div>
