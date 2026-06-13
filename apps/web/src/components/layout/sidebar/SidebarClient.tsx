@@ -1,8 +1,6 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
-import Image from "next/image"
-
 import LibrarySection from "./LibrarySection"
 import CollectionSection from "./CollectionSection"
 import WorkspaceSection from "./WorkspaceSection"
@@ -77,24 +75,9 @@ export default function SidebarClient({
   return (
     <aside
       style={{ width: sidebarWidth }}
-      className="relative flex flex-col h-full bg-[var(--surface)] border-r border-[var(--border)] overflow-y-auto shrink-0"
+      className="dashboard-sidebar relative flex flex-col h-full bg-[#171a18] border-r border-[var(--border)] overflow-y-auto shrink-0"
     >
-      <div className="lg:hidden p-2 border-b border-[var(--border)]">
-        <div className="flex flex-col justify-center items-center">
-          <Image
-            src="/logo-bg.png"
-            alt="devnote"
-            width={46}
-            height={46}
-            priority
-            className="rounded-full"
-          />
-          <span className="text-[17px] font-semibold tracking-tight">
-            dev<span className="text-[var(--em)]">note</span>
-          </span>
-        </div>
-      </div>
-
+      <div className="relative z-10 flex min-h-0 flex-1 flex-col">
       <LibrarySection
         totalSnippets={totalSnippets}
         totalFavorites={totalFavorites}
@@ -116,6 +99,7 @@ export default function SidebarClient({
         totalCopies={totalCopies}
         totalTags={tags.length}
       />
+      </div>
 
       <div
         onMouseDown={startResizing}

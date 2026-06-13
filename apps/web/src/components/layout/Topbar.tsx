@@ -109,11 +109,11 @@ export default function Topbar({ onNewSnippet, onToggleSidebar }: TopbarProps) {
     const user = session.user
     const initials = getInitials(user.name)
 
-    const inputClass = "bg-[var(--surface2)] border border-[var(--border2)] focus:border-[var(--em)] rounded-full px-4 py-[6px] pl-8 text-[12px] font-mono text-[var(--text)] placeholder:text-[var(--text4)] outline-none transition-all"
+    const inputClass = "bg-[#171a18] border border-[var(--border)] focus:border-[var(--em-border)] rounded-lg px-4 py-[8px] pl-9 text-[12px] font-mono text-[var(--text)] placeholder:text-[var(--text4)] outline-none transition-all"
 
     return (
         <>
-            <header className="h-[52px] bg-[var(--surface)] border-b border-[var(--border)] flex items-center justify-between px-5 shrink-0 relative">
+            <header className="h-[64px] bg-[#101211] border-b border-[var(--border)] flex items-center justify-between px-4 lg:px-5 shrink-0 relative">
 
                 {searchOpen && (
                     <div className="absolute inset-0 z-10 flex items-center gap-2 px-3 bg-[var(--surface)] lg:hidden">
@@ -148,8 +148,15 @@ export default function Topbar({ onNewSnippet, onToggleSidebar }: TopbarProps) {
                         <FontAwesomeIcon icon={faBars} className="w-[14px] h-[14px]" />
                     </button>
 
-                    <div className="flex items-center ">
-                        <Image src="/emerald-trans-bg.png" alt="devnote" width={45} height={45} className="hidden lg:flex" />
+                    <div className="flex items-center gap-1.5">
+                        <Image
+                            src="/emerald-trans-bg.png"
+                            alt="devnote"
+                            width={45}
+                            height={45}
+                            priority
+                            className="hidden lg:block"
+                        />
                         <span className="text-[15px] font-semibold tracking-tight">
                             dev<span className="text-[var(--em)]">note</span>
                         </span>
@@ -164,7 +171,7 @@ export default function Topbar({ onNewSnippet, onToggleSidebar }: TopbarProps) {
                             value={searchQuery}
                             onChange={e => handleSearch(e.target.value)}
                             placeholder="Cari snippets..."
-                            className={`w-[200px] ${inputClass}`}
+                            className={`w-[min(42vw,520px)] ${inputClass}`}
                         />
                         <FontAwesomeIcon
                             icon={faMagnifyingGlass}
@@ -182,7 +189,7 @@ export default function Topbar({ onNewSnippet, onToggleSidebar }: TopbarProps) {
                             onKeyDown={e => { if (e.key === "Enter") handleCodeSubmit() }}
                             placeholder="Enter code"
                             readOnly
-                            className={`w-[120px] cursor-pointer ${inputClass} pl-8`}
+                            className={`w-[132px] cursor-pointer ${inputClass} pl-8`}
                         />
                         <FontAwesomeIcon
                             icon={faKey}
@@ -206,7 +213,7 @@ export default function Topbar({ onNewSnippet, onToggleSidebar }: TopbarProps) {
 
                     <button
                         onClick={onNewSnippet}
-                        className="flex items-center gap-2 bg-[var(--em)] text-[#0a0a0a] font-semibold text-[13px] px-4 py-[6px] rounded-full border border-transparent hover:bg-transparent hover:text-[var(--em)] hover:border-[var(--em)] hover:shadow-[0_0_20px_var(--em-glow)] transition-all"
+                        className="flex h-[36px] items-center gap-2 bg-[var(--em)] text-[#07100c] font-semibold text-[12px] px-4 rounded-lg border border-[var(--em)] hover:bg-[#55e4ad] hover:border-[#55e4ad] transition-all"
                     >
                         <FontAwesomeIcon icon={faPlus} className="w-[12px] h-[12px]" />
                         <span className="hidden lg:inline">Tambah Snippet</span>

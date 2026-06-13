@@ -3,11 +3,12 @@ import { useState, useEffect, useRef, type ReactNode } from "react"
 import { useRouter } from "next/navigation"
 import CopyButton from "./CopyButton"
 import CodeBlock from "./CodeBlock"
+import MarkdownViewer from "./MarkdownViewer"
 import type { Snippet } from "./types"
 import { getLang } from "@/lib/languages"
 import { useAppStore } from "@/lib/store"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faFolderPlus, faCheck, faCopy, faLink, faLinkSlash, faEllipsisVertical, faCode } from "@fortawesome/free-solid-svg-icons"
+import { faFolderPlus, faCheck, faCopy, faLink, faLinkSlash, faEllipsisVertical, faCode, faEye } from "@fortawesome/free-solid-svg-icons"
 
 interface SnippetDetailProps {
     snippet: Snippet
@@ -62,6 +63,7 @@ export default function SnippetDetail({
     const [shareLoading, setShareLoading] = useState(false)
     const [urlCopied, setUrlCopied] = useState(false)
     const [codeCopied, setCodeCopied] = useState(false)
+    const [markdownMode, setMarkdownMode] = useState<"raw" | "preview">("raw")
 
     const colRef = useRef<HTMLDivElement>(null)
 
@@ -141,6 +143,8 @@ export default function SnippetDetail({
     }
 
     const lang = getLang(snippet.language)
+    const normalizedLanguage = snippet.language.toLowerCase().trim().replace(/^\./, "")
+    const isMarkdown = normalizedLanguage === "markdown" || normalizedLanguage === "md"
 
     const handleDelete = async () => {
         setDeleting(true)
@@ -242,10 +246,15 @@ export default function SnippetDetail({
     }
 
     return (
-        <div className="flex-1 flex flex-col h-full min-h-0 overflow-y-auto lg:overflow-hidden">
-            <div className="px-6 py-2 sm:py-5 border-b border-[var(--border)] shrink-0">
+        <div className="flex-1 flex flex-col h-full min-h-0 overflow-y-auto lg:overflow-hidden bg-[var(--bg)]">
+            <div className="px-5 lg:px-8 py-3 sm:py-5 border-b border-[var(--border)] bg-[#0d0f0e] shrink-0">
                 <div className="flex items-start justify-between gap-4 mb-1 sm:mb-3">
-                    <div>
+                    <div className="min-w-0">
+                        <div className="mb-3 hidden items-center gap-2 text-[10px] text-[var(--text4)] sm:flex">
+                            <span>Library</span>
+                            <span>›</span>
+                            <span>Snippets</span>
+                        </div>
                         <div className="flex items-center gap-2 mb-2">
                             <span
                                 className="font-mono text-[9px] font-semibold px-[7px] py-[2px] rounded-[3px] border"
@@ -259,7 +268,7 @@ export default function SnippetDetail({
                             </span>
                             <span className="text-[12px] text-[var(--text3)]">{snippet.language}</span>
                         </div>
-                        <h2 className="text-[18px] sm:text-[22px] font-bold tracking-[-0.5px] leading-tight">
+                        <h2 className="text-[19px] sm:text-[23px] font-semibold leading-tight truncate">
                             {snippet.title}
                         </h2>
                     </div>
@@ -317,16 +326,16 @@ export default function SnippetDetail({
                 </div>
 
                 {snippet.description && (
-                    <p className="text-[13px] text-[var(--text3)] mb-2 sm:mb-4 leading-relaxed max-w-2xl">
+                    <p className="text-[12px] text-[var(--text3)] mb-2 sm:mb-3 leading-relaxed max-w-3xl">
                         {snippet.description}
                     </p>
                 )}
 
-                <div className="flex gap-2 mb-2 sm:mb-4 flex-wrap">
+                <div className="flex gap-1.5 mb-3 flex-wrap">
                     {snippet.tags.map(tag => (
                         <span
                             key={tag}
-                            className="font-mono text-[7px] sm:text-[10px] text-[var(--text3)] bg-[var(--surface2)] border border-[var(--border2)] px-2.5 py-[3px] rounded-full"
+                            className="font-mono text-[8px] sm:text-[9px] text-[var(--text3)] bg-[var(--surface2)] border border-[var(--border2)] px-2.5 py-[3px] rounded-[4px]"
                         >
                             {tag}
                         </span>
@@ -448,7 +457,7 @@ export default function SnippetDetail({
                     )}
                 </div>
 
-                <div className="flex items-center gap-4 mt-2 sm:mt-4 font-mono text-[8px] sm:text-[11px] text-[var(--text4)]">
+                <div className="flex items-center gap-4 mt-3 font-mono text-[8px] sm:text-[10px] text-[var(--text4)]">
                     <span>Disimpan {snippet.createdAt}</span>
                     <span>{copyCount} kali disalin</span>
                     {showPersonalControls && (
@@ -458,10 +467,49 @@ export default function SnippetDetail({
             </div>
 
             <div className="h-[420px] shrink-0 overflow-hidden sm:h-[520px] lg:h-auto lg:flex-1 lg:min-h-0">
-                <CodeBlock code={snippet.code} language={snippet.language} />
+                {isMarkdown ? (
+                    <div className="flex h-full min-h-0 flex-col">
+                        <div className="flex h-[40px] shrink-0 items-center justify-end border-b border-[var(--border)] bg-[#111312] px-4">
+                            <div className="flex items-center rounded-md border border-[var(--border2)] bg-[#0b0d0c] p-[2px]">
+                                <button
+                                    onClick={() => setMarkdownMode("raw")}
+                                    className={`flex h-[28px] items-center gap-1.5 rounded-[4px] px-3 text-[10px] font-medium transition-colors ${
+                                        markdownMode === "raw"
+                                            ? "bg-[var(--surface3)] text-[var(--text)]"
+                                            : "text-[var(--text4)] hover:text-[var(--text2)]"
+                                    }`}
+                                >
+                                    <FontAwesomeIcon icon={faCode} className="h-[10px] w-[10px]" />
+                                    Raw
+                                </button>
+                                <button
+                                    onClick={() => setMarkdownMode("preview")}
+                                    className={`flex h-[28px] items-center gap-1.5 rounded-[4px] px-3 text-[10px] font-medium transition-colors ${
+                                        markdownMode === "preview"
+                                            ? "bg-[var(--surface3)] text-[var(--em)]"
+                                            : "text-[var(--text4)] hover:text-[var(--text2)]"
+                                    }`}
+                                >
+                                    <FontAwesomeIcon icon={faEye} className="h-[10px] w-[10px]" />
+                                    Preview
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="min-h-0 flex-1">
+                            {markdownMode === "preview" ? (
+                                <MarkdownViewer content={snippet.code} />
+                            ) : (
+                                <CodeBlock code={snippet.code} language={snippet.language} />
+                            )}
+                        </div>
+                    </div>
+                ) : (
+                    <CodeBlock code={snippet.code} language={snippet.language} />
+                )}
             </div>
 
-            <div className="flex items-center justify-between px-6 py-2.5 border-t border-[var(--border)] bg-[var(--surface)] shrink-0">
+            <div className="flex items-center justify-between px-5 lg:px-8 py-2.5 border-t border-[var(--border)] bg-[#111312] shrink-0">
                 <div className="flex items-center gap-4 font-mono text-[10px] text-[var(--text4)]">
                     <span>{snippet.code.split('\n').length} baris</span>
                     <span>UTF-8</span>

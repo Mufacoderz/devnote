@@ -70,6 +70,89 @@ body {
   color: var(--text);
 }
 
+.dashboard-sidebar::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 42%;
+  pointer-events: none;
+  background: linear-gradient(
+    28deg,
+    rgba(52, 211, 153, 0.14) 0%,
+    rgba(52, 211, 153, 0.045) 34%,
+    transparent 68%
+  );
+}
+
+.markdown-viewer {
+  color: var(--text3);
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.markdown-viewer h1,
+.markdown-viewer h2,
+.markdown-viewer h3,
+.markdown-viewer h4 {
+  color: var(--text);
+  font-weight: 650;
+  line-height: 1.3;
+  margin: 1.5em 0 0.65em;
+}
+
+.markdown-viewer h1 { font-size: 28px; margin-top: 0; }
+.markdown-viewer h2 { font-size: 20px; }
+.markdown-viewer h3 { font-size: 16px; }
+.markdown-viewer p,
+.markdown-viewer ul,
+.markdown-viewer ol,
+.markdown-viewer blockquote { margin: 0 0 1.15em; }
+.markdown-viewer ul,
+.markdown-viewer ol { padding-left: 1.4em; }
+.markdown-viewer li { margin: 0.3em 0; }
+.markdown-viewer a { color: var(--em); text-decoration: underline; text-underline-offset: 3px; }
+.markdown-viewer strong { color: var(--text2); font-weight: 650; }
+.markdown-viewer blockquote {
+  border-left: 2px solid var(--em);
+  background: var(--em-faint);
+  padding: 0.8em 1em;
+}
+.markdown-viewer code {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: #080a09;
+  color: var(--text2);
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  padding: 0.12em 0.38em;
+}
+.markdown-viewer pre {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: #080a09;
+  margin: 1.2em 0;
+  padding: 1.1em 1.2em;
+}
+.markdown-viewer pre code {
+  border: 0;
+  background: transparent;
+  padding: 0;
+}
+.markdown-viewer table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.2em 0;
+}
+.markdown-viewer th,
+.markdown-viewer td {
+  border: 1px solid var(--border);
+  padding: 0.6em 0.8em;
+  text-align: left;
+}
+.markdown-viewer th { color: var(--text2); background: var(--surface2); }
+.markdown-viewer hr { border: 0; border-top: 1px solid var(--border); margin: 2em 0; }
+
 /* Scrollbar global */
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }

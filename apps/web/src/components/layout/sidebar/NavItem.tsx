@@ -28,11 +28,11 @@ export default function NavItem({
       onPointerEnter={onPrefetch}
       onTouchStart={onPrefetch}
       onFocus={onPrefetch}
-      className={`flex items-center justify-between px-2 py-[6px] rounded-[5px] cursor-pointer text-[13px] transition-all
+      className={`relative flex items-center justify-between px-3 py-[8px] rounded-[4px] cursor-pointer text-[13px] transition-all
       ${
         active
-          ? "bg-[var(--em-faint)] text-[var(--em)] font-medium"
-          : "text-[var(--text2)] hover:bg-[var(--em-faint)] hover:text-[var(--text)]"
+          ? "bg-[#242925] text-[var(--text)] font-medium before:absolute before:left-0 before:inset-y-0 before:w-[2px] before:bg-[var(--em)]"
+          : "text-[var(--text3)] hover:bg-[#202421] hover:text-[var(--text)]"
       }`}
     >
       <div className="flex items-center gap-2 min-w-0">
@@ -57,8 +57,8 @@ export default function NavItem({
         className={`font-mono text-[10px] px-2 py-[1px] rounded-full shrink-0
         ${
           active
-            ? "text-[var(--em-dim)] bg-[var(--em-faint)]"
-            : "text-[var(--text4)] bg-[var(--surface3)]"
+            ? "text-[var(--em)] bg-[rgba(52,211,153,0.08)]"
+            : "text-[var(--text4)] bg-[#202421]"
         }`}
       >
         {count}
