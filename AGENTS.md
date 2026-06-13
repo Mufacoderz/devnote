@@ -10,17 +10,21 @@ When working in this repository:
 
 ## Commits
 
-- Commit AI-authored work as:
-
-  ```bash
-  git -c user.name="devnote-agent" -c user.email="270543300+devnote-agent@users.noreply.github.com" commit -m "Clear commit message"
-  ```
-
-- Do not change global or repository Git config for the author identity unless the user explicitly asks.
-- If the user wants their own account as the main author, keep their author identity and add this trailer to the commit message:
+- Keep the user's Git identity as the primary author whenever possible.
+- For AI-assisted work, add the following trailer to every commit message:
 
   ```text
   Co-authored-by: devnote-agent <270543300+devnote-agent@users.noreply.github.com>
   ```
 
+- Example:
+
+  ```text
+  feat: add snippet sharing
+
+  Co-authored-by: devnote-agent <270543300+devnote-agent@users.noreply.github.com>
+  ```
+
+- Only use the `devnote-agent` identity as the primary commit author when the user explicitly requests agent-authored commits.
+- Do not modify global Git configuration.
 - Keep commit messages short, specific, and focused on the user-visible fix or feature.
